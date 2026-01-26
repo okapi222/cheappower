@@ -1421,7 +1421,7 @@ export function KwhCalculator() {
       </div>
 
       {/* Price Drivers Button & Factor Headers */}
-      <div className={`flex items-center gap-2 mt-2 pt-0 ${isPriceDriversExpanded ? "sm:grid sm:grid-cols-4 sm:gap-4" : ""}`}>
+      <div className={`flex items-center gap-2 mt-2 pt-0 ${isPriceDriversExpanded ? "lg:grid lg:grid-cols-4 lg:gap-4" : ""}`}>
         <div className="flex items-center gap-2">
           {/* Mobile: Show Compare Other States when analysis complete, otherwise show Price Drivers */}
           {/* Desktop: Always show Price Drivers button */}
@@ -1474,9 +1474,9 @@ export function KwhCalculator() {
           </Tooltip>
         </div>
         
-        {/* Factor Column Headers - only visible in expanded view on tablet/desktop */}
+        {/* Factor Column Headers - only visible in expanded view on desktop (lg+) */}
         {isPriceDriversExpanded && (
-          <div className="hidden sm:contents">
+          <div className="hidden lg:contents">
             {isAnalyzing ? (
               // Skeleton headers while loading
               [0, 1, 2].map((idx) => (
