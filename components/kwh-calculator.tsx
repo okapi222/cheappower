@@ -1421,15 +1421,15 @@ export function KwhCalculator() {
       </div>
 
       {/* Price Drivers Button & Factor Headers */}
-      <div className={`flex items-center gap-2 mt-2 pt-0 ${isPriceDriversExpanded ? "lg:grid lg:grid-cols-4 lg:gap-4" : ""}`}>
+      <div className={`flex items-center gap-2 mt-2 pt-0 ${isPriceDriversExpanded ? "sm:grid sm:grid-cols-4 sm:gap-4" : ""}`}>
         <div className="flex items-center gap-2">
-          {/* Mobile/Tablet: Show Compare Other States when analysis complete, otherwise show Price Drivers */}
-          {/* Desktop (lg+): Always show Price Drivers button */}
+          {/* Mobile: Show Compare Other States when analysis complete, otherwise show Price Drivers */}
+          {/* Desktop: Always show Price Drivers button */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
-            // Mobile/Tablet: Compare Other States button after analysis
+            // Mobile only: Compare Other States button after analysis
             <Button
               variant="secondary"
-              className="flex lg:hidden items-center gap-2"
+              className="flex sm:hidden items-center gap-2"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
                 setAnalysis(null)
@@ -1440,9 +1440,9 @@ export function KwhCalculator() {
             </Button>
           ) : null}
           
-          {/* Price Drivers button - hidden on mobile/tablet when expanded and analysis complete */}
+          {/* Price Drivers button - hidden on mobile when expanded and analysis complete */}
           <Button
-            className={`flex items-center gap-2 min-w-[200px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden lg:flex" : ""}`}
+            className={`flex items-center gap-2 min-w-[200px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden sm:flex" : ""}`}
             onClick={() => {
               runAnalysis()
               setIsPriceDriversExpanded(true)
@@ -1464,7 +1464,7 @@ export function KwhCalculator() {
           </Button>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className={`text-muted-foreground hover:text-foreground transition-colors ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden lg:block" : ""}`}>
+              <button type="button" className={`text-muted-foreground hover:text-foreground transition-colors ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden sm:block" : ""}`}>
                 <Info className="h-4 w-4" />
               </button>
             </TooltipTrigger>
@@ -1474,9 +1474,9 @@ export function KwhCalculator() {
           </Tooltip>
         </div>
         
-        {/* Factor Column Headers - only visible in expanded view on desktop (lg+) */}
+        {/* Factor Column Headers - only visible in expanded view on tablet/desktop */}
         {isPriceDriversExpanded && (
-          <div className="hidden lg:contents">
+          <div className="hidden sm:contents">
             {isAnalyzing ? (
               // Skeleton headers while loading
               [0, 1, 2].map((idx) => (
@@ -1568,8 +1568,8 @@ export function KwhCalculator() {
       {isPriceDriversExpanded && (
         <div className="space-y-2 animate-in fade-in duration-300">
           
-          {/* Mobile Summary View */}
-          <div className="md:hidden space-y-3">
+          {/* Phone Summary View */}
+          <div className="sm:hidden space-y-3">
             {(() => {
               const allRegions = [
                 ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
@@ -1755,7 +1755,7 @@ export function KwhCalculator() {
           </div>
 
           {/* Tablet View - 2 column grid with accordion cards (sm to lg) */}
-          <div className="hidden sm:grid sm:grid-cols-2 lg:hidden gap-3">
+          <div className="hidden sm:block lg:hidden">
             {(() => {
               const allRegions = [
                 ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
@@ -1793,112 +1793,140 @@ export function KwhCalculator() {
                 return "bg-slate-100"
               }
 
-              return allRegions.map((region, idx) => {
-                const isAnalyzed = lastAnalyzedRegions.includes(region.key)
-                
-                return (
-                  <motion.div
-                    key={region.key}
-                    layoutId={`card-tablet-${region.key}`}
-                    layout
-                    transition={{ type: "spring", stiffness: 25, damping: 12 }}
-                  >
-                    <Card
-                      className={`w-full h-full ${
-                        region.isPinned ? "bg-indigo-50/50 border-indigo-200" : 
-                        region.isUserAdded ? "bg-sky-50/50 border-sky-200" : 
-                        ""
-                      }`}
-                    >
-                      <CardHeader className="p-3 pb-1 pt-3">
-                        <CardTitle className="text-base flex items-center gap-1.5">
-                          <MapPin className="h-3.5 w-3.5" />
-                          {region.displayName}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-3 pt-0 space-y-2">
-                        {/* Price display */}
-                        <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
-                          <div className="font-bold text-2xl" style={{ color: "#00f" }}>
-                            ${regionData[region.key].priceUSD.toFixed(2)}
-                          </div>
-                          <div className="text-muted-foreground text-xs">per kWh (USD)</div>
-                        </div>
+              return (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    {allRegions.map((region, idx) => {
+                      const isAnalyzed = lastAnalyzedRegions.includes(region.key)
+                      
+                      return (
+                        <Card
+                          key={region.key}
+                          className={`w-full ${
+                            region.isPinned ? "bg-indigo-50/50 border-indigo-200" : 
+                            region.isUserAdded ? "bg-sky-50/50 border-sky-200" : 
+                            ""
+                          }`}
+                          style={{
+                            animation: `morphToColumn 0.4s ease-out ${idx * 0.08}s both`,
+                          }}
+                        >
+                          <CardHeader className="p-3 pb-1 pt-3">
+                            <CardTitle className="text-base flex items-center gap-1.5">
+                              <MapPin className="h-3.5 w-3.5" />
+                              {region.displayName}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-3 pt-0 space-y-2">
+                            {/* Price display */}
+                            <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
+                              <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+                                ${regionData[region.key].priceUSD.toFixed(2)}
+                              </div>
+                              <div className="text-muted-foreground text-xs">per kWh (USD)</div>
+                            </div>
 
-                        {/* Energy Mix */}
-                        <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+                            {/* Energy Mix */}
+                            <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
 
-                        {/* Data Sources */}
-                        <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
-                          <a
-                            href={regionData[region.key].priceSourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline truncate"
-                          >
-                            Price: {regionData[region.key].priceSource}
-                          </a>
-                          <a
-                            href={regionData[region.key].energySourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline truncate"
-                          >
-                            Mix: {regionData[region.key].energySource}
-                          </a>
-                        </div>
+                            {/* Data Sources */}
+                            <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+                              <a
+                                href={regionData[region.key].priceSourceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline truncate"
+                              >
+                                Price: {regionData[region.key].priceSource}
+                              </a>
+                              <a
+                                href={regionData[region.key].energySourceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline truncate"
+                              >
+                                Mix: {regionData[region.key].energySource}
+                              </a>
+                            </div>
 
-                        {/* Factor Accordions */}
-                        {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
-                          <Accordion type="multiple" className="w-full border-t pt-2">
-                            {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
-                              const score = getFactorScore(region.key, region.displayName, factorIdx)
-                              const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
-                              
-                              return (
-                                <AccordionItem key={factorIdx} value={`factor-${factorIdx}`} className="border-b-0">
-                                  <AccordionTrigger className="py-2 hover:no-underline">
-                                    <div className="flex items-center justify-between w-full pr-2">
-                                      <span className="text-sm font-medium">{factor.factor}</span>
-                                      <span className={`text-sm font-bold px-2 py-0.5 rounded ${
-                                        score && score > 0 ? "bg-green-100 text-green-700" :
-                                        score && score < 0 ? "bg-red-100 text-red-700" :
-                                        "bg-gray-100 text-gray-600"
-                                      }`}>
-                                        {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
-                                      </span>
-                                    </div>
-                                  </AccordionTrigger>
-                                  <AccordionContent>
-                                    {justification ? (
-                                      <p className="text-sm text-foreground leading-relaxed pb-2">{justification}</p>
-                                    ) : (
-                                      <p className="text-xs text-muted-foreground pb-2">No explanation available.</p>
-                                    )}
-                                  </AccordionContent>
-                                </AccordionItem>
-                              )
-                            })}
-                          </Accordion>
-                        )}
+                            {/* Factor Accordions */}
+                            {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
+                              <Accordion type="multiple" className="w-full border-t pt-2">
+                                {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
+                                  const score = getFactorScore(region.key, region.displayName, factorIdx)
+                                  const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
+                                  
+                                  return (
+                                    <AccordionItem key={factorIdx} value={`factor-${factorIdx}`} className="border-b-0">
+                                      <AccordionTrigger className="py-2 hover:no-underline">
+                                        <div className="flex items-center justify-between w-full pr-2">
+                                          <span className="text-sm font-medium">{factor.factor}</span>
+                                          <span className={`text-sm font-bold px-2 py-0.5 rounded ${
+                                            score && score > 0 ? "bg-green-100 text-green-700" :
+                                            score && score < 0 ? "bg-red-100 text-red-700" :
+                                            "bg-gray-100 text-gray-600"
+                                          }`}>
+                                            {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
+                                          </span>
+                                        </div>
+                                      </AccordionTrigger>
+                                      <AccordionContent>
+                                        {justification ? (
+                                          <p className="text-sm text-foreground leading-relaxed pb-2">{justification}</p>
+                                        ) : (
+                                          <p className="text-xs text-muted-foreground pb-2">No explanation available.</p>
+                                        )}
+                                      </AccordionContent>
+                                    </AccordionItem>
+                                  )
+                                })}
+                              </Accordion>
+                            )}
 
-                        {/* Loading skeleton for factors */}
-                        {isAnalyzing && (
-                          <div className="space-y-2 border-t pt-2">
-                            {[0, 1, 2].map((i) => (
-                              <Skeleton key={i} className="h-10 w-full" />
+                            {/* Loading skeleton for factors */}
+                            {isAnalyzing && (
+                              <div className="space-y-2 border-t pt-2">
+                                {[0, 1, 2].map((i) => (
+                                  <Skeleton key={i} className="h-10 w-full" />
+                                ))}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+
+                  {/* Synthesis Summary for tablet */}
+                  {!isAnalyzing && analysis?.synthesis && (
+                    <Card className="bg-slate-50 mt-3">
+                      <CardContent className="p-3">
+                        <h4 className="font-semibold text-sm mb-2">Summary</h4>
+                        <p className="text-xs text-muted-foreground">{analysis.synthesis}</p>
+                        {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {analysis.synthesisSources.map((source, idx) => (
+                              <a 
+                                key={idx} 
+                                href={source.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 hover:underline"
+                              >
+                                [{source.label}]
+                              </a>
                             ))}
                           </div>
                         )}
                       </CardContent>
                     </Card>
-                  </motion.div>
-                )
-              })
+                  )}
+                </>
+              )
             })()}
           </div>
 
-          {/* Desktop Stacked Region Cards with Factor Scores (lg+ only) */}
+          {/* Desktop Stacked Region Cards with Factor Scores (lg+) */}
           <div className="hidden lg:flex flex-col gap-2">
             {/* All displayed regions */}
             {(() => {
