@@ -1,14 +1,46 @@
 "use client"
 
+import { AlertDialogAction } from "@/components/ui/alert-dialog"
+
+import { AlertDialogCancel } from "@/components/ui/alert-dialog"
+
+import { AlertDialogFooter } from "@/components/ui/alert-dialog"
+
+import { AlertDialogDescription } from "@/components/ui/alert-dialog"
+
+import { AlertDialogTitle } from "@/components/ui/alert-dialog"
+
+import { AlertDialogHeader } from "@/components/ui/alert-dialog"
+
+import { AlertDialogContent } from "@/components/ui/alert-dialog"
+
+import { AlertDialog } from "@/components/ui/alert-dialog"
+
 import { useState, useEffect } from "react"
+import { motion, LayoutGroup } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin } from "lucide-react"
+import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2 } from "lucide-react"
 import { analyzeRegionPricing, askFollowUp } from "@/app/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
+import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 
 interface RegionData {
   priceUSD: number
@@ -584,15 +616,19 @@ const getRandomRegions = (count: number): string[] => {
 }
 
 const EnergyBreakdown = ({ energyMix, compact = false }: { energyMix: RegionData["energyMix"]; compact?: boolean }) => {
-  const entries = Object.entries(energyMix)
+  const allEntries = Object.entries(energyMix)
     .filter(([, value]) => value && value > 0)
     .sort(([, a], [, b]) => (b || 0) - (a || 0))
 
-  const total = entries.reduce((sum, [, value]) => sum + (value || 0), 0)
+  // Limit to top 6 energy sources by proportion for display
+  const entries = allEntries.slice(0, 6)
+  
+  // Use all entries for total calculation (for accurate bar proportions)
+  const total = allEntries.reduce((sum, [, value]) => sum + (value || 0), 0)
 
   return (
     <div className={compact ? "space-y-1" : "space-y-2"}>
-      <h4 className={`font-medium text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}>Energy Sources</h4>
+      <h4 className={`font-medium text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}>Energy Mix</h4>
       <div className="h-3 w-full rounded-full overflow-hidden flex">
         {entries.map(([key, value]) => (
           <div
@@ -626,9 +662,11 @@ const EnergyBreakdown = ({ energyMix, compact = false }: { energyMix: RegionData
 const PlaceholderCard = ({
   onSelectRegion,
   compact = false,
+  isAnalyzing = false,
 }: {
   onSelectRegion: (key: string) => void
   compact?: boolean
+  isAnalyzing?: boolean
 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
@@ -649,15 +687,32 @@ const PlaceholderCard = ({
     <Card className="border-dashed border-2">
       <CardContent className="flex flex-col items-center justify-center py-6 px-4">
         {!isSearchOpen ? (
-          <Button 
-            variant="default" 
-            size="sm" 
-            className="gap-2"
-            onClick={() => setIsSearchOpen(true)}
-          >
-            <Search className="h-4 w-4" />
-            Compare Another State               
-          </Button>
+          <div className="text-center space-y-5">
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              className="gap-2"
+              onClick={() => setIsSearchOpen(true)}
+              disabled={isAnalyzing}
+            >
+              <Search className="h-4 w-4" />
+              Add a State               
+            </Button>
+            <div className="text-xs text-muted-foreground space-y-1 text-left">
+              <div className="flex items-center gap-1.5">
+                <Plus className="h-3 w-3" />
+                <span>Add up to 6 states</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Pin className="h-3 w-3" />
+                <span>Pin to preserve when filtering</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <X className="h-3 w-3" />
+                <span>Remove from comparison</span>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="w-full space-y-2">
             <div className="relative">
@@ -724,6 +779,7 @@ const RegionCard = ({
   isUserAdded = false,
   isPinned = false,
   onTogglePin,
+  layoutId,
 }: {
   regionKey: string
   displayName: string
@@ -735,12 +791,11 @@ const RegionCard = ({
   isUserAdded?: boolean
   isPinned?: boolean
   onTogglePin?: () => void
+  layoutId?: string
 }) => {
-  const [sourcesExpanded, setSourcesExpanded] = useState(false)
-
   // Determine card styling based on state
   const getCardClasses = () => {
-    if (isPinned) return "bg-indigo-50 border-indigo-200"
+    if (isPinned) return "bg-indigo-50/50 border-indigo-200"
     if (isUserAdded) return "bg-sky-50/50 border-sky-200"
     return ""
   }
@@ -752,32 +807,53 @@ const RegionCard = ({
   }
 
   return (
-    <Card className={`leading-6 ${getCardClasses()}`}>
-      <CardHeader className="p-3 pb-1 pt-0">
+    <motion.div
+      layoutId={layoutId}
+      layout
+      transition={{ type: "spring", stiffness: 25, damping: 12 }}
+    >
+      <Card className={`leading-6 h-[280px] ${getCardClasses()}`}>
+        <CardHeader className="p-3 pb-1 pt-0">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5" />
             {displayName}
           </CardTitle>
           <div className="flex items-center gap-0.5">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-5 w-5" 
-              onClick={onTogglePin}
-              title={isPinned ? "Unpin from board" : "Pin to board"}
-            >
-              <Pin className={`h-3 w-3 ${isPinned ? "fill-current" : ""}`} />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-5 w-5" 
-              onClick={onRemove}
-              title="Remove from board"
-            >
-              <X className="h-3 w-3" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-5 w-5" 
+                    onClick={onTogglePin}
+                  >
+                    <Pin className={`h-3 w-3 ${isPinned ? "fill-current" : ""}`} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  {isPinned ? "Unpin from board" : "Pin to board"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-5 w-5" 
+                    onClick={onRemove}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  Remove from board
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </CardHeader>
@@ -791,37 +867,27 @@ const RegionCard = ({
 
         <EnergyBreakdown energyMix={data.energyMix} compact={true} />
 
-        <div className="border-t pt-1">
-          <button
-            onClick={() => setSourcesExpanded(!sourcesExpanded)}
-            className="flex items-center justify-between w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+        <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+          <a
+            href={data.priceSourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline truncate"
           >
-            <span>Data Sources</span>
-            {sourcesExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-          </button>
-          {sourcesExpanded && (
-            <div className="mt-1 space-y-0.5 text-xs">
-              <a
-                href={data.priceSourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-primary hover:underline"
-              >
-                Price: {data.priceSource}
-              </a>
-              <a
-                href={data.energySourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-primary hover:underline"
-              >
-                Energy Mix: {data.energySource}
-              </a>
-            </div>
-          )}
+            Price: {data.priceSource}
+          </a>
+          <a
+            href={data.energySourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline truncate"
+          >
+            Mix: {data.energySource}
+          </a>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
@@ -859,6 +925,13 @@ export function KwhCalculator() {
   const [isAskingFollowUp, setIsAskingFollowUp] = useState(false)
   const [isAnalysisCollapsed, setIsAnalysisCollapsed] = useState(false)
   const [expandedFollowUpIndex, setExpandedFollowUpIndex] = useState<number | null>(null)
+  const [isPriceDriversExpanded, setIsPriceDriversExpanded] = useState(false)
+  
+  const [pendingFilterChange, setPendingFilterChange] = useState<{ type: 'category' | 'order'; value: string } | null>(null)
+  const [filterChangeDialogOpen, setFilterChangeDialogOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [dialogSearchValue, setDialogSearchValue] = useState("")
+  const [mobileDetailRegion, setMobileDetailRegion] = useState<string | null>(null)
 
   // Calculate filter value for a region based on category
   const getFilterValue = (data: RegionData, category: FilterCategory): number => {
@@ -882,6 +955,16 @@ export function KwhCalculator() {
   const [filteredStates, setFilteredStates] = useState<{ key: string; displayName: string; value: number }[]>([])
 
   useEffect(() => {
+    // Calculate how many slots are available for filtered states (max 6 total)
+    const pinnedCount = pinnedRegions.size
+    const nonPinnedUserAdded = userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).length
+    const occupiedSlots = pinnedCount + nonPinnedUserAdded
+    const availableForFilter = Math.max(0, 6 - occupiedSlots)
+    
+    // Show up to (3 - removedFilterSlots) filtered states, capped by available slots
+    // removedFilterSlots tracks pinned/hidden states from current filter
+    const maxFilterSlots = Math.min(Math.max(0, 3 - removedFilterSlots), availableForFilter)
+
     const newFilteredStates = Object.entries(regionData)
       .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
       .map(([key, data]) => ({
@@ -890,7 +973,7 @@ export function KwhCalculator() {
         value: getFilterValue(data, filterCategory),
       }))
       .sort((a, b) => filterOrder === "highest" ? b.value - a.value : a.value - b.value)
-      .slice(0, Math.max(0, 3 - removedFilterSlots))
+      .slice(0, maxFilterSlots)
 
     setFilteredStates(newFilteredStates)
   }, [filterCategory, filterOrder, pinnedRegions, hiddenRegions, userAddedRegions, removedFilterSlots])
@@ -972,13 +1055,9 @@ export function KwhCalculator() {
   }
 
   useEffect(() => {
-    const displayedRegions = getDisplayedRegions()
-
-    if (!hasInitialAnalysisRun && displayedRegions.length >= 1) {
-      // Initial automatic analysis
-      runAnalysis()
-    } else if (hasInitialAnalysisRun) {
-      // Check if regions have changed since last analysis
+    // Only track region changes after user has clicked "Explore Price Drivers"
+    if (hasInitialAnalysisRun) {
+      const displayedRegions = getDisplayedRegions()
       const currentKeys = displayedRegions
         .map((r) => r.key)
         .sort()
@@ -1007,6 +1086,13 @@ export function KwhCalculator() {
   const nonPinnedUserAdded = userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).length
   const totalDisplayedStates = pinnedCount + filteredStates.length + nonPinnedUserAdded
 
+  // Collapse expanded view if all regions are removed
+  useEffect(() => {
+    if (isPriceDriversExpanded && totalDisplayedStates === 0) {
+      setIsPriceDriversExpanded(false)
+    }
+  }, [isPriceDriversExpanded, totalDisplayedStates])
+
   const addRegion = (key: string) => {
     const displayName = key
       .split(" ")
@@ -1018,7 +1104,7 @@ export function KwhCalculator() {
     const isInUserAdded = userAddedRegions.some((r) => r.key === key)
     const isInPinned = pinnedRegions.has(key)
     
-    if (!isInFiltered && !isInUserAdded && !isInPinned && totalDisplayedStates < 4) {
+    if (!isInFiltered && !isInUserAdded && !isInPinned && totalDisplayedStates < 6) {
       setUserAddedRegions((prev) => [...prev, { key, displayName }])
     }
   }
@@ -1033,7 +1119,25 @@ export function KwhCalculator() {
     })
   }
 
+  // Handle filter change - exits expanded mode if active
+  const handleFilterChange = (type: 'category' | 'order', value: string) => {
+    setIsPriceDriversExpanded(false)
+    if (type === 'category') {
+      setFilterCategory(value as FilterCategory)
+      setFilterOrder("highest")
+    } else {
+      setFilterOrder(value as FilterOrder)
+    }
+    setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
+    setHiddenRegions(new Set())
+    setRemovedFilterSlots(0)
+  }
+
   const togglePinRegion = (key: string) => {
+    // Check if this is a filtered state being pinned (not already pinned)
+    const isFilteredState = filteredStates.some(s => s.key === key)
+    const isCurrentlyPinned = pinnedRegions.has(key)
+    
     setPinnedRegions((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(key)) {
@@ -1049,6 +1153,11 @@ export function KwhCalculator() {
       newSet.delete(key)
       return newSet
     })
+    
+    // Increment removedFilterSlots when pinning a filtered state
+    if (isFilteredState && !isCurrentlyPinned) {
+      setRemovedFilterSlots(prev => prev + 1)
+    }
   }
 
   const hideFilterRegion = (key: string) => {
@@ -1069,6 +1178,23 @@ export function KwhCalculator() {
 
   const removeRegion = (key: string) => {
     setSelectedRegions((prev) => prev.filter((r) => r.key !== key))
+  }
+
+  const confirmFilterChange = () => {
+    if (pendingFilterChange) {
+      if (pendingFilterChange.type === 'category') {
+        setFilterCategory(pendingFilterChange.value as FilterCategory)
+        setFilterOrder("highest")
+      } else {
+        setFilterOrder(pendingFilterChange.value as FilterOrder)
+      }
+      setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
+      setHiddenRegions(new Set())
+      setRemovedFilterSlots(0)
+      setIsPriceDriversExpanded(false)
+      setPendingFilterChange(null)
+      setFilterChangeDialogOpen(false)
+    }
   }
 
   const rollTheDice = () => {
@@ -1158,42 +1284,34 @@ export function KwhCalculator() {
       {/* Header Section */}
       <div className="py-0">
         <div className="flex items-center justify-center gap-3">
-          <h1 className="font-semibold text-3xl">Why power costs more here.</h1>
+          <h1 className="font-semibold text-3xl">Compare State Electricity Prices and Their Drivers</h1>
         </div>
       </div>
 
-      {/* Filter Controls - Mobile Dropdowns */}
-      <div className="flex sm:hidden gap-3 items-center justify-center">
+      {/* Filter Controls - Mobile Dropdowns - hidden in expanded view */}
+      {!isPriceDriversExpanded && (
+      <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
         <Select
           value={filterCategory}
-          onValueChange={(value: FilterCategory) => {
-            setFilterCategory(value)
-            setFilterOrder("highest")
-            setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
-            setHiddenRegions(new Set())
-            setRemovedFilterSlots(0)
-          }}
+          onValueChange={(value: FilterCategory) => handleFilterChange('category', value)}
+          disabled={isAnalyzing || totalDisplayedStates >= 6}
         >
           <SelectTrigger className="w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="price">Price</SelectItem>
-            <SelectItem value="renewables">% Renewables</SelectItem>
-            <SelectItem value="nuclear">% Nuclear</SelectItem>
-            <SelectItem value="fossilFuels">% Fossil Fuels</SelectItem>
-            <SelectItem value="coal">% Coal</SelectItem>
+            <SelectItem value="renewables">Renewables</SelectItem>
+            <SelectItem value="nuclear">Nuclear</SelectItem>
+            <SelectItem value="fossilFuels">Fossil Fuels</SelectItem>
+            <SelectItem value="coal">Coal</SelectItem>
           </SelectContent>
         </Select>
 
         <Select
           value={filterOrder}
-          onValueChange={(value: FilterOrder) => {
-            setFilterOrder(value)
-            setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
-            setHiddenRegions(new Set())
-            setRemovedFilterSlots(0)
-          }}
+          onValueChange={(value: FilterOrder) => handleFilterChange('order', value)}
+          disabled={isAnalyzing || totalDisplayedStates >= 6}
         >
           <SelectTrigger className="w-[100px]">
             <SelectValue />
@@ -1203,346 +1321,955 @@ export function KwhCalculator() {
             <SelectItem value="lowest">Lowest</SelectItem>
           </SelectContent>
         </Select>
-      </div>
 
-      {/* Filter Controls - Desktop Segmented Controls */}
-      <div className="hidden sm:flex flex-row gap-3 items-center justify-center">
-        {/* Category Filter */}
-        <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-          {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
-            <button
-              key={category}
-              onClick={() => {
-                setFilterCategory(category)
-                setFilterOrder("highest")
-                // Clear unpinned user-added regions and hidden regions when filter changes
-                setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
-                setHiddenRegions(new Set())
-                setRemovedFilterSlots(0)
-              }}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                filterCategory === category
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {category === "price" && "Price"}
-              {category === "renewables" && "% Renewables"}
-              {category === "nuclear" && "% Nuclear"}
-              {category === "fossilFuels" && "% Fossil Fuels"}
-              {category === "coal" && "% Coal"}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button className="p-1 text-muted-foreground hover:text-foreground">
+              <Info className="h-4 w-4" />
             </button>
-          ))}
-        </div>
-
-        {/* Order Filter */}
-        <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-          {(["highest", "lowest"] as FilterOrder[]).map((order) => (
-            <button
-              key={order}
-              onClick={() => {
-                setFilterOrder(order)
-                // Clear unpinned user-added regions and hidden regions when order changes
-                setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
-                setHiddenRegions(new Set())
-                setRemovedFilterSlots(0)
-              }}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                filterOrder === order
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {order === "highest" ? "Highest" : "Lowest"}
-            </button>
-          ))}
-        </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="max-w-[200px] text-center">
+            Filter states by price or energy mix
+          </TooltipContent>
+        </Tooltip>
       </div>
+      )}
 
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {/* All pinned regions first (both user-added and filter-generated) */}
-        {Array.from(pinnedRegions)
-          .filter((key) => regionData[key])
-          .map((key) => {
-            const isUserAddedRegion = userAddedRegions.some((r) => r.key === key)
-            return (
-              <RegionCard
-                key={key}
-                regionKey={key}
-                displayName={key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
-                data={regionData[key]}
-                onRemove={() => isUserAddedRegion ? removeUserRegion(key) : hideFilterRegion(key)}
-                compact={compact}
-                isUserAdded={isUserAddedRegion}
-                isPinned={true}
-                onTogglePin={() => togglePinRegion(key)}
-              />
-            )
-          })}
-        {/* Filtered states (excluding pinned) */}
-        {filteredStates.map((state) => (
-          <RegionCard
-            key={state.key}
-            regionKey={state.key}
-            displayName={state.displayName}
-            data={regionData[state.key]}
-            onRemove={() => hideFilterRegion(state.key)}
-            compact={compact}
-            filterValue={filterCategory !== "price" ? `${state.value}%` : undefined}
-            filterLabel={filterCategory !== "price" ? filterCategory : undefined}
-            isPinned={pinnedRegions.has(state.key)}
-            onTogglePin={() => togglePinRegion(state.key)}
-          />
-        ))}
-        {/* Non-pinned user-added regions */}
-        {userAddedRegions
-          .filter((region) => !pinnedRegions.has(region.key))
-          .map((region) => (
-            <RegionCard
-              key={region.key}
-              regionKey={region.key}
-              displayName={region.displayName}
-              data={regionData[region.key]}
-              onRemove={() => removeUserRegion(region.key)}
-              compact={compact}
-              isUserAdded={true}
-              isPinned={false}
-              onTogglePin={() => togglePinRegion(region.key)}
-            />
-          ))}
-        {totalDisplayedStates < 4 && (
-          <PlaceholderCard onSelectRegion={addRegion} compact={compact} />
+{/* Filter Controls / Compare Other States - same vertical position */}
+      <div className="hidden sm:flex flex-row gap-3 items-center justify-center min-h-[44px]">
+        {/* Filter Controls - fade out when expanded */}
+        {!isPriceDriversExpanded && (
+          <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
+            {/* Help text - desktop only (lg+) */}
+            <span className="hidden lg:block text-sm text-muted-foreground text-right leading-tight">Filter states by<br />price or energy mix</span>
+            {/* Category Filter */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                  {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
+                    <button
+                      key={category}
+                      disabled={isAnalyzing || totalDisplayedStates >= 6}
+                      onClick={() => handleFilterChange('category', category)}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                        filterCategory === category
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                    >
+                      {category === "price" && "Price"}
+                      {category === "renewables" && "Renewables"}
+                      {category === "nuclear" && "Nuclear"}
+                      {category === "fossilFuels" && "Fossil Fuels"}
+                      {category === "coal" && "Coal"}
+                    </button>
+                  ))}
+                </div>
+              </TooltipTrigger>
+            </Tooltip>
+
+            {/* Order Filter */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                  {(["highest", "lowest"] as FilterOrder[]).map((order) => (
+                    <button
+                      key={order}
+                      disabled={isAnalyzing || totalDisplayedStates >= 6}
+                      onClick={() => handleFilterChange('order', order)}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                        filterOrder === order
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                    >
+                      {order === "highest" ? "Highest" : "Lowest"}
+                    </button>
+                  ))}
+                </div>
+              </TooltipTrigger>
+            </Tooltip>
+
+            {/* Info icon - tablet only (sm to lg) */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
+                  <Info className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-[200px] text-center">
+                Filter states by price or energy mix
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )}
+
+        {/* Compare Other States Button - appears when analysis is complete */}
+        {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
+          <Button 
+            variant="secondary" 
+            className="gap-2"
+            onClick={() => {
+              setIsPriceDriversExpanded(false)
+              setAnalysis(null)
+            }}
+          >
+            <Undo2 className="h-4 w-4" />
+            Compare Other States
+          </Button>
         )}
       </div>
 
-      {selectedRegions.length >= 1 && (
-        <Card>
-          <CardHeader className="pb-0">
-            <div className="flex justify-between items-center py-0">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Analysis
-              </CardTitle>
-              {hasInitialAnalysisRun && regionsChangedSinceAnalysis && !isAnalyzing && (
-                <Button variant="secondary" size="sm" onClick={runAnalysis} className="flex items-center gap-1 my-0 py-0 bg-input">
-                  <Zap className="h-4 w-4" />
-                  Refactor
-                </Button>
-              )}
+      {/* Price Drivers Button & Factor Headers */}
+      <div className={`flex items-center gap-2 mt-2 pt-0 ${isPriceDriversExpanded ? "lg:grid lg:grid-cols-4 lg:gap-4" : ""}`}>
+        <div className="flex items-center gap-2">
+          {/* Mobile/Tablet: Show Compare Other States when analysis complete, otherwise show Price Drivers */}
+          {/* Desktop (lg+): Always show Price Drivers button */}
+          {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
+            // Mobile/Tablet: Compare Other States button after analysis
+            <Button
+              variant="secondary"
+              className="flex lg:hidden items-center gap-2"
+              onClick={() => {
+                setIsPriceDriversExpanded(false)
+                setAnalysis(null)
+              }}
+            >
+              <Undo2 className="h-4 w-4" />
+              Compare Other States
+            </Button>
+          ) : null}
+          
+          {/* Price Drivers button - hidden on mobile/tablet when expanded and analysis complete */}
+          <Button
+            className={`flex items-center gap-2 min-w-[200px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden lg:flex" : ""}`}
+            onClick={() => {
+              runAnalysis()
+              setIsPriceDriversExpanded(true)
+            }}
+            disabled={isAnalyzing || totalDisplayedStates === 0 || (analysis !== null && !regionsChangedSinceAnalysis)}
+          >
+            {isAnalyzing ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              <TrendingUp className="h-4 w-4" />
+            )}
+            {isAnalyzing ? (
+              <span className="inline-flex w-[100px]">
+                Analyzing<span className="w-[18px] text-left">{".".repeat(ellipsisCount)}</span>
+              </span>
+            ) : (
+              "Price Drivers"
+            )}
+          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className={`text-muted-foreground hover:text-foreground transition-colors ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden lg:block" : ""}`}>
+                <Info className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-[340px] p-3 text-left">
+              <p className="text-sm"><span className="font-semibold">Price Driver</span> compares regions across the major factors that influence electricity prices. We review public data from grid operators and regulators, assess how regions differ, and evaluate whether each difference helps or hurts low-cost power. Only the <span className="font-semibold">three factors that best explain price differences</span> between the selected regions are shown.</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        
+        {/* Factor Column Headers - only visible in expanded view on desktop (lg+) */}
+        {isPriceDriversExpanded && (
+          <div className="hidden lg:contents">
+            {isAnalyzing ? (
+              // Skeleton headers while loading
+              [0, 1, 2].map((idx) => (
+                <div key={idx} className="flex justify-center">
+                  <Skeleton className="h-5 w-32" />
+                </div>
+              ))
+            ) : (
+              // Actual factor headers
+              analysis?.scoreTable?.slice(0, 3).map((row, idx) => (
+                <div key={idx} className="text-center text-black text-sm font-semibold">
+                  {row.factor}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      <LayoutGroup>
+      {/* Normal Grid View */}
+      {!isPriceDriversExpanded && (
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {/* All pinned regions first (both user-added and filter-generated) */}
+          {Array.from(pinnedRegions)
+            .filter((key) => regionData[key])
+            .map((key) => {
+              const isUserAddedRegion = userAddedRegions.some((r) => r.key === key)
+              return (
+                <RegionCard
+                  key={key}
+                  regionKey={key}
+                  displayName={key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
+                  data={regionData[key]}
+                  onRemove={() => isUserAddedRegion ? removeUserRegion(key) : hideFilterRegion(key)}
+                  compact={compact}
+                  isUserAdded={isUserAddedRegion}
+                  isPinned={true}
+                  onTogglePin={() => togglePinRegion(key)}
+                  layoutId={`card-${key}`}
+                />
+              )
+            })}
+          {/* Filtered states (excluding pinned) */}
+          {filteredStates.map((state) => (
+            <RegionCard
+              key={state.key}
+              regionKey={state.key}
+              displayName={state.displayName}
+              data={regionData[state.key]}
+              onRemove={() => hideFilterRegion(state.key)}
+              compact={compact}
+              filterValue={filterCategory !== "price" ? `${state.value}%` : undefined}
+              filterLabel={filterCategory !== "price" ? filterCategory : undefined}
+              isPinned={pinnedRegions.has(state.key)}
+              onTogglePin={() => togglePinRegion(state.key)}
+              layoutId={`card-${state.key}`}
+            />
+          ))}
+          {/* Non-pinned user-added regions */}
+          {userAddedRegions
+            .filter((region) => !pinnedRegions.has(region.key))
+            .map((region) => (
+              <RegionCard
+                key={region.key}
+                regionKey={region.key}
+                displayName={region.displayName}
+                data={regionData[region.key]}
+                onRemove={() => removeUserRegion(region.key)}
+                compact={compact}
+                isUserAdded={true}
+                isPinned={false}
+                onTogglePin={() => togglePinRegion(region.key)}
+                layoutId={`card-${region.key}`}
+              />
+            ))}
+          {totalDisplayedStates < 6 && (
+            <PlaceholderCard onSelectRegion={addRegion} compact={compact} isAnalyzing={isAnalyzing} />
+          )}
+          {totalDisplayedStates >= 6 && (
+            <div className="col-span-full text-center py-3 text-sm text-muted-foreground">
+              Maximum of 6 states reached. Remove a state to add another.
             </div>
-          </CardHeader>
-          <CardContent>
-            {analysisError && <p className="text-sm text-destructive">{analysisError}</p>}
+          )}
+        </div>
+      )}
 
-            {isAnalyzing && (
-              <p className="text-muted-foreground leading-relaxed">Synthesizing data{".".repeat(ellipsisCount)}</p>
-            )}
+      {/* Expanded Price Drivers View */}
+      {isPriceDriversExpanded && (
+        <div className="space-y-2 animate-in fade-in duration-300">
+          
+          {/* Mobile Summary View */}
+          <div className="md:hidden space-y-3">
+            {(() => {
+              const allRegions = [
+                ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
+                  key,
+                  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                  isUserAdded: userAddedRegions.some((r) => r.key === key),
+                  isPinned: true,
+                })),
+                ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                  key: state.key,
+                  displayName: state.displayName,
+                  isUserAdded: false,
+                  isPinned: false,
+                })),
+                ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
+                  key: region.key,
+                  displayName: region.displayName,
+                  isUserAdded: true,
+                  isPinned: false,
+                })),
+              ]
 
-            {!analysis && !isAnalyzing && !analysisError && (
-              <p className="text-muted-foreground leading-relaxed">Preparing analysis...</p>
-            )}
+              // Calculate overall score for each region
+              const getOverallScore = (regionKey: string, displayName: string) => {
+                if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
+                let total = 0
+                let count = 0
+                for (const factor of analysis.scoreTable.slice(0, 3)) {
+                  const score = factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
+                  total += score
+                  count++
+                }
+                return count > 0 ? total : null
+              }
 
-            {analysis && (
-              <div className="space-y-4">
-                <Collapsible open={!isAnalysisCollapsed} onOpenChange={(open) => setIsAnalysisCollapsed(!open)}>
-                  <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full">
-                    {isAnalysisCollapsed ? (
-                      <>
-                        <ChevronRight className="h-4 w-4" />
-                        <span className="truncate">{analysis.synthesis.slice(0, 100)}...</span>
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="h-4 w-4" />
-                        <span>Collapse analysis</span>
-                      </>
-                    )}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="space-y-6 mt-4">
-                      {/* Score Table - Desktop */}
-                      {analysis.scoreTable && analysis.scoreTable.length > 0 && (
-                        <div className="hidden sm:block overflow-x-auto">
-                          <table className="w-full text-sm border-collapse">
-                            <thead>
-                              <tr className="border-b">
-                                <th className="text-left py-2 px-3 font-semibold">Factor</th>
-                                {Object.keys(analysis.scoreTable[0]?.scores || {}).map((region) => (
-                                  <th key={region} className="text-center py-2 px-3 font-semibold">{region}</th>
+              // Helper to get factor score for a region
+              const getFactorScore = (regionKey: string, displayName: string, factorIndex: number) => {
+                if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
+                const factor = analysis.scoreTable[factorIndex]
+                if (!factor) return null
+                return factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
+              }
+
+              // Helper to get price div background classes matching unexpanded cards
+              const getPriceDivClasses = (isPinned: boolean, isUserAdded: boolean) => {
+                if (isPinned) return "bg-indigo-100"
+                if (isUserAdded) return "bg-sky-100"
+                return "bg-slate-100"
+              }
+
+              return (
+                <>
+                  {/* Expanded Region Cards with Factor Accordions */}
+                  <div className="space-y-3">
+                    {allRegions.map((region, idx) => {
+                      const isAnalyzed = lastAnalyzedRegions.includes(region.key)
+                      
+                      return (
+                        <Card
+                          key={region.key}
+                          className={`w-full ${
+                            region.isPinned ? "bg-indigo-50/50 border-indigo-200" : 
+                            region.isUserAdded ? "bg-sky-50/50 border-sky-200" : 
+                            ""
+                          }`}
+                          style={{
+                            animation: `morphToColumn 0.4s ease-out ${idx * 0.08}s both`,
+                          }}
+                        >
+                          <CardHeader className="p-3 pb-1 pt-3">
+                            <CardTitle className="text-base flex items-center gap-1.5">
+                              <MapPin className="h-3.5 w-3.5" />
+                              {region.displayName}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-3 pt-0 space-y-2">
+                            {/* Price display matching unexpanded cards */}
+                            <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
+                              <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+                                ${regionData[region.key].priceUSD.toFixed(2)}
+                              </div>
+                              <div className="text-muted-foreground text-xs">per kWh (USD)</div>
+                            </div>
+
+                            {/* Energy Mix */}
+                            <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+
+                            {/* Data Sources */}
+                            <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+                              <a
+                                href={regionData[region.key].priceSourceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline truncate"
+                              >
+                                Price: {regionData[region.key].priceSource}
+                              </a>
+                              <a
+                                href={regionData[region.key].energySourceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline truncate"
+                              >
+                                Mix: {regionData[region.key].energySource}
+                              </a>
+                            </div>
+
+                            {/* Factor Accordions - below sources */}
+                            {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
+                              <Accordion type="multiple" className="w-full border-t pt-2">
+                                {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
+                                  const score = getFactorScore(region.key, region.displayName, factorIdx)
+                                  const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
+                                  
+                                  return (
+                                    <AccordionItem key={factorIdx} value={`factor-${factorIdx}`} className="border-b-0">
+                                      <AccordionTrigger className="py-2 hover:no-underline">
+                                        <div className="flex items-center justify-between w-full pr-2">
+                                          <span className="text-sm font-medium">{factor.factor}</span>
+                                          <span className={`text-sm font-bold px-2 py-0.5 rounded ${
+                                            score && score > 0 ? "bg-green-100 text-green-700" :
+                                            score && score < 0 ? "bg-red-100 text-red-700" :
+                                            "bg-gray-100 text-gray-600"
+                                          }`}>
+                                            {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
+                                          </span>
+                                        </div>
+                                      </AccordionTrigger>
+                                      <AccordionContent>
+                                        {justification ? (
+                                          <p className="text-sm text-foreground leading-relaxed pb-2">{justification}</p>
+                                        ) : (
+                                          <p className="text-xs text-muted-foreground pb-2">No explanation available.</p>
+                                        )}
+                                      </AccordionContent>
+                                    </AccordionItem>
+                                  )
+                                })}
+                              </Accordion>
+                            )}
+
+                            {/* Loading skeleton for factors */}
+                            {isAnalyzing && (
+                              <div className="space-y-2 border-t pt-2">
+                                {[0, 1, 2].map((i) => (
+                                  <Skeleton key={i} className="h-10 w-full" />
                                 ))}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {analysis.scoreTable.map((row, idx) => (
-                                <tr key={idx} className="border-b">
-                                  <td className="py-2 px-3 font-medium">{row.factor}</td>
-                                  {Object.entries(row.scores).map(([region, score]) => (
-                                    <td key={region} className="text-center py-2 px-3">
-                                      <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                                        score === 1 ? "bg-green-100 text-green-700" :
-                                        score === -1 ? "bg-red-100 text-red-700" :
-                                        "bg-gray-100 text-gray-600"
-                                      }`}>
-                                        {score > 0 ? `+${score}` : score}
-                                      </span>
-                                      {row.justifications?.[region] && (
-                                        <p className="text-xs text-muted-foreground mt-1">{row.justifications[region]}</p>
-                                      )}
-                                    </td>
-                                  ))}
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+
+                  {/* Synthesis Summary */}
+                  {!isAnalyzing && analysis?.synthesis && (
+                    <Card className="bg-slate-50">
+                      <CardContent className="p-3">
+                        <h4 className="font-semibold text-sm mb-2">Summary</h4>
+                        <p className="text-xs text-muted-foreground">{analysis.synthesis}</p>
+                        {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {analysis.synthesisSources.map((source, idx) => (
+                              <a 
+                                key={idx} 
+                                href={source.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 hover:underline"
+                              >
+                                [{source.label}]
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              )
+            })()}
+          </div>
+
+          {/* Tablet View - 2 column grid with accordion cards (sm to lg) */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:hidden gap-3">
+            {(() => {
+              const allRegions = [
+                ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
+                  key,
+                  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                  isUserAdded: userAddedRegions.some((r) => r.key === key),
+                  isPinned: true,
+                })),
+                ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                  key: state.key,
+                  displayName: state.displayName,
+                  isUserAdded: false,
+                  isPinned: false,
+                })),
+                ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
+                  key: region.key,
+                  displayName: region.displayName,
+                  isUserAdded: true,
+                  isPinned: false,
+                })),
+              ]
+
+              // Helper to get factor score for a region
+              const getFactorScore = (regionKey: string, displayName: string, factorIndex: number) => {
+                if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
+                const factor = analysis.scoreTable[factorIndex]
+                if (!factor) return null
+                return factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
+              }
+
+              // Helper to get price div background classes
+              const getPriceDivClasses = (isPinned: boolean, isUserAdded: boolean) => {
+                if (isPinned) return "bg-indigo-100"
+                if (isUserAdded) return "bg-sky-100"
+                return "bg-slate-100"
+              }
+
+              return allRegions.map((region, idx) => {
+                const isAnalyzed = lastAnalyzedRegions.includes(region.key)
+                
+                return (
+                  <motion.div
+                    key={region.key}
+                    layoutId={`card-tablet-${region.key}`}
+                    layout
+                    transition={{ type: "spring", stiffness: 25, damping: 12 }}
+                  >
+                    <Card
+                      className={`w-full h-full ${
+                        region.isPinned ? "bg-indigo-50/50 border-indigo-200" : 
+                        region.isUserAdded ? "bg-sky-50/50 border-sky-200" : 
+                        ""
+                      }`}
+                    >
+                      <CardHeader className="p-3 pb-1 pt-3">
+                        <CardTitle className="text-base flex items-center gap-1.5">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {region.displayName}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-3 pt-0 space-y-2">
+                        {/* Price display */}
+                        <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
+                          <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+                            ${regionData[region.key].priceUSD.toFixed(2)}
+                          </div>
+                          <div className="text-muted-foreground text-xs">per kWh (USD)</div>
                         </div>
-                      )}
 
-                      {/* Score Table - Mobile Stacked Cards */}
-                      {analysis.scoreTable && analysis.scoreTable.length > 0 && (
-                        <div className="sm:hidden space-y-3">
-                          {analysis.scoreTable.map((row, idx) => (
-                            <div key={idx} className="border rounded-lg p-3 bg-muted/30">
-                              <h5 className="font-semibold text-sm mb-3">{row.factor}</h5>
-                              <div className="space-y-2">
-                                {Object.entries(row.scores).map(([region, score]) => (
-                                  <div key={region} className="flex items-start justify-between gap-2">
-                                    <span className="text-sm text-muted-foreground">{region}</span>
-                                    <div className="flex flex-col items-end">
-                                      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
-                                        score === 1 ? "bg-green-100 text-green-700" :
-                                        score === -1 ? "bg-red-100 text-red-700" :
+                        {/* Energy Mix */}
+                        <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+
+                        {/* Data Sources */}
+                        <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+                          <a
+                            href={regionData[region.key].priceSourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline truncate"
+                          >
+                            Price: {regionData[region.key].priceSource}
+                          </a>
+                          <a
+                            href={regionData[region.key].energySourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline truncate"
+                          >
+                            Mix: {regionData[region.key].energySource}
+                          </a>
+                        </div>
+
+                        {/* Factor Accordions */}
+                        {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
+                          <Accordion type="multiple" className="w-full border-t pt-2">
+                            {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
+                              const score = getFactorScore(region.key, region.displayName, factorIdx)
+                              const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
+                              
+                              return (
+                                <AccordionItem key={factorIdx} value={`factor-${factorIdx}`} className="border-b-0">
+                                  <AccordionTrigger className="py-2 hover:no-underline">
+                                    <div className="flex items-center justify-between w-full pr-2">
+                                      <span className="text-sm font-medium">{factor.factor}</span>
+                                      <span className={`text-sm font-bold px-2 py-0.5 rounded ${
+                                        score && score > 0 ? "bg-green-100 text-green-700" :
+                                        score && score < 0 ? "bg-red-100 text-red-700" :
                                         "bg-gray-100 text-gray-600"
                                       }`}>
-                                        {score > 0 ? `+${score}` : score}
+                                        {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
                                       </span>
-                                      {row.justifications?.[region] && (
-                                        <p className="text-xs text-muted-foreground mt-1 text-right max-w-[180px]">{row.justifications[region]}</p>
-                                      )}
                                     </div>
-                                  </div>
-                                ))}
+                                  </AccordionTrigger>
+                                  <AccordionContent>
+                                    {justification ? (
+                                      <p className="text-sm text-foreground leading-relaxed pb-2">{justification}</p>
+                                    ) : (
+                                      <p className="text-xs text-muted-foreground pb-2">No explanation available.</p>
+                                    )}
+                                  </AccordionContent>
+                                </AccordionItem>
+                              )
+                            })}
+                          </Accordion>
+                        )}
+
+                        {/* Loading skeleton for factors */}
+                        {isAnalyzing && (
+                          <div className="space-y-2 border-t pt-2">
+                            {[0, 1, 2].map((i) => (
+                              <Skeleton key={i} className="h-10 w-full" />
+                            ))}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })
+            })()}
+          </div>
+
+          {/* Desktop Stacked Region Cards with Factor Scores (lg+ only) */}
+          <div className="hidden lg:flex flex-col gap-2">
+            {/* All displayed regions */}
+            {(() => {
+              const allRegions = [
+                ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
+                  key,
+                  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                  isUserAdded: userAddedRegions.some((r) => r.key === key),
+                  isPinned: true,
+                })),
+                ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                  key: state.key,
+                  displayName: state.displayName,
+                  isUserAdded: false,
+                  isPinned: false,
+                })),
+                ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
+                  key: region.key,
+                  displayName: region.displayName,
+                  isUserAdded: true,
+                  isPinned: false,
+                })),
+              ]
+
+              return allRegions.map((region, idx) => (
+                <motion.div
+                  key={region.key}
+                  layoutId={`card-${region.key}`}
+                  layout
+                  transition={{ type: "spring", stiffness: 25, damping: 12 }}
+                >
+                  <Card 
+                    className={`w-full ${region.isPinned ? "bg-indigo-50/50 border-indigo-200" : region.isUserAdded ? "bg-sky-50/50 border-sky-200" : ""}`}
+                  >
+                    <CardContent className="p-3 py-0">
+                    <div className="grid grid-cols-4 gap-4 items-start">
+                      {/* Column 1: Original Card Content */}
+                      <div className="space-y-2">
+                        {/* Header with name */}
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="h-3.5 w-3.5" />
+                          <span className="font-semibold text-base">{region.displayName}</span>
+                        </div>
+                        
+                        {/* Price display */}
+                        <div className={`rounded-lg p-2 text-center ${region.isPinned ? "bg-indigo-100" : region.isUserAdded ? "bg-sky-100" : "bg-slate-100"}`}>
+                          <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+                            ${regionData[region.key].priceUSD.toFixed(2)}
+                          </div>
+                          <div className="text-muted-foreground text-xs">per kWh (USD)</div>
+                        </div>
+                        
+                        {/* Energy Sources Chart */}
+                        <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+                        
+                        {/* Data Sources */}
+                        <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+                          <a
+                            href={regionData[region.key].priceSourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline truncate"
+                          >
+                            Price: {regionData[region.key].priceSource}
+                          </a>
+                          <a
+                            href={regionData[region.key].energySourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline truncate"
+                          >
+                            Mix: {regionData[region.key].energySource}
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Columns 2, 3, 4: Factor Scores or Skeleton Loading */}
+                      {isAnalyzing ? (
+                        // Skeleton shimmer loading state
+                        <>
+                          {[0, 1, 2].map((idx) => (
+<div key={idx} className="flex flex-col items-center justify-start gap-2 pt-10">
+                              <Skeleton className="w-10 h-10 rounded-full" />
+                              <div className="space-y-2 w-full">
+                                <Skeleton className="h-3 w-full" />
+                                <Skeleton className="h-3 w-4/5 mx-auto" />
+                                <Skeleton className="h-3 w-3/5 mx-auto" />
                               </div>
                             </div>
                           ))}
-                        </div>
-                      )}
-
-                      {/* Factor Analyses */}
-                      <div className="space-y-4">
-                        {analysis.factorAnalyses?.map((factor, index) => (
-                          <div key={factor.factor} className="border-l-4 border-[#00f] pl-4">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00f] text-white text-sm font-medium">
-                                {index + 1}
-                              </span>
-                              <h4 className="font-semibold">{factor.factor}</h4>
+                        </>
+                      ) : !lastAnalyzedRegions.includes(region.key) ? (
+                        // Placeholder for newly added regions (not yet analyzed)
+                        [0, 1, 2].map((idx) => (
+                          <div key={idx} className="flex flex-col items-center justify-start gap-2 pt-10">
+                            <div className="w-10 h-10 rounded-full bg-slate-200" />
+                            <div className="space-y-2 w-full">
+                              <div className="h-3 w-full rounded bg-slate-200" />
+                              <div className="h-3 w-4/5 mx-auto rounded bg-slate-200" />
+                              <div className="h-3 w-3/5 mx-auto rounded bg-slate-200" />
                             </div>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                              {factor.analysis}
-                              {factor.sources && factor.sources.length > 0 && (
-                                <span className="ml-1">
-                                  {factor.sources.map((source, idx) => (
-                                    <sup key={idx} className="ml-0.5">
-                                      <a
-                                        href={source.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-[#00f] hover:underline"
-                                        title={source.label}
-                                      >
-                                        [{idx + 1}]
-                                      </a>
-                                    </sup>
-                                  ))}
-                                </span>
-                              )}
-                            </p>
                           </div>
+                        ))
+                      ) : (
+                        // Actual factor scores
+                        analysis?.scoreTable?.slice(0, 3).map((row, factorIdx) => {
+                          const score = row.scores[region.displayName] ?? row.scores[region.key] ?? 0
+                          const justification = row.justifications?.[region.displayName] ?? row.justifications?.[region.key] ?? ""
+                          
+                          return (
+                            <div key={factorIdx} className="flex flex-col items-center justify-start gap-2 pt-10">
+                              <span className={`inline-flex items-center justify-center w-10 h-10 rounded-full text-lg font-bold ${
+                                score === 1 ? "bg-green-100 text-green-700" :
+                                score === -1 ? "bg-red-100 text-red-700" :
+                                "bg-gray-100 text-gray-600"
+                              }`}>
+                                {score > 0 ? `+${score}` : score}
+                              </span>
+                              {justification && (
+                                <p className="text-center text-foreground text-sm pt-4">{justification}</p>
+                              )}
+                            </div>
+                          )
+                        })
+                      )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))
+            })()}
+          </div>
+
+          {/* Factor Analysis Paragraphs - Desktop */}
+          {!isAnalyzing && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+            <div className="hidden md:block mt-6 space-y-4">
+              <h4 className="font-semibold text-lg">Detailed Factor Analysis</h4>
+              {analysis.factorAnalyses.map((factor, idx) => (
+                <Card key={idx}>
+                  <CardContent className="p-4">
+                    <h5 className="font-medium mb-2">{factor.factor}</h5>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{factor.analysis}</p>
+                    {factor.sources && factor.sources.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {factor.sources.map((source, sIdx) => (
+                          <a 
+                            key={sIdx} 
+                            href={source.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:underline"
+                          >
+                            [{source.label}]
+                          </a>
                         ))}
                       </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
-                      {/* Synthesis */}
-                      <div className="bg-muted/50 rounded-lg p-4">
-                        <h4 className="font-semibold mb-2">Synthesis</h4>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {analysis.synthesis}
-                          {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
-                            <span className="ml-1">
-                              {analysis.synthesisSources.map((source, idx) => (
-                                <sup key={idx} className="ml-0.5">
-                                  <a
-                                    href={source.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[#00f] hover:underline"
-                                    title={source.label}
-                                  >
-                                    [{idx + 1}]
-                                  </a>
-                                </sup>
-                              ))}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-
-                {followUpMessages.length > 0 && (
-                  <div className="space-y-2 border-t pt-4">
-                    {followUpMessages.map((msg, idx) => (
-                      <Collapsible
-                        key={idx}
-                        open={expandedFollowUpIndex === idx}
-                        onOpenChange={(open) => setExpandedFollowUpIndex(open ? idx : null)}
+          {/* Synthesis Summary - Desktop */}
+          {!isAnalyzing && analysis?.synthesis && (
+            <Card className="hidden md:block bg-slate-50 mt-4">
+              <CardContent className="p-4">
+                <h4 className="font-semibold mb-2">Summary</h4>
+                <p className="text-sm text-muted-foreground">{analysis.synthesis}</p>
+                {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {analysis.synthesisSources.map((source, idx) => (
+                      <a 
+                        key={idx} 
+                        href={source.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-600 hover:underline"
                       >
-                        <CollapsibleTrigger className="flex items-center gap-2 text-sm text-foreground hover:text-muted-foreground transition-colors w-full text-left">
-                          {expandedFollowUpIndex === idx ? (
-                            <ChevronDown className="h-4 w-4 flex-shrink-0" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                          )}
-                          <span className={expandedFollowUpIndex === idx ? "font-medium" : "truncate"}>
-                            {msg.question}
-                          </span>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <p className="text-sm text-muted-foreground leading-relaxed pl-6 pt-2">{msg.response}</p>
-                        </CollapsibleContent>
-                      </Collapsible>
+                        [{source.label}]
+                      </a>
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+      </LayoutGroup>
 
-                <div className="flex gap-2 pt-2">
-                  <Input
-                    placeholder="Dig deeper, ask a followup or challenge the analysis."
-                    value={followUpInput}
-                    onChange={(e) => setFollowUpInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault()
-                        handleFollowUpSubmit()
-                      }
-                    }}
-                    disabled={isAskingFollowUp}
-                    className="flex-1"
-                  />
-                  <Button
-                    size="icon"
-                    onClick={handleFollowUpSubmit}
-                    disabled={!followUpInput.trim() || isAskingFollowUp}
-                    className="shrink-0"
-                  >
-                    <ArrowUp className="h-4 w-4" />
-                  </Button>
-                </div>
+      {/* Search Dialog for Expanded View */}
+      <Dialog open={isSearchOpen} onOpenChange={(open) => {
+        setIsSearchOpen(open)
+        if (!open) setDialogSearchValue("")
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add a State</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="relative">
+              <Input
+                placeholder="Search for a US state..."
+                value={dialogSearchValue}
+                onChange={(e) => setDialogSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  const dialogSuggestions = dialogSearchValue
+                    ? Object.keys(regionData)
+                        .filter(
+                          (key) => key.toLowerCase().includes(dialogSearchValue.toLowerCase()) &&
+                            !filteredStates.some((s) => s.key === key) &&
+                            !userAddedRegions.some((r) => r.key === key),
+                        )
+                        .slice(0, 6)
+                    : []
+                  if (e.key === "Enter" && dialogSuggestions.length > 0) {
+                    addRegion(dialogSuggestions[0])
+                    setDialogSearchValue("")
+                    setIsSearchOpen(false)
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            {dialogSearchValue && (
+              <div className="flex flex-wrap gap-2">
+                {Object.keys(regionData)
+                  .filter(
+                    (key) => key.toLowerCase().includes(dialogSearchValue.toLowerCase()) &&
+                      !filteredStates.some((s) => s.key === key) &&
+                      !userAddedRegions.some((r) => r.key === key),
+                  )
+                  .slice(0, 6)
+                  .map((key) => (
+                    <Badge
+                      key={key}
+                      variant="secondary"
+                      className="cursor-pointer hover:bg-secondary/80"
+                      onClick={() => {
+                        addRegion(key)
+                        setDialogSearchValue("")
+                        setIsSearchOpen(false)
+                      }}
+                    >
+                      {key
+                        .split(" ")
+                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                        .join(" ")}
+                    </Badge>
+                  ))}
               </div>
             )}
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mobile Region Detail Sheet */}
+      <Sheet open={!!mobileDetailRegion} onOpenChange={(open) => !open && setMobileDetailRegion(null)}>
+        <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
+          {mobileDetailRegion && (() => {
+            const regionKey = mobileDetailRegion
+            const data = regionData[regionKey]
+            if (!data) return null
+            
+            const displayName = regionKey.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+            const isPinned = pinnedRegions.has(regionKey)
+            const isUserAdded = userAddedRegions.some((r) => r.key === regionKey)
+            const isAnalyzed = lastAnalyzedRegions.includes(regionKey)
+
+            return (
+              <>
+                <SheetHeader className="pb-4 border-b">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <SheetTitle className="flex items-center gap-2">
+                        {isPinned && <Pin className="h-4 w-4 fill-current text-indigo-600" />}
+                        {displayName}
+                      </SheetTitle>
+                      <div className="text-2xl font-bold text-primary mt-1">
+                        ${data.priceUSD.toFixed(2)}/kWh
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => togglePinRegion(regionKey)}
+                        disabled={isAnalyzing}
+                      >
+                        <Pin className={`h-4 w-4 mr-1 ${isPinned ? "fill-current" : ""}`} />
+                        {isPinned ? "Unpin" : "Pin"}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          isUserAdded ? removeUserRegion(regionKey) : hideFilterRegion(regionKey)
+                          setMobileDetailRegion(null)
+                        }}
+                        disabled={isAnalyzing}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                </SheetHeader>
+
+                <div className="py-4 space-y-4">
+                  {/* Energy Mix */}
+                  <div>
+                    <h4 className="font-semibold text-sm mb-2">Energy Mix</h4>
+                    <div className="flex flex-wrap gap-1.5">
+                      {Object.entries(data.energyMix)
+                        .filter(([, v]) => v > 0)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([source, pct]) => (
+                          <Badge key={source} variant="secondary" className="text-xs">
+                            {source.charAt(0).toUpperCase() + source.slice(1)} {pct}%
+                          </Badge>
+                        ))}
+                    </div>
+                  </div>
+
+                  {/* Factor Scores */}
+                  <div>
+                    <h4 className="font-semibold text-sm mb-3">Price Driver Scores</h4>
+                    {isAnalyzing ? (
+                      <div className="space-y-3">
+                        {[0, 1, 2].map((i) => (
+                          <div key={i} className="p-3 rounded-lg border">
+                            <Skeleton className="h-5 w-32 mb-2" />
+                            <Skeleton className="h-8 w-8 rounded-full mb-2" />
+                            <Skeleton className="h-12 w-full" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : !isAnalyzed ? (
+                      <p className="text-sm text-muted-foreground p-3 bg-slate-50 rounded-lg">
+                        This region was not included in the current analysis. Tap "Refactor Price Drivers" to include it.
+                      </p>
+                    ) : analysis?.scoreTable?.slice(0, 3).map((factor, idx) => {
+                      const score = factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
+                      const justification = factor.justifications?.[displayName] || factor.justifications?.[regionKey]
+                      
+                      return (
+                        <div key={idx} className="p-3 rounded-lg border mb-3">
+                          <div className="flex items-start justify-between gap-3 mb-2">
+                            <h5 className="font-medium text-sm">{factor.factor}</h5>
+                            <div className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold ${
+                              score === 1 ? "bg-green-100 text-green-700" :
+                              score === -1 ? "bg-red-100 text-red-700" :
+                              "bg-gray-100 text-gray-600"
+                            }`}>
+                              {score > 0 ? `+${score}` : score}
+                            </div>
+                          </div>
+                          {justification && (
+                            <p className="text-sm text-muted-foreground">{justification}</p>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </>
+            )
+          })()}
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

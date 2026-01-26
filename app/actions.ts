@@ -166,9 +166,9 @@ Return ONLY valid JSON in this exact format:
 }`
 
   const { text } = await generateText({
-    model: "anthropic/claude-sonnet-4-20250514",
+    model: "anthropic/claude-3-5-haiku-20241022",
     prompt,
-    maxOutputTokens: 6000,
+    maxOutputTokens: 4000,
   })
 
   try {
@@ -244,9 +244,9 @@ Respond directly to the user's question or challenge. If they are challenging th
 Respond with plain text only, no JSON formatting.`
 
   const { text } = await generateText({
-    model: "anthropic/claude-sonnet-4-20250514",
+    model: "anthropic/claude-3-5-haiku-20241022",
     prompt,
-    maxOutputTokens: 2000,
+    maxOutputTokens: 1500,
   })
 
   return { success: true, response: text }
