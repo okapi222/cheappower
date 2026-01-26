@@ -1677,38 +1677,34 @@ export function KwhCalculator() {
                               </a>
                             </div>
 
-                            {/* Factor Accordions - below sources */}
+                            {/* Factor Analysis - below sources */}
                             {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
-                              <Accordion type="multiple" className="w-full border-t pt-2">
+                              <div className="w-full border-t pt-2 space-y-3">
                                 {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
                                   const score = getFactorScore(region.key, region.displayName, factorIdx)
                                   const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
                                   
                                   return (
-                                    <AccordionItem key={factorIdx} value={`factor-${factorIdx}`} className="border-b-0">
-                                      <AccordionTrigger className="py-2 hover:no-underline">
-                                        <div className="flex items-center justify-between w-full pr-2">
-                                          <span className="text-sm font-medium">{factor.factor}</span>
-                                          <span className={`text-sm font-bold px-2 py-0.5 rounded ${
-                                            score && score > 0 ? "bg-green-100 text-green-700" :
-                                            score && score < 0 ? "bg-red-100 text-red-700" :
-                                            "bg-gray-100 text-gray-600"
-                                          }`}>
-                                            {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
-                                          </span>
-                                        </div>
-                                      </AccordionTrigger>
-                                      <AccordionContent>
-                                        {justification ? (
-                                          <p className="text-sm text-foreground leading-relaxed pb-2">{justification}</p>
-                                        ) : (
-                                          <p className="text-xs text-muted-foreground pb-2">No explanation available.</p>
-                                        )}
-                                      </AccordionContent>
-                                    </AccordionItem>
+                                    <div key={factorIdx} className="space-y-1">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-sm font-medium">{factor.factor}</span>
+                                        <span className={`text-sm font-bold px-2 py-0.5 rounded ${
+                                          score && score > 0 ? "bg-green-100 text-green-700" :
+                                          score && score < 0 ? "bg-red-100 text-red-700" :
+                                          "bg-gray-100 text-gray-600"
+                                        }`}>
+                                          {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
+                                        </span>
+                                      </div>
+                                      {justification ? (
+                                        <p className="text-sm text-muted-foreground leading-relaxed">{justification}</p>
+                                      ) : (
+                                        <p className="text-xs text-muted-foreground">No explanation available.</p>
+                                      )}
+                                    </div>
                                   )
                                 })}
-                              </Accordion>
+                              </div>
                             )}
 
                             {/* Loading skeleton for factors */}
@@ -1849,38 +1845,34 @@ export function KwhCalculator() {
                               </a>
                             </div>
 
-                            {/* Factor Accordions */}
+                            {/* Factor Analysis */}
                             {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
-                              <Accordion type="multiple" className="w-full border-t pt-2">
+                              <div className="w-full border-t pt-2 space-y-3">
                                 {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
                                   const score = getFactorScore(region.key, region.displayName, factorIdx)
                                   const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
                                   
                                   return (
-                                    <AccordionItem key={factorIdx} value={`factor-${factorIdx}`} className="border-b-0">
-                                      <AccordionTrigger className="py-2 hover:no-underline">
-                                        <div className="flex items-center justify-between w-full pr-2">
-                                          <span className="text-sm font-medium">{factor.factor}</span>
-                                          <span className={`text-sm font-bold px-2 py-0.5 rounded ${
-                                            score && score > 0 ? "bg-green-100 text-green-700" :
-                                            score && score < 0 ? "bg-red-100 text-red-700" :
-                                            "bg-gray-100 text-gray-600"
-                                          }`}>
-                                            {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
-                                          </span>
-                                        </div>
-                                      </AccordionTrigger>
-                                      <AccordionContent>
-                                        {justification ? (
-                                          <p className="text-sm text-foreground leading-relaxed pb-2">{justification}</p>
-                                        ) : (
-                                          <p className="text-xs text-muted-foreground pb-2">No explanation available.</p>
-                                        )}
-                                      </AccordionContent>
-                                    </AccordionItem>
+                                    <div key={factorIdx} className="space-y-1">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-sm font-medium">{factor.factor}</span>
+                                        <span className={`text-sm font-bold px-2 py-0.5 rounded ${
+                                          score && score > 0 ? "bg-green-100 text-green-700" :
+                                          score && score < 0 ? "bg-red-100 text-red-700" :
+                                          "bg-gray-100 text-gray-600"
+                                        }`}>
+                                          {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
+                                        </span>
+                                      </div>
+                                      {justification ? (
+                                        <p className="text-sm text-muted-foreground leading-relaxed">{justification}</p>
+                                      ) : (
+                                        <p className="text-xs text-muted-foreground">No explanation available.</p>
+                                      )}
+                                    </div>
                                   )
                                 })}
-                              </Accordion>
+                              </div>
                             )}
 
                             {/* Loading skeleton for factors */}
