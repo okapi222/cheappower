@@ -1366,13 +1366,13 @@ setAnalysis(null)
       </div>
       )}
 
-{/* Filter Controls - visible but disabled during analysis, replaced by Compare Other States when complete */}
-      <div className={`hidden sm:flex flex-row gap-3 items-center justify-center min-h-[44px]`}>
-        {/* Compare Other States button - shown when analysis is complete */}
+{/* Filter Controls - visible but disabled during analysis, replaced by Compare Other States when complete (desktop only) */}
+      <div className={`hidden lg:flex flex-row gap-3 items-center justify-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "" : "sm:flex"}`}>
+        {/* Compare Other States button - shown when analysis is complete (desktop only) */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
           <Button
             variant="secondary"
-            className="flex items-center gap-2"
+            className="hidden lg:flex items-center gap-2"
             onClick={() => {
               setIsPriceDriversExpanded(false)
               setAnalysis(null)
