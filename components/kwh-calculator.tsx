@@ -1371,7 +1371,7 @@ setAnalysis(null)
 {/* New Analysis button - shown when analysis is complete (desktop only), primary and centered */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
             <Button
-              className="hidden lg:flex items-center gap-2 animate-in fade-in duration-500"
+              className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
                 setAnalysis(null)
@@ -1455,7 +1455,7 @@ setAnalysis(null)
           {/* Mobile/Tablet: Show New Analysis when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
-              className="flex lg:hidden items-center gap-2 animate-in fade-in duration-500"
+              className="flex lg:hidden items-center gap-2 animate-in fade-in duration-1000"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
                 setAnalysis(null)
