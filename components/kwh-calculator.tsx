@@ -1453,11 +1453,11 @@ setAnalysis(null)
       {/* Price Drivers Button & Factor Headers */}
       <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"}`}>
         <div className="flex items-center gap-2">
-          {/* Show Compare Other States when analysis complete on all views */}
+          {/* Mobile/Tablet: Show Compare Other States when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
               variant="secondary"
-              className="flex items-center gap-2"
+              className="flex lg:hidden items-center gap-2"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
                 setAnalysis(null)
@@ -1465,6 +1465,17 @@ setAnalysis(null)
             >
               <Undo2 className="h-4 w-4" />
               Compare Other States
+            </Button>
+          ) : null}
+          
+          {/* Desktop: Show disabled Price Drivers button when analysis complete */}
+          {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
+            <Button
+              className="hidden lg:flex items-center gap-2 min-w-[200px]"
+              disabled={true}
+            >
+              <TrendingUp className="h-4 w-4" />
+              Price Drivers
             </Button>
           ) : null}
           
