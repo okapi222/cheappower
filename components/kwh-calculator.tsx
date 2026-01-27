@@ -1471,7 +1471,7 @@ setAnalysis(null)
           {/* Desktop: Show disabled Price Drivers button when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
-              className="hidden lg:flex items-center gap-2 min-w-[200px]"
+              className="hidden lg:flex items-center gap-2 "
               disabled={true}
             >
               <TrendingUp className="h-4 w-4" />
@@ -1481,7 +1481,7 @@ setAnalysis(null)
           
           {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
           <Button
-            className={`flex items-center gap-2 min-w-[200px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}
+            className={`flex items-center gap-2  ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}
             onClick={() => {
               runAnalysis()
               setIsPriceDriversExpanded(true)
