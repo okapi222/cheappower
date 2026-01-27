@@ -1367,7 +1367,7 @@ setAnalysis(null)
       )}
 
 {/* Filter Controls - visible but disabled during analysis, replaced by New Analysis when complete (desktop only) */}
-      <div className={`hidden lg:flex flex-row gap-3 items-center justify-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "" : "sm:flex"}`}>
+      <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
         {/* New Analysis button - shown when analysis is complete (desktop only) */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
           <Button
