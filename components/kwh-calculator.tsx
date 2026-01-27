@@ -1893,8 +1893,8 @@ export function KwhCalculator() {
                   {!isAnalyzing && analysis?.synthesis && (
                     <Card className="bg-slate-50 mt-3">
                       <CardContent className="p-3">
-                        <h4 className="font-semibold text-sm mb-2">Summary</h4>
-                        <p className="text-xs text-muted-foreground">{analysis.synthesis}</p>
+                        <h4 className="text-sm mb-2 font-medium">Summary</h4>
+                        <p className="text-muted-foreground text-sm">{analysis.synthesis}</p>
                         {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1.5">
                             {analysis.synthesisSources.map((source, idx) => (
