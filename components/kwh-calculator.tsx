@@ -1443,7 +1443,7 @@ setAnalysis(null)
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-[200px] text-center">
-                Filter states by price or energy mix
+                Ranks and select states by price and energy mix
               </TooltipContent>
             </Tooltip>
           </div>
