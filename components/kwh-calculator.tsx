@@ -1435,11 +1435,15 @@ setAnalysis(null)
               </TooltipTrigger>
             </Tooltip>
 
-            {/* Info icon - tablet only (sm to lg) */}
-            <Tooltip>
+            {/* Info icon - mobile/tablet only (below lg) */}
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <button className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
-                  <Info className="h-4 w-4" />
+                <button 
+                  type="button"
+                  className="lg:hidden p-2 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <Info className="h-5 w-5" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-[200px] text-center">
