@@ -1368,19 +1368,19 @@ setAnalysis(null)
 
 {/* Filter Controls - visible but disabled during analysis, replaced by New Analysis when complete (desktop only) */}
       <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-center" : "justify-center sm:flex"}`}>
-        {/* New Analysis button - shown when analysis is complete (desktop only), primary and centered */}
-        {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
-          <Button
-            className="hidden lg:flex items-center gap-2"
-            onClick={() => {
-              setIsPriceDriversExpanded(false)
-              setAnalysis(null)
-            }}
-          >
-            <Sun className="h-4 w-4" />
-            New Analysis
-          </Button>
-        )}
+{/* New Analysis button - shown when analysis is complete (desktop only), primary and centered */}
+          {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
+            <Button
+              className="hidden lg:flex items-center gap-2 animate-in fade-in duration-500"
+              onClick={() => {
+                setIsPriceDriversExpanded(false)
+                setAnalysis(null)
+              }}
+            >
+              <Sun className="h-4 w-4" />
+              New Analysis
+            </Button>
+          )}
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
         {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
           <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
@@ -1455,7 +1455,7 @@ setAnalysis(null)
           {/* Mobile/Tablet: Show New Analysis when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
-              className="flex lg:hidden items-center gap-2"
+              className="flex lg:hidden items-center gap-2 animate-in fade-in duration-500"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
                 setAnalysis(null)
