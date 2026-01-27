@@ -1467,16 +1467,12 @@ setAnalysis(null)
             </Button>
           ) : null}
           
-          {/* Desktop: Show disabled secondary Price Drivers button when analysis complete */}
+          {/* Desktop: Show Price Drivers text label when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
-            <Button
-              variant="secondary"
-              className="hidden lg:flex items-center gap-2"
-              disabled={true}
-            >
+            <span className="hidden lg:flex items-center gap-2 text-foreground font-extrabold">
               <TrendingUp className="h-4 w-4" />
               Price Drivers
-            </Button>
+            </span>
           ) : null}
           
           {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
