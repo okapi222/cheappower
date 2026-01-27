@@ -1353,10 +1353,14 @@ setAnalysis(null)
           </SelectContent>
         </Select>
 
-        <Tooltip>
+        <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
-            <button className="p-1 text-muted-foreground hover:text-foreground">
-              <Info className="h-4 w-4" />
+            <button 
+              type="button"
+              className="p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+              onClick={(e) => e.preventDefault()}
+            >
+              <Info className="size-6" />
             </button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-[200px] text-center">
@@ -1435,15 +1439,19 @@ setAnalysis(null)
               </TooltipTrigger>
             </Tooltip>
 
-            {/* Info icon - tablet only (sm to lg) */}
-            <Tooltip>
+            {/* Info icon - mobile/tablet only (below lg) */}
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <button className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
-                  <Info className="h-4 w-4" />
+                <button 
+                  type="button"
+                  className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <Info className="size-6" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-[200px] text-center">
-                Filter states by price or energy mix
+                Rank and select states by price and energy mix
               </TooltipContent>
             </Tooltip>
           </div>
@@ -1502,10 +1510,14 @@ setAnalysis(null)
               "Price Drivers"
             )}
           </Button>
-          <Tooltip>
+          <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
-                <Info className="h-4 w-4" />
+              <button 
+                type="button" 
+                className="p-3 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                onClick={(e) => e.preventDefault()}
+              >
+                <Info className="size-6" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-[340px] p-3 text-left">
