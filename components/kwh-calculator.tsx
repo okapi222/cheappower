@@ -1885,7 +1885,7 @@ setAnalysis(null)
 
               return (
                 <>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     {allRegions.map((region, idx) => {
                       const isAnalyzed = lastAnalyzedRegions.includes(region.key)
                       
