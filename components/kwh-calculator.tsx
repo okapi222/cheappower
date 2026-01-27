@@ -1353,10 +1353,14 @@ setAnalysis(null)
           </SelectContent>
         </Select>
 
-        <Tooltip>
+        <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
-            <button className="p-1 text-muted-foreground hover:text-foreground">
-              <Info className="size-7 ml-3" />
+            <button 
+              type="button"
+              className="p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+              onClick={(e) => e.preventDefault()}
+            >
+              <Info className="size-6" />
             </button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-[200px] text-center">
@@ -1440,10 +1444,10 @@ setAnalysis(null)
               <TooltipTrigger asChild>
                 <button 
                   type="button"
-                  className="lg:hidden p-2 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation"
+                  className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                   onClick={(e) => e.preventDefault()}
                 >
-                  <Info className="size-7 pl-0 ml-3" />
+                  <Info className="size-6" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-[200px] text-center">
@@ -1506,10 +1510,14 @@ setAnalysis(null)
               "Price Drivers"
             )}
           </Button>
-          <Tooltip>
+          <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
-                <Info className="size-7 ml-3" />
+              <button 
+                type="button" 
+                className="p-3 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                onClick={(e) => e.preventDefault()}
+              >
+                <Info className="size-6" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-[340px] p-3 text-left">
