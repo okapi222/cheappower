@@ -2105,7 +2105,7 @@ export function KwhCalculator() {
                 <Card key={idx}>
                   <CardContent className="p-4">
                     <h5 className="font-medium mb-2">{factor.factor}</h5>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{factor.analysis}</p>
+                    <p className="text-sm leading-relaxed text-foreground text-foreground">{factor.analysis}</p>
                     {factor.sources && factor.sources.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
                         {factor.sources.map((source, sIdx) => (
