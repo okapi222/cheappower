@@ -1366,19 +1366,20 @@ setAnalysis(null)
       </div>
       )}
 
-{/* Filter Controls - visible but disabled during analysis, replaced by New Analysis when complete (desktop only) */}
-      <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-center" : "justify-center sm:flex"}`}>
-{/* New Analysis button - shown when analysis is complete (desktop only), primary and centered */}
-          {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
-            <Button
-              className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
+{/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
+      <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
+        {/* Select New States button - shown when analysis is complete (desktop only), secondary and left-aligned */}
+        {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
+          <Button
+            variant="secondary"
+            className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
                 setAnalysis(null)
               }}
             >
               <Sun className="h-4 w-4" />
-              New Analysis
+              Select New States
             </Button>
           )}
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
@@ -1452,9 +1453,10 @@ setAnalysis(null)
       {/* Price Drivers Button & Factor Headers */}
       <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"}`}>
         <div className="flex items-center gap-2">
-          {/* Mobile/Tablet: Show New Analysis when analysis complete */}
+          {/* Mobile/Tablet: Show Select New States when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
+              variant="secondary"
               className="flex lg:hidden items-center gap-2 animate-in fade-in duration-1000"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
@@ -1462,7 +1464,7 @@ setAnalysis(null)
               }}
             >
               <Sun className="h-4 w-4" />
-              New Analysis
+              Select New States
             </Button>
           ) : null}
           
