@@ -1467,12 +1467,16 @@ setAnalysis(null)
             </Button>
           ) : null}
           
-          {/* Desktop: Show Price Drivers text label when analysis complete */}
+          {/* Desktop: Show disabled secondary Price Drivers button when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
-            <span className="hidden lg:flex items-center gap-2 text-foreground font-extrabold">
+            <Button
+              variant="secondary"
+              className="hidden lg:flex items-center gap-2"
+              disabled={true}
+            >
               <TrendingUp className="h-4 w-4" />
               Price Drivers
-            </span>
+            </Button>
           ) : null}
           
           {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
@@ -1499,7 +1503,7 @@ setAnalysis(null)
           </Button>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className={`text-muted-foreground hover:text-foreground transition-colors ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}>
+              <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Info className="h-4 w-4" />
               </button>
             </TooltipTrigger>
