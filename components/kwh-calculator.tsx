@@ -1443,7 +1443,7 @@ setAnalysis(null)
                   className="lg:hidden p-2 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation"
                   onClick={(e) => e.preventDefault()}
                 >
-                  <Info className="h-5 w-5" />
+                  <Info className="size-7 pl-0 ml-3" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-[200px] text-center">
@@ -1509,7 +1509,7 @@ setAnalysis(null)
           <Tooltip>
             <TooltipTrigger asChild>
               <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
-                <Info className="h-4 w-4" />
+                <Info className="size-7 ml-3" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-[340px] p-3 text-left">
