@@ -89,7 +89,7 @@ const stateCodeMap: Record<string, string> = {
 
 const USA_AVERAGE_PRICE = 0.127 // US average retail electricity price per kWh (2024)
 
-export async function analyzeRegionPricing(regions: RegionInfo[], averagePrice: number, isSingleRegion: boolean) {
+export async function analyzeRegionPricing(regions: RegionInfo[], averagePrice: number, isSingleRegion: boolean, skipFactorAnalyses = true) {
   const eiaSources: EIASource[] = regions.map((r) => {
     const stateName = r.name.toLowerCase()
     const stateCode = stateCodeMap[stateName]
@@ -142,8 +142,8 @@ For each of the three reported factors, assign each region a relative score:
 
 **OUTPUT REQUIREMENTS:**
 1. Score Table: Three factors with scores for each region and brief justifications
-2. Factor Analyses: One paragraph per factor comparing how regions DIFFER and whether the factor HELPS or HURTS each region's ability to provide low-cost electricity
-3. Synthesis: Final paragraph explaining WHY these regions have different retail electricity prices
+${skipFactorAnalyses ? '' : '2. Factor Analyses: One paragraph per factor comparing how regions DIFFER and whether the factor HELPS or HURTS each region\'s ability to provide low-cost electricity'}
+${skipFactorAnalyses ? '2' : '3'}. Synthesis: Final paragraph explaining WHY these regions have different retail electricity prices
 
 Return ONLY valid JSON in this exact format:
 {
@@ -153,14 +153,14 @@ Return ONLY valid JSON in this exact format:
       "scores": {${regionNames.map(n => `"${n}": 0`).join(", ")}},
       "justifications": {${regionNames.map(n => `"${n}": "Brief 1-2 sentence justification"`).join(", ")}}
     }
-  ],
+  ],${skipFactorAnalyses ? '' : `
   "factorAnalyses": [
     {
       "factor": "Factor Name",
       "analysis": "Comparative paragraph explaining how this factor differs across regions and its impact on prices. Must compare all regions.",
       "sources": [{"url": "https://www.eia.gov/electricity/state/...", "label": "EIA State Data"}]
     }
-  ],
+  ],`}
   "synthesis": "Final paragraph synthesizing WHY these regions have different retail electricity prices, referencing the key factors analyzed.",
   "synthesisSources": [{"url": "https://www.eia.gov/electricity/", "label": "EIA"}]
 }`
@@ -176,6 +176,10 @@ Return ONLY valid JSON in this exact format:
     // Fix invalid JSON: replace +1 with 1 (JSON doesn't support + prefix for positive numbers)
     const jsonText = jsonMatch ? jsonMatch[0].replace(/:\s*\+1/g, ": 1") : text.replace(/:\s*\+1/g, ": 1")
     const parsed = JSON.parse(jsonText)
+    // If factorAnalyses was skipped, set it to empty array
+    if (!parsed.factorAnalyses) {
+      parsed.factorAnalyses = []
+    }
     return { success: true, data: { ...parsed, eiaSources } as AnalysisResponse }
   } catch {
     return {
@@ -186,15 +190,94 @@ Return ONLY valid JSON in this exact format:
           scores: Object.fromEntries(regions.map(r => [r.name, 0])),
           justifications: Object.fromEntries(regions.map(r => [r.name, "Analysis pending"]))
         }],
-        factorAnalyses: [{
-          factor: "Generation Mix",
-          analysis: "Analysis of regional electricity pricing factors is being prepared.",
-          sources: eiaSources.map(s => ({ url: s.url, label: s.name }))
-        }],
+        factorAnalyses: [],
         synthesis: "Regional electricity prices vary based on multiple factors including generation mix, regulatory structure, and infrastructure costs.",
         synthesisSources: [{ url: "https://www.eia.gov/electricity/", label: "EIA" }],
         eiaSources,
       } as AnalysisResponse,
+    }
+  }
+}
+
+export async function generateFactorAnalyses(
+  regions: RegionInfo[],
+  scoreTable: { factor: string; scores: Record<string, number>; justifications: Record<string, string> }[]
+) {
+  const eiaSources: EIASource[] = regions.map((r) => {
+    const stateName = r.name.toLowerCase()
+    const stateCode = stateCodeMap[stateName]
+    if (stateCode) {
+      return {
+        name: `EIA ${r.name}`,
+        url: `https://www.eia.gov/electricity/state/${stateName.replace(/ /g, "")}/`,
+      }
+    }
+    return {
+      name: `EIA`,
+      url: `https://www.eia.gov/electricity/`,
+    }
+  })
+
+  const factors = scoreTable.map(row => row.factor)
+
+  const prompt = `You are an electricity market analyst. Generate detailed comparative analysis paragraphs for each of the following price factors.
+
+**REGIONS:**
+${regions
+  .map(
+    (r) =>
+      `- ${r.name}: $${r.price.toFixed(3)}/kWh
+  Energy Mix: ${Object.entries(r.energyMix)
+    .filter(([, v]) => v > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => `${k} ${v}%`)
+    .join(", ")}`,
+  )
+  .join("\n\n")}
+
+**FACTORS TO ANALYZE:**
+${factors.map((f, i) => `${i + 1}. ${f}`).join("\n")}
+
+**SCORE CONTEXT:**
+${scoreTable.map(row => 
+  `${row.factor}: ${Object.entries(row.scores).map(([region, score]) => `${region}=${score > 0 ? '+' : ''}${score}`).join(', ')}`
+).join('\n')}
+
+For each factor, write a comparative paragraph explaining:
+- How this factor DIFFERS across the regions
+- Whether this factor HELPS or HURTS each region's ability to provide low-cost electricity
+- Reference specific data and cite sources
+
+Return ONLY valid JSON:
+{
+  "factorAnalyses": [
+    {
+      "factor": "Factor Name",
+      "analysis": "Detailed comparative paragraph (3-5 sentences) explaining regional differences and price impacts.",
+      "sources": [{"url": "https://www.eia.gov/electricity/state/...", "label": "EIA State Data"}]
+    }
+  ]
+}`
+
+  const { text } = await generateText({
+    model: "anthropic/claude-3-5-haiku-20241022",
+    prompt,
+    maxOutputTokens: 2500,
+  })
+
+  try {
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    const jsonText = jsonMatch ? jsonMatch[0].replace(/:\s*\+1/g, ": 1") : text.replace(/:\s*\+1/g, ": 1")
+    const parsed = JSON.parse(jsonText)
+    return { success: true, data: parsed.factorAnalyses as FactorAnalysis[] }
+  } catch {
+    return {
+      success: true,
+      data: factors.map(f => ({
+        factor: f,
+        analysis: "Detailed analysis for this factor is being prepared.",
+        sources: eiaSources.map(s => ({ url: s.url, label: s.name }))
+      })) as FactorAnalysis[],
     }
   }
 }
