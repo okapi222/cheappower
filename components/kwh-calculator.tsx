@@ -1367,11 +1367,10 @@ setAnalysis(null)
       )}
 
 {/* Filter Controls - visible but disabled during analysis, replaced by New Analysis when complete (desktop only) */}
-      <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
-        {/* New Analysis button - shown when analysis is complete (desktop only) */}
+      <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-center" : "justify-center sm:flex"}`}>
+        {/* New Analysis button - shown when analysis is complete (desktop only), primary and centered */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
           <Button
-            variant="secondary"
             className="hidden lg:flex items-center gap-2"
             onClick={() => {
               setIsPriceDriversExpanded(false)
@@ -1468,10 +1467,11 @@ setAnalysis(null)
             </Button>
           ) : null}
           
-          {/* Desktop: Show disabled Price Drivers button when analysis complete */}
+          {/* Desktop: Show disabled secondary Price Drivers button when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
-              className="hidden lg:flex items-center gap-2 "
+              variant="secondary"
+              className="hidden lg:flex items-center gap-2"
               disabled={true}
             >
               <TrendingUp className="h-4 w-4" />
