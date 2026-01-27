@@ -1335,8 +1335,8 @@ export function KwhCalculator() {
       </div>
       )}
 
-{/* Filter Controls / Compare Other States - same vertical position */}
-      <div className="hidden sm:flex flex-row gap-3 items-center justify-center min-h-[44px]">
+{/* Filter Controls - hidden when price drivers expanded on tablet, visible on desktop */}
+      <div className={`hidden sm:flex flex-row gap-3 items-center justify-center min-h-[44px] ${isPriceDriversExpanded ? "sm:hidden lg:flex" : ""}`}>
         {/* Filter Controls - fade out when expanded */}
         {!isPriceDriversExpanded && (
           <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
@@ -1406,7 +1406,7 @@ export function KwhCalculator() {
       </div>
 
       {/* Price Drivers Button & Factor Headers */}
-      <div className={`flex items-center gap-2 mt-2 pt-0 ${isPriceDriversExpanded ? "lg:grid lg:grid-cols-4 lg:gap-4" : ""}`}>
+      <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"}`}>
         <div className="flex items-center gap-2">
           {/* Mobile/Tablet: Show Compare Other States when analysis complete, otherwise show Price Drivers */}
           {/* Desktop (lg+): Always show Price Drivers button */}
