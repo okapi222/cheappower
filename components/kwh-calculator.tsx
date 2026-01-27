@@ -1443,7 +1443,7 @@ setAnalysis(null)
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-[200px] text-center">
-                Ranks and select states by price and energy mix
+                Rank and select states by price and energy mix
               </TooltipContent>
             </Tooltip>
           </div>
