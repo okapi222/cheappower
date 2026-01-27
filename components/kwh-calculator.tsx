@@ -1403,33 +1403,18 @@ export function KwhCalculator() {
             </Tooltip>
           </div>
         )}
-
-        {/* Compare Other States Button - appears when analysis is complete */}
-        {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
-          <Button 
-            variant="secondary" 
-            className="gap-2"
-            onClick={() => {
-              setIsPriceDriversExpanded(false)
-              setAnalysis(null)
-            }}
-          >
-            <Undo2 className="h-4 w-4" />
-            Compare Other States
-          </Button>
-        )}
       </div>
 
       {/* Price Drivers Button & Factor Headers */}
       <div className={`flex items-center gap-2 mt-2 pt-0 ${isPriceDriversExpanded ? "lg:grid lg:grid-cols-4 lg:gap-4" : ""}`}>
         <div className="flex items-center gap-2">
-          {/* Mobile: Show Compare Other States when analysis complete, otherwise show Price Drivers */}
-          {/* Desktop: Always show Price Drivers button */}
+          {/* Mobile/Tablet: Show Compare Other States when analysis complete, otherwise show Price Drivers */}
+          {/* Desktop (lg+): Always show Price Drivers button */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
-            // Mobile only: Compare Other States button after analysis
+            // Mobile/Tablet: Compare Other States button after analysis
             <Button
               variant="secondary"
-              className="flex sm:hidden items-center gap-2"
+              className="flex lg:hidden items-center gap-2"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
                 setAnalysis(null)
@@ -1440,9 +1425,9 @@ export function KwhCalculator() {
             </Button>
           ) : null}
           
-          {/* Price Drivers button - hidden on mobile when expanded and analysis complete */}
+          {/* Price Drivers button - hidden on mobile/tablet when expanded and analysis complete */}
           <Button
-            className={`flex items-center gap-2 min-w-[200px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden sm:flex" : ""}`}
+            className={`flex items-center gap-2 min-w-[200px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden lg:flex" : ""}`}
             onClick={() => {
               runAnalysis()
               setIsPriceDriversExpanded(true)
@@ -1464,7 +1449,7 @@ export function KwhCalculator() {
           </Button>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className={`text-muted-foreground hover:text-foreground transition-colors ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden sm:block" : ""}`}>
+              <button type="button" className={`text-muted-foreground hover:text-foreground transition-colors ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden lg:block" : ""}`}>
                 <Info className="h-4 w-4" />
               </button>
             </TooltipTrigger>
