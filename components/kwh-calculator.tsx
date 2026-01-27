@@ -2200,7 +2200,7 @@ setAnalysis(null)
 
           {/* Full Analysis Button - Desktop */}
           {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
-            <div className="hidden lg:flex justify-center mt-6">
+            <div className="hidden lg:flex justify-start mt-6">
               <Button
                 variant="outline"
                 onClick={loadFullAnalysis}
