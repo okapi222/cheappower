@@ -1706,6 +1706,36 @@ export function KwhCalculator() {
                     })}
                   </div>
 
+                  {/* Detailed Factor Analysis - Phone */}
+                  {!isAnalyzing && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-sm">Detailed Factor Analysis</h4>
+                      {analysis.factorAnalyses.map((factor, idx) => (
+                        <Card key={idx}>
+                          <CardContent className="p-3">
+                            <h5 className="font-medium text-sm mb-2">{factor.factor}</h5>
+                            <p className="text-xs text-muted-foreground leading-relaxed">{factor.analysis}</p>
+                            {factor.sources && factor.sources.length > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {factor.sources.map((source, sIdx) => (
+                                  <a 
+                                    key={sIdx} 
+                                    href={source.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-blue-600 hover:underline"
+                                  >
+                                    [{source.label}]
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Synthesis Summary */}
                   {!isAnalyzing && analysis?.synthesis && (
                     <Card className="bg-slate-50">
@@ -1873,6 +1903,36 @@ export function KwhCalculator() {
                       )
                     })}
                   </div>
+
+                  {/* Detailed Factor Analysis - Tablet */}
+                  {!isAnalyzing && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+                    <div className="space-y-3 mt-3">
+                      <h4 className="font-semibold text-sm">Detailed Factor Analysis</h4>
+                      {analysis.factorAnalyses.map((factor, idx) => (
+                        <Card key={idx}>
+                          <CardContent className="p-3">
+                            <h5 className="font-medium text-sm mb-2">{factor.factor}</h5>
+                            <p className="text-xs text-muted-foreground leading-relaxed">{factor.analysis}</p>
+                            {factor.sources && factor.sources.length > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {factor.sources.map((source, sIdx) => (
+                                  <a 
+                                    key={sIdx} 
+                                    href={source.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-blue-600 hover:underline"
+                                  >
+                                    [{source.label}]
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Synthesis Summary for tablet */}
                   {!isAnalyzing && analysis?.synthesis && (
