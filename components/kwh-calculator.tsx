@@ -1356,7 +1356,7 @@ setAnalysis(null)
         <Tooltip>
           <TooltipTrigger asChild>
             <button className="p-1 text-muted-foreground hover:text-foreground">
-              <Info className="h-4 w-4" />
+              <Info className="size-7 ml-3" />
             </button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-[200px] text-center">
