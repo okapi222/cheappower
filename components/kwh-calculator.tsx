@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2 } from "lucide-react"
-import { analyzeRegionPricing, askFollowUp } from "@/app/actions"
+import { analyzeRegionPricing, askFollowUp, generateFactorAnalyses } from "@/app/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
@@ -916,6 +916,8 @@ export function KwhCalculator() {
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
+  const [showFullAnalysis, setShowFullAnalysis] = useState(false)
+  const [isLoadingFullAnalysis, setIsLoadingFullAnalysis] = useState(false)
   const [hasInitialAnalysisRun, setHasInitialAnalysisRun] = useState(false)
   const [regionsChangedSinceAnalysis, setRegionsChangedSinceAnalysis] = useState(false)
   const [lastAnalyzedRegions, setLastAnalyzedRegions] = useState<string[]>([])
@@ -1025,11 +1027,12 @@ export function KwhCalculator() {
       return
     }
 
-    setAnalysis(null)
-    setFollowUpMessages([]) // Clear follow-up messages
-    setIsAnalysisCollapsed(false) // Expand analysis
-    setIsAnalyzing(true)
-    setAnalysisError(null)
+setAnalysis(null)
+  setFollowUpMessages([]) // Clear follow-up messages
+  setIsAnalysisCollapsed(false) // Expand analysis
+  setIsAnalyzing(true)
+  setAnalysisError(null)
+  setShowFullAnalysis(false) // Reset full analysis state
 
     try {
       const regionsForAnalysis = displayedRegions.map((r) => ({
@@ -1051,6 +1054,34 @@ export function KwhCalculator() {
     } finally {
       setIsAnalyzing(false)
       setHasInitialAnalysisRun(true)
+    }
+  }
+
+  const loadFullAnalysis = async () => {
+    if (!analysis?.scoreTable || isLoadingFullAnalysis) return
+    
+    setIsLoadingFullAnalysis(true)
+    
+    try {
+      const displayedRegions = getDisplayedRegions()
+      const regionsForAnalysis = displayedRegions
+        .filter(r => lastAnalyzedRegions.includes(r.key))
+        .map((r) => ({
+          name: r.displayName,
+          price: regionData[r.key].priceUSD,
+          energyMix: regionData[r.key].energyMix as Record<string, number>,
+        }))
+      
+      const result = await generateFactorAnalyses(regionsForAnalysis, analysis.scoreTable)
+      
+      if (result.success && result.data) {
+        setAnalysis(prev => prev ? { ...prev, factorAnalyses: result.data } : null)
+        setShowFullAnalysis(true)
+      }
+    } catch (error) {
+      console.error("Error loading full analysis:", error)
+    } finally {
+      setIsLoadingFullAnalysis(false)
     }
   }
 
@@ -1706,8 +1737,32 @@ export function KwhCalculator() {
                     })}
                   </div>
 
+                  {/* Full Analysis Button - Phone */}
+                  {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
+                    <div className="flex justify-center">
+                      <Button
+                        variant="outline"
+                        onClick={loadFullAnalysis}
+                        disabled={isLoadingFullAnalysis}
+                        className="gap-2 bg-transparent"
+                      >
+                        {isLoadingFullAnalysis ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                            Loading...
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="h-4 w-4" />
+                            Full Analysis
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+
                   {/* Detailed Factor Analysis - Phone */}
-                  {!isAnalyzing && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+                  {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
                     <div className="space-y-3">
                       <h4 className="font-semibold text-sm">Detailed Factor Analysis</h4>
                       {analysis.factorAnalyses.map((factor, idx) => (
@@ -1904,8 +1959,32 @@ export function KwhCalculator() {
                     })}
                   </div>
 
+                  {/* Full Analysis Button - Tablet */}
+                  {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
+                    <div className="flex justify-center mt-3">
+                      <Button
+                        variant="outline"
+                        onClick={loadFullAnalysis}
+                        disabled={isLoadingFullAnalysis}
+                        className="gap-2 bg-transparent"
+                      >
+                        {isLoadingFullAnalysis ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                            Loading...
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="h-4 w-4" />
+                            Full Analysis
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+
                   {/* Detailed Factor Analysis - Tablet */}
-                  {!isAnalyzing && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+                  {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
                     <div className="space-y-3 mt-3">
                       <h4 className="font-semibold text-sm">Detailed Factor Analysis</h4>
                       {analysis.factorAnalyses.map((factor, idx) => (
@@ -2097,15 +2176,39 @@ export function KwhCalculator() {
             })()}
           </div>
 
+          {/* Full Analysis Button - Desktop */}
+          {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
+            <div className="hidden lg:flex justify-center mt-6">
+              <Button
+                variant="outline"
+                onClick={loadFullAnalysis}
+                disabled={isLoadingFullAnalysis}
+                className="gap-2 bg-transparent"
+              >
+                {isLoadingFullAnalysis ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="h-4 w-4" />
+                    Full Analysis
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
           {/* Factor Analysis Paragraphs - Desktop */}
-          {!isAnalyzing && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
-            <div className="hidden md:block mt-6 space-y-4">
+          {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+            <div className="hidden lg:block mt-6 space-y-4">
               <h4 className="font-semibold text-lg">Detailed Factor Analysis</h4>
               {analysis.factorAnalyses.map((factor, idx) => (
                 <Card key={idx}>
                   <CardContent className="p-4">
                     <h5 className="mb-2 font-semibold">{factor.factor}</h5>
-                    <p className="text-sm leading-relaxed text-foreground text-foreground">{factor.analysis}</p>
+                    <p className="text-sm leading-relaxed text-foreground">{factor.analysis}</p>
                     {factor.sources && factor.sources.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
                         {factor.sources.map((source, sIdx) => (
