@@ -1366,10 +1366,24 @@ setAnalysis(null)
       </div>
       )}
 
-{/* Filter Controls - hidden when price drivers expanded on tablet, visible on desktop */}
-      <div className={`hidden sm:flex flex-row gap-3 items-center justify-center min-h-[44px] ${isPriceDriversExpanded ? "sm:hidden lg:flex" : ""}`}>
-        {/* Filter Controls - fade out when expanded */}
-        {!isPriceDriversExpanded && (
+{/* Filter Controls - visible but disabled during analysis, replaced by Compare Other States when complete */}
+      <div className={`hidden sm:flex flex-row gap-3 items-center justify-center min-h-[44px]`}>
+        {/* Compare Other States button - shown when analysis is complete */}
+        {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
+          <Button
+            variant="secondary"
+            className="flex items-center gap-2"
+            onClick={() => {
+              setIsPriceDriversExpanded(false)
+              setAnalysis(null)
+            }}
+          >
+            <Undo2 className="h-4 w-4" />
+            Compare Other States
+          </Button>
+        )}
+        {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
+        {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
           <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
             {/* Help text - desktop only (lg+) */}
             <span className="hidden lg:block text-sm text-muted-foreground text-right leading-tight">Rank States →</span>
