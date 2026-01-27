@@ -1518,7 +1518,7 @@ setAnalysis(null)
   <Info className="size-6" />
   </button>
   </PopoverTrigger>
-  <PopoverContent side="bottom" className="max-w-[340px] p-3 text-left">
+  <PopoverContent side="bottom" className="max-w-[340px] p-3 text-left bg-foreground text-background">
   <p className="text-sm"><span className="font-semibold">Price Driver</span> compares regions across the major factors that influence electricity prices. We review public data from grid operators and regulators, assess how regions differ, and evaluate whether each difference helps or hurts low-cost power. Only the <span className="font-semibold">three factors that best explain price differences</span> between the selected regions are shown.</p>
   </PopoverContent>
   </Popover>
