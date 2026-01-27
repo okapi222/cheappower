@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2 } from "lucide-react"
+import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sunrise } from "lucide-react"
 import { analyzeRegionPricing, askFollowUp, generateFactorAnalyses } from "@/app/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -1366,9 +1366,9 @@ setAnalysis(null)
       </div>
       )}
 
-{/* Filter Controls - visible but disabled during analysis, replaced by Compare Other States when complete (desktop only) */}
+{/* Filter Controls - visible but disabled during analysis, replaced by New Analysis when complete (desktop only) */}
       <div className={`hidden lg:flex flex-row gap-3 items-center justify-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "" : "sm:flex"}`}>
-        {/* Compare Other States button - shown when analysis is complete (desktop only) */}
+        {/* New Analysis button - shown when analysis is complete (desktop only) */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
           <Button
             variant="secondary"
@@ -1378,8 +1378,8 @@ setAnalysis(null)
               setAnalysis(null)
             }}
           >
-            <Undo2 className="h-4 w-4" />
-            Compare Other States
+            <Sunrise className="h-4 w-4" />
+            New Analysis
           </Button>
         )}
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
@@ -1453,7 +1453,7 @@ setAnalysis(null)
       {/* Price Drivers Button & Factor Headers */}
       <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"}`}>
         <div className="flex items-center gap-2">
-          {/* Mobile/Tablet: Show Compare Other States when analysis complete */}
+          {/* Mobile/Tablet: Show New Analysis when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
               variant="secondary"
@@ -1463,8 +1463,8 @@ setAnalysis(null)
                 setAnalysis(null)
               }}
             >
-              <Undo2 className="h-4 w-4" />
-              Compare Other States
+              <Sunrise className="h-4 w-4" />
+              New Analysis
             </Button>
           ) : null}
           
