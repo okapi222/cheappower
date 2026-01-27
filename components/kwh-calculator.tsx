@@ -1366,8 +1366,8 @@ setAnalysis(null)
       </div>
       )}
 
-{/* Filter Controls - hidden when price drivers expanded on all views */}
-      <div className={`hidden sm:flex flex-row gap-3 items-center justify-center min-h-[44px] ${isPriceDriversExpanded ? "sm:hidden" : ""}`}>
+{/* Filter Controls - hidden when price drivers expanded on tablet, visible on desktop */}
+      <div className={`hidden sm:flex flex-row gap-3 items-center justify-center min-h-[44px] ${isPriceDriversExpanded ? "sm:hidden lg:flex" : ""}`}>
         {/* Filter Controls - fade out when expanded */}
         {!isPriceDriversExpanded && (
           <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
@@ -1439,24 +1439,24 @@ setAnalysis(null)
       {/* Price Drivers Button & Factor Headers */}
       <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"}`}>
         <div className="flex items-center gap-2">
-{/* Show Compare Other States when analysis complete on all views */}
-  {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
-  <Button
-  variant="secondary"
-  className="flex items-center gap-2"
-  onClick={() => {
-  setIsPriceDriversExpanded(false)
-  setAnalysis(null)
-  }}
-  >
-  <Undo2 className="h-4 w-4" />
-  Compare Other States
-  </Button>
-  ) : null}
-  
-  {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
-  <Button
-  className={`flex items-center gap-2 min-w-[200px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}
+          {/* Show Compare Other States when analysis complete on all views */}
+          {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
+            <Button
+              variant="secondary"
+              className="flex items-center gap-2"
+              onClick={() => {
+                setIsPriceDriversExpanded(false)
+                setAnalysis(null)
+              }}
+            >
+              <Undo2 className="h-4 w-4" />
+              Compare Other States
+            </Button>
+          ) : null}
+          
+          {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
+          <Button
+            className={`flex items-center gap-2 min-w-[200px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}
             onClick={() => {
               runAnalysis()
               setIsPriceDriversExpanded(true)
