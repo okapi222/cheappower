@@ -1850,7 +1850,7 @@ export function KwhCalculator() {
                                         </span>
                                       </div>
                                       {justification ? (
-                                        <p className="text-sm text-muted-foreground leading-relaxed">{justification}</p>
+                                        <p className="text-sm leading-relaxed text-foreground">{justification}</p>
                                       ) : (
                                         <p className="text-xs text-muted-foreground">No explanation available.</p>
                                       )}
@@ -1879,7 +1879,7 @@ export function KwhCalculator() {
                     <Card className="bg-slate-50 mt-3">
                       <CardContent className="p-3">
                         <h4 className="text-sm mb-2 font-medium">Summary</h4>
-                        <p className="text-muted-foreground text-sm">{analysis.synthesis}</p>
+                        <p className="text-sm text-foreground">{analysis.synthesis}</p>
                         {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1.5">
                             {analysis.synthesisSources.map((source, idx) => (
