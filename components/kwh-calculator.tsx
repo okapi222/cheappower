@@ -1518,8 +1518,18 @@ setAnalysis(null)
   <Info className="size-6" />
   </button>
   </PopoverTrigger>
-  <PopoverContent side="bottom" className="max-w-[340px] p-3 text-left text-popover-foreground bg-amber-50">
-  <p className="text-sm"><span className="font-semibold">Price Driver</span> compares regions across the major factors that influence electricity prices. We review public data from grid operators and regulators, assess how regions differ, and evaluate whether each difference helps or hurts low-cost power. Only the <span className="font-semibold">three factors that best explain price differences</span> between the selected regions are shown.</p>
+  <PopoverContent side="bottom" className="w-[420px] p-4 text-left text-popover-foreground bg-amber-50">
+  <p className="text-sm mb-3"><span className="font-semibold">Price Drivers</span> compares regions across the key factors that influence electricity prices. Using public data from grid operators and regulators, we assess how regions differ and whether those differences help or hinder low-cost power across seven cost drivers:</p>
+  <ul className="text-sm space-y-1 mb-3 list-disc list-inside">
+    <li>Fuel and generation costs</li>
+    <li>Transmission and distribution</li>
+    <li>Regulatory structure and utility model</li>
+    <li>State and federal policies</li>
+    <li>Wholesale market conditions</li>
+    <li>Geography and local conditions</li>
+    <li>Reliability and resilience costs</li>
+  </ul>
+  <p className="text-sm">From this list we select the <span className="font-semibold">3 factors that best explain price differences</span> between the selected regions are shown.</p>
   </PopoverContent>
   </Popover>
         </div>
