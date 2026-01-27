@@ -1792,7 +1792,7 @@ setAnalysis(null)
                   )}
 
                   {/* Synthesis Summary */}
-                  {!isAnalyzing && analysis?.synthesis && (
+                  {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
                     <Card className="bg-slate-50">
                       <CardContent className="p-3">
                         <h4 className="text-sm mb-2 font-semibold">Summary</h4>
@@ -2014,7 +2014,7 @@ setAnalysis(null)
                   )}
 
                   {/* Synthesis Summary for tablet */}
-                  {!isAnalyzing && analysis?.synthesis && (
+                  {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
                     <Card className="bg-slate-50 mt-3">
                       <CardContent className="p-3">
                         <h4 className="text-sm mb-2 font-semibold">Summary</h4>
@@ -2231,7 +2231,7 @@ setAnalysis(null)
           )}
 
           {/* Synthesis Summary - Desktop */}
-          {!isAnalyzing && analysis?.synthesis && (
+          {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
             <Card className="hidden md:block bg-slate-50 mt-4">
               <CardContent className="p-4">
                 <h4 className="font-semibold mb-2">Summary</h4>
