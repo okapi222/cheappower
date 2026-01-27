@@ -1539,7 +1539,7 @@ setAnalysis(null)
       <LayoutGroup>
       {/* Normal Grid View */}
       {!isPriceDriversExpanded && (
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4">
           {/* All pinned regions first (both user-added and filter-generated) */}
           {Array.from(pinnedRegions)
             .filter((key) => regionData[key])
