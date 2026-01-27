@@ -1455,7 +1455,6 @@ setAnalysis(null)
           {/* Mobile/Tablet: Show New Analysis when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
-              variant="secondary"
               className="flex lg:hidden items-center gap-2"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
