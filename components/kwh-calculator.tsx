@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sunrise } from "lucide-react"
+import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sun, Sunrise } from "lucide-react"
 import { analyzeRegionPricing, askFollowUp, generateFactorAnalyses } from "@/app/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -1378,7 +1378,7 @@ setAnalysis(null)
               setAnalysis(null)
             }}
           >
-            <Sunrise className="h-4 w-4" />
+            <Sun className="h-4 w-4" />
             New Analysis
           </Button>
         )}
@@ -1463,7 +1463,7 @@ setAnalysis(null)
                 setAnalysis(null)
               }}
             >
-              <Sunrise className="h-4 w-4" />
+              <Sun className="h-4 w-4" />
               New Analysis
             </Button>
           ) : null}
