@@ -28,6 +28,7 @@ import { analyzeRegionPricing, askFollowUp, generateFactorAnalyses } from "@/app
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Dialog,
@@ -1353,20 +1354,19 @@ setAnalysis(null)
           </SelectContent>
         </Select>
 
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <button 
-              type="button"
-              className="p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Info className="size-6" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-[200px] text-center">
-            Filter states by price or energy mix
-          </TooltipContent>
-        </Tooltip>
+<Popover>
+  <PopoverTrigger asChild>
+  <button
+  type="button"
+  className="p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+  >
+  <Info className="size-6" />
+  </button>
+  </PopoverTrigger>
+  <PopoverContent side="bottom" className="max-w-[200px] text-center text-sm p-3 bg-yellow-50">
+  Filter states by price or energy mix
+  </PopoverContent>
+  </Popover>
       </div>
       )}
 
@@ -1439,21 +1439,20 @@ setAnalysis(null)
               </TooltipTrigger>
             </Tooltip>
 
-            {/* Info icon - mobile/tablet only (below lg) */}
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <button 
-                  type="button"
-                  className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <Info className="size-6" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-[200px] text-center">
-                Rank and select states by price and energy mix
-              </TooltipContent>
-            </Tooltip>
+{/* Info icon - mobile/tablet only (below lg) */}
+  <Popover>
+  <PopoverTrigger asChild>
+  <button
+  type="button"
+  className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+  >
+  <Info className="size-6" />
+  </button>
+  </PopoverTrigger>
+  <PopoverContent side="bottom" className="max-w-[200px] text-center text-sm p-3 text-popover-foreground bg-amber-50">
+  Rank and select states by price and energy mix
+  </PopoverContent>
+  </Popover>
           </div>
         )}
       </div>
@@ -1510,20 +1509,19 @@ setAnalysis(null)
               "Price Drivers"
             )}
           </Button>
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <button 
-                type="button" 
-                className="p-3 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-                onClick={(e) => e.preventDefault()}
-              >
-                <Info className="size-6" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-[340px] p-3 text-left">
-              <p className="text-sm"><span className="font-semibold">Price Driver</span> compares regions across the major factors that influence electricity prices. We review public data from grid operators and regulators, assess how regions differ, and evaluate whether each difference helps or hurts low-cost power. Only the <span className="font-semibold">three factors that best explain price differences</span> between the selected regions are shown.</p>
-            </TooltipContent>
-          </Tooltip>
+<Popover>
+  <PopoverTrigger asChild>
+  <button
+  type="button"
+  className="p-3 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+  >
+  <Info className="size-6" />
+  </button>
+  </PopoverTrigger>
+  <PopoverContent side="bottom" className="max-w-[340px] p-3 text-left text-popover-foreground bg-amber-50">
+  <p className="text-sm"><span className="font-semibold">Price Driver</span> compares regions across the major factors that influence electricity prices. We review public data from grid operators and regulators, assess how regions differ, and evaluate whether each difference helps or hurts low-cost power. Only the <span className="font-semibold">three factors that best explain price differences</span> between the selected regions are shown.</p>
+  </PopoverContent>
+  </Popover>
         </div>
         
         {/* Factor Column Headers - only visible in expanded view on desktop (lg+) */}
