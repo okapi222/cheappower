@@ -1358,7 +1358,7 @@ setAnalysis(null)
             <button 
               type="button"
               className="p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => e.stopPropagation()}
             >
               <Info className="size-6" />
             </button>
