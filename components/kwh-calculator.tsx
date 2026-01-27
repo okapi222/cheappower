@@ -1713,7 +1713,7 @@ export function KwhCalculator() {
                       {analysis.factorAnalyses.map((factor, idx) => (
                         <Card key={idx}>
                           <CardContent className="p-3">
-                            <h5 className="font-medium text-sm mb-2">{factor.factor}</h5>
+                            <h5 className="text-sm mb-2 font-semibold">{factor.factor}</h5>
                             <p className="text-xs text-muted-foreground leading-relaxed">{factor.analysis}</p>
                             {factor.sources && factor.sources.length > 0 && (
                               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -1740,7 +1740,7 @@ export function KwhCalculator() {
                   {!isAnalyzing && analysis?.synthesis && (
                     <Card className="bg-slate-50">
                       <CardContent className="p-3">
-                        <h4 className="text-sm mb-2 font-medium">Summary</h4>
+                        <h4 className="text-sm mb-2 font-semibold">Summary</h4>
                         <p className="text-sm text-foreground">{analysis.synthesis}</p>
                         {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1.5">
