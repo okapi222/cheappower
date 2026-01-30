@@ -18,7 +18,7 @@ const _sourceSerif_4 = Source_Serif_4({
 })
 
 export const metadata: Metadata = {
-  title: "Power Atlas",
+  title: "Energy Atlas",
   description: "Compare consumer electricity prices and energy sources across different regions",
   generator: "v0.app",
   icons: {
