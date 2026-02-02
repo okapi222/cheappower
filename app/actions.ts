@@ -1,7 +1,6 @@
 "use server"
 
 import { generateText } from "ai"
-import { perplexity } from "some-module" // Declare the perplexity variable
 
 interface RegionInfo {
   name: string
