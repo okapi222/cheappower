@@ -1390,7 +1390,7 @@ setAnalysis(null)
         {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
           <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
             {/* Help text - desktop only (lg+) */}
-            <span className="hidden lg:block text-sm text-muted-foreground text-right leading-tight">Rank States →</span>
+            
             {/* Category Filter */}
             <Tooltip>
               <TooltipTrigger asChild>
