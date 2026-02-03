@@ -1372,7 +1372,7 @@ setAnalysis(null)
 
 {/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
       <div className="hidden lg:block -mb-4">
-        <p className="text-sm text-muted-foreground text-center mb-2.5 pb-3.5">Filter for best and worst performers</p>
+        <p className="text-sm text-muted-foreground text-center mb-2.5 pb-3.5">Filter to find for best and worst performers  </p>
       </div>
       <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
         {/* Select New States button - shown when analysis is complete (desktop only), secondary and left-aligned */}
