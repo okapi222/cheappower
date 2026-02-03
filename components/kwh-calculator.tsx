@@ -1323,8 +1323,7 @@ setAnalysis(null)
       {/* Filter Controls - Mobile Dropdowns - hidden in expanded view */}
       {!isPriceDriversExpanded && (
       <>
-        <div className="flex sm:hidden justify-center">
-          Filter for best and worst a performers
+        <div className="flex sm:hidden justify-center"> Filter for best and worst a performers
         </div>
       <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
         <Select
