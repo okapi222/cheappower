@@ -1323,7 +1323,7 @@ setAnalysis(null)
       {/* Filter Controls - Mobile Dropdowns - hidden in expanded view */}
       {!isPriceDriversExpanded && (
       <>
-        <div className="flex sm:hidden justify-center py-2">
+        <div className="flex sm:hidden justify-center">
           <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
         </div>
       <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
@@ -1377,7 +1377,7 @@ setAnalysis(null)
 
 {/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
       <>
-        <div className="hidden lg:flex justify-center py-2 w-full">
+        <div className="hidden lg:flex justify-center w-full">
           <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
         </div>
       <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
