@@ -1,9 +1,8 @@
-import { KwhCalculator } from "@/components/kwh-calculator"
-
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background flex items-start justify-center p-4 py-8">
-      <KwhCalculator />
-    </main>
+    <div className="w-screen h-screen bg-white text-black flex flex-col items-center justify-center gap-4">
+      <h1 className="text-4xl font-bold">Energy Atlas</h1>
+      <p className="text-xl">Application loaded successfully</p>
+    </div>
   )
 }
