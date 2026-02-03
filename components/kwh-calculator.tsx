@@ -1322,9 +1322,9 @@ setAnalysis(null)
 
       {/* Filter Controls - Mobile Dropdowns - hidden in expanded view */}
       {!isPriceDriversExpanded && (
-      <div className="space-y-1">
+      <>
         <div className="flex sm:hidden justify-center">
-          <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
+          Filter for best and worst performers
         </div>
       <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
         <Select
@@ -1372,7 +1372,100 @@ setAnalysis(null)
   </PopoverContent>
   </Popover>
       </div>
+      </>
+      )}
+
+{/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
+      <>
+        <div className="hidden lg:flex justify-center w-full">
+          <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
+        </div>
+      <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
+        {/* Select New States button - shown when analysis is complete (desktop only), secondary and left-aligned */}
+        {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
+          <Button
+            variant="secondary"
+            className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
+              onClick={() => {
+                setIsPriceDriversExpanded(false)
+                setAnalysis(null)
+              }}
+            >
+              <Sun className="h-4 w-4" />
+              Select New States
+            </Button>
+          )}
+        {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
+        {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
+          <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
+            {/* Help text - desktop only (lg+) */}
+            
+            {/* Category Filter */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                  {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
+                    <button
+                      key={category}
+                      disabled={isAnalyzing || totalDisplayedStates >= 6}
+                      onClick={() => handleFilterChange('category', category)}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                        filterCategory === category
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                    >
+                      {category === "price" && "Price"}
+                      {category === "renewables" && "Renewables"}
+                      {category === "nuclear" && "Nuclear"}
+                      {category === "fossilFuels" && "Fossil Fuels"}
+                      {category === "coal" && "Coal"}
+                    </button>
+                  ))}
+                </div>
+              </TooltipTrigger>
+            </Tooltip>
+
+            {/* Order Filter */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                  {(["highest", "lowest"] as FilterOrder[]).map((order) => (
+                    <button
+                      key={order}
+                      disabled={isAnalyzing || totalDisplayedStates >= 6}
+                      onClick={() => handleFilterChange('order', order)}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                        filterOrder === order
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                    >
+                      {order === "highest" ? "Highest" : "Lowest"}
+                    </button>
+                  ))}
+                </div>
+              </TooltipTrigger>
+            </Tooltip>
+
+{/* Info icon - mobile/tablet only (below lg) */}
+  <Popover>
+  <PopoverTrigger asChild>
+  <button
+  type="button"
+  className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+  >
+  <Info className="size-6" />
+  </button>
+  </PopoverTrigger>
+  <PopoverContent side="bottom" className="max-w-[200px] text-center text-sm p-3 text-popover-foreground bg-amber-50">
+  Rank and select states by price and energy mix
+  </PopoverContent>
+  </Popover>
+          </div>
+        )}
       </div>
+      </>
 
       {/* Price Drivers Button & Factor Headers */}
       <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"}`}>
