@@ -1322,6 +1322,10 @@ setAnalysis(null)
 
       {/* Filter Controls - Mobile Dropdowns - hidden in expanded view */}
       {!isPriceDriversExpanded && (
+      <>
+        <div className="flex sm:hidden justify-center py-2">
+          <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
+        </div>
       <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
         <Select
           value={filterCategory}
@@ -1368,9 +1372,14 @@ setAnalysis(null)
   </PopoverContent>
   </Popover>
       </div>
+      </>
       )}
 
 {/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
+      <>
+        <div className="hidden lg:flex justify-center py-2 w-full">
+          <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
+        </div>
       <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
         {/* Select New States button - shown when analysis is complete (desktop only), secondary and left-aligned */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
@@ -1456,6 +1465,7 @@ setAnalysis(null)
           </div>
         )}
       </div>
+      </>
 
       {/* Price Drivers Button & Factor Headers */}
       <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"}`}>
