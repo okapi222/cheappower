@@ -1492,6 +1492,7 @@ setAnalysis(null)
           
           {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
           <Button
+            variant="secondary"
             className={`flex items-center gap-2  ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}
             onClick={() => {
               runAnalysis()
