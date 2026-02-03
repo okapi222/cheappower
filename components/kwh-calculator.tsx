@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sun, Sunrise } from "lucide-react"
+import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sun, Sunrise, Filter } from "lucide-react"
 import { analyzeRegionPricing, askFollowUp, generateFactorAnalyses } from "@/app/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -1371,8 +1371,9 @@ setAnalysis(null)
       )}
 
 {/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
-      <div className="hidden lg:block -mb-4">
-        <p className="text-sm text-muted-foreground text-center mb-2.5 pb-3.5">Filter to find for best and worst performers  </p>
+      <div className="hidden lg:flex justify-center items-center gap-1.5 -mb-4">
+        <Filter className="size-3.5 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground mb-2.5 pb-3.5">Filter for best and worst performers</p>
       </div>
       <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
         {/* Select New States button - shown when analysis is complete (desktop only), secondary and left-aligned */}
