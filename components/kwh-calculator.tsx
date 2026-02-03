@@ -1405,7 +1405,7 @@ setAnalysis(null)
                       onClick={() => handleFilterChange('category', category)}
                       className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                         filterCategory === category
-                          ? "bg-background text-foreground shadow-sm"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
                     >
@@ -1431,7 +1431,7 @@ setAnalysis(null)
                       onClick={() => handleFilterChange('order', order)}
                       className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                         filterOrder === order
-                          ? "bg-background text-foreground shadow-sm"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
                     >
