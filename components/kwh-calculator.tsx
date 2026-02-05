@@ -1389,10 +1389,17 @@ setAnalysis(null)
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
         {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
           <div className="flex flex-col gap-2 items-center">
-            {/* Help text - above filters */}
-            <p className="text-sm text-foreground">Rank states by price and energy mix</p>
+            {/* Help text row */}
+            <div className="flex flex-row gap-3 items-center">
+              <p className="text-sm text-foreground">Rank states by price and energy mix</p>
+              
+              {/* Vertical separator */}
+              <div className="h-6 w-px bg-border" />
+              
+              <p className="text-sm text-foreground">Or select states individually</p>
+            </div>
             
-            {/* Filter buttons row */}
+            {/* Filter buttons and Add a State button row */}
             <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
               {/* Category Filter */}
               <Tooltip>
@@ -1448,25 +1455,22 @@ setAnalysis(null)
               <div className="h-6 w-px bg-border" />
               
               {/* "Add a State" button with magnifying glass */}
-              <div className="flex flex-col gap-1 items-center">
-                <p className="text-xs text-foreground">Or select states individually</p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    // Scroll to add state section or trigger add state action
-                    const addStateCards = document.querySelector('[data-add-state-section]');
-                    if (addStateCards) {
-                      addStateCards.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="flex items-center gap-2"
-                  disabled={isAnalyzing || totalDisplayedStates >= 6}
-                >
-                  <Search className="h-4 w-4" />
-                  Add a State
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  // Scroll to add state section or trigger add state action
+                  const addStateCards = document.querySelector('[data-add-state-section]');
+                  if (addStateCards) {
+                    addStateCards.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="flex items-center gap-2"
+                disabled={isAnalyzing || totalDisplayedStates >= 6}
+              >
+                <Search className="h-4 w-4" />
+                Add a State
+              </Button>
             </div>
           </div>
         )}
