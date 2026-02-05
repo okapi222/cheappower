@@ -1442,21 +1442,6 @@ setAnalysis(null)
                 </div>
               </TooltipTrigger>
             </Tooltip>
-
-{/* Info icon - mobile/tablet only (below lg) */}
-  <Popover>
-  <PopoverTrigger asChild>
-  <button
-  type="button"
-  className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-  >
-  <Info className="size-6" />
-  </button>
-  </PopoverTrigger>
-  <PopoverContent side="bottom" className="max-w-[200px] text-center text-sm p-3 text-popover-foreground bg-amber-50">
-  Rank and select states by price and energy mix
-  </PopoverContent>
-  </Popover>
             
             {/* Visual separator */}
             <div className="h-6 w-px bg-border" />
@@ -1483,6 +1468,21 @@ setAnalysis(null)
             </Button>
           </div>
         )}
+        
+        {/* Info icon - mobile/tablet only (below lg) */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+            >
+              <Info className="size-6" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent side="bottom" className="max-w-[200px] text-center text-sm p-3 text-popover-foreground bg-amber-50">
+            Rank and select states by price and energy mix
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Price Drivers Button & Factor Headers */}
