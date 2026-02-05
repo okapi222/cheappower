@@ -1419,6 +1419,7 @@ setAnalysis(null)
                   ))}
                 </div>
               </TooltipTrigger>
+              <TooltipContent side="top">Select category to filter by</TooltipContent>
             </Tooltip>
 
             {/* Order Filter */}
@@ -1441,6 +1442,7 @@ setAnalysis(null)
                   ))}
                 </div>
               </TooltipTrigger>
+              <TooltipContent side="top">Sort by highest or lowest</TooltipContent>
             </Tooltip>
             
             {/* Visual separator */}
