@@ -1389,11 +1389,8 @@ setAnalysis(null)
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
         {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
           <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
-            {/* Help text and icon - left side */}
-            <div className="flex items-center gap-1.5">
-              <Filter className="size-3.5 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
-            </div>
+            {/* Help text - left side */}
+            <p className="text-sm text-foreground">Rank states by price and energy mix</p>
             
             {/* Category Filter */}
             <Tooltip>
@@ -1445,11 +1442,8 @@ setAnalysis(null)
               <TooltipContent side="top">Sort by highest or lowest</TooltipContent>
             </Tooltip>
             
-            {/* Visual separator */}
-            <div className="h-6 w-px bg-border" />
-            
             {/* "or" text */}
-            <p className="text-sm text-muted-foreground">or</p>
+            <p className="text-sm text-foreground">or</p>
             
             {/* "Add a State" button with magnifying glass */}
             <Button
