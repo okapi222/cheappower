@@ -1371,7 +1371,7 @@ setAnalysis(null)
       )}
 
 {/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
-      <div className={`hidden lg:flex flex-row gap-4 items-center justify-center min-h-[44px]`}>
+      <div className={`hidden lg:flex flex-col gap-2 items-center justify-center`}>
         {/* Select New States button - shown when analysis is complete (desktop only), secondary and left-aligned */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
           <Button
@@ -1388,80 +1388,86 @@ setAnalysis(null)
           )}
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
         {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
-          <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
-            {/* Help text - left side */}
+          <div className="flex flex-col gap-2 items-center">
+            {/* Help text - above filters */}
             <p className="text-sm text-foreground">Rank states by price and energy mix</p>
             
-            {/* Category Filter */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-                  {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
-                    <button
-                      key={category}
-                      disabled={isAnalyzing || totalDisplayedStates >= 6}
-                      onClick={() => handleFilterChange('category', category)}
-                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                        filterCategory === category
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
-                      } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
-                    >
-                      {category === "price" && "Price"}
-                      {category === "renewables" && "Renewables"}
-                      {category === "nuclear" && "Nuclear"}
-                      {category === "fossilFuels" && "Fossil Fuels"}
-                      {category === "coal" && "Coal"}
-                    </button>
-                  ))}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top">Select category to filter by</TooltipContent>
-            </Tooltip>
+            {/* Filter buttons row */}
+            <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
+              {/* Category Filter */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                    {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
+                      <button
+                        key={category}
+                        disabled={isAnalyzing || totalDisplayedStates >= 6}
+                        onClick={() => handleFilterChange('category', category)}
+                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                          filterCategory === category
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                      >
+                        {category === "price" && "Price"}
+                        {category === "renewables" && "Renewables"}
+                        {category === "nuclear" && "Nuclear"}
+                        {category === "fossilFuels" && "Fossil Fuels"}
+                        {category === "coal" && "Coal"}
+                      </button>
+                    ))}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">Select category to filter by</TooltipContent>
+              </Tooltip>
 
-            {/* Order Filter */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-                  {(["highest", "lowest"] as FilterOrder[]).map((order) => (
-                    <button
-                      key={order}
-                      disabled={isAnalyzing || totalDisplayedStates >= 6}
-                      onClick={() => handleFilterChange('order', order)}
-                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                        filterOrder === order
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
-                      } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
-                    >
-                      {order === "highest" ? "Highest" : "Lowest"}
-                    </button>
-                  ))}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top">Sort by highest or lowest</TooltipContent>
-            </Tooltip>
-            
-            {/* "or" text */}
-            <p className="text-sm text-foreground">or</p>
-            
-            {/* "Add a State" button with magnifying glass */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                // Scroll to add state section or trigger add state action
-                const addStateCards = document.querySelector('[data-add-state-section]');
-                if (addStateCards) {
-                  addStateCards.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="flex items-center gap-2"
-              disabled={isAnalyzing || totalDisplayedStates >= 6}
-            >
-              <Search className="h-4 w-4" />
-              Add a State
-            </Button>
+              {/* Order Filter */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                    {(["highest", "lowest"] as FilterOrder[]).map((order) => (
+                      <button
+                        key={order}
+                        disabled={isAnalyzing || totalDisplayedStates >= 6}
+                        onClick={() => handleFilterChange('order', order)}
+                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                          filterOrder === order
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                      >
+                        {order === "highest" ? "Highest" : "Lowest"}
+                      </button>
+                    ))}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">Sort by highest or lowest</TooltipContent>
+              </Tooltip>
+              
+              {/* Vertical separator */}
+              <div className="h-6 w-px bg-border" />
+              
+              {/* "Add a State" button with magnifying glass */}
+              <div className="flex flex-col gap-1 items-center">
+                <p className="text-xs text-foreground">Or select states individually</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // Scroll to add state section or trigger add state action
+                    const addStateCards = document.querySelector('[data-add-state-section]');
+                    if (addStateCards) {
+                      addStateCards.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="flex items-center gap-2"
+                  disabled={isAnalyzing || totalDisplayedStates >= 6}
+                >
+                  <Search className="h-4 w-4" />
+                  Add a State
+                </Button>
+              </div>
+            </div>
           </div>
         )}
         
