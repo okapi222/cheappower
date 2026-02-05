@@ -1370,29 +1370,31 @@ setAnalysis(null)
       </div>
       )}
 
-      {/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
-      <div className="hidden lg:flex justify-center items-center gap-1.5 mb-2.5">
-        <Filter className="size-3.5 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
-      </div>
-      <div className={`hidden lg:flex flex-row gap-3 items-center min-h-[44px] ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "justify-start" : "justify-center sm:flex"}`}>
+{/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
+      <div className={`hidden lg:flex flex-row gap-4 items-center justify-center min-h-[44px]`}>
         {/* Select New States button - shown when analysis is complete (desktop only), secondary and left-aligned */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
           <Button
             variant="secondary"
             className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
-            onClick={() => {
-              setIsPriceDriversExpanded(false)
-              setAnalysis(null)
-            }}
-          >
-            <Sun className="h-4 w-4" />
-            Select New States
-          </Button>
-        )}
+              onClick={() => {
+                setIsPriceDriversExpanded(false)
+                setAnalysis(null)
+              }}
+            >
+              <Sun className="h-4 w-4" />
+              Select New States
+            </Button>
+          )}
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
         {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
           <div className={`flex flex-row gap-3 items-center transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
+            {/* Help text and icon - left side */}
+            <div className="flex items-center gap-1.5">
+              <Filter className="size-3.5 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Filter for best and worst performers</p>
+            </div>
+            
             {/* Category Filter */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -1401,9 +1403,11 @@ setAnalysis(null)
                     <button
                       key={category}
                       disabled={isAnalyzing || totalDisplayedStates >= 6}
-                      onClick={() => handleFilterChange("category", category)}
+                      onClick={() => handleFilterChange('category', category)}
                       className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                        filterCategory === category ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        filterCategory === category
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
                       } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
                     >
                       {category === "price" && "Price"}
@@ -1426,9 +1430,11 @@ setAnalysis(null)
                     <button
                       key={order}
                       disabled={isAnalyzing || totalDisplayedStates >= 6}
-                      onClick={() => handleFilterChange("order", order)}
+                      onClick={() => handleFilterChange('order', order)}
                       className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                        filterOrder === order ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        filterOrder === order
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
                       } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
                     >
                       {order === "highest" ? "Highest" : "Lowest"}
@@ -1438,21 +1444,22 @@ setAnalysis(null)
               </TooltipTrigger>
               <TooltipContent side="top">Sort by highest or lowest</TooltipContent>
             </Tooltip>
-
+            
             {/* Visual separator */}
             <div className="h-6 w-px bg-border" />
-
+            
             {/* "or" text */}
             <p className="text-sm text-muted-foreground">or</p>
-
+            
             {/* "Add a State" button with magnifying glass */}
             <Button
               variant="outline"
               size="sm"
               onClick={() => {
-                const addStateCards = document.querySelector("[data-add-state-section]")
+                // Scroll to add state section or trigger add state action
+                const addStateCards = document.querySelector('[data-add-state-section]');
                 if (addStateCards) {
-                  addStateCards.scrollIntoView({ behavior: "smooth" })
+                  addStateCards.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
               className="flex items-center gap-2"
@@ -1463,7 +1470,7 @@ setAnalysis(null)
             </Button>
           </div>
         )}
-
+        
         {/* Info icon - mobile/tablet only (below lg) */}
         <Popover>
           <PopoverTrigger asChild>
