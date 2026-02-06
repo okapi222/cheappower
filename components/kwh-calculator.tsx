@@ -1456,7 +1456,6 @@ setAnalysis(null)
                 <p className="text-sm text-foreground">Or select states individually</p>
                 
                 {!isSearchOpen ? (
-                  // "Add a State" button with magnifying glass
                   <Button
                     variant="outline"
                     size="sm"
@@ -1468,8 +1467,7 @@ setAnalysis(null)
                     Add a State
                   </Button>
                 ) : (
-                  // Search input that replaces button
-                  <div className="relative w-full max-w-sm">
+                  <div className="relative">
                     <Input
                       placeholder="Search for a US state..."
                       value={searchValue}
