@@ -764,6 +764,10 @@ const RegionCard = ({
   isPinned = false,
   onTogglePin,
   layoutId,
+  isSelectionMode = false,
+  isSelected = false,
+  isSelectionDisabled = false,
+  onToggleSelection,
 }: {
   regionKey: string
   displayName: string
@@ -776,9 +780,15 @@ const RegionCard = ({
   isPinned?: boolean
   onTogglePin?: () => void
   layoutId?: string
+  isSelectionMode?: boolean
+  isSelected?: boolean
+  isSelectionDisabled?: boolean
+  onToggleSelection?: () => void
 }) => {
   // Determine card styling based on state
   const getCardClasses = () => {
+    if (isSelectionMode && isSelected) return "bg-primary/5 border-primary ring-2 ring-primary/20"
+    if (isSelectionMode && isSelectionDisabled && !isSelected) return "opacity-50"
     if (isPinned) return "bg-indigo-50/50 border-indigo-200"
     if (isUserAdded) return "bg-sky-50/50 border-sky-200"
     return ""
@@ -796,7 +806,10 @@ const RegionCard = ({
       layout
       transition={{ type: "spring", stiffness: 25, damping: 12 }}
     >
-      <Card className={`leading-6 h-[280px] ${getCardClasses()}`}>
+      <Card 
+        className={`leading-6 h-[280px] ${getCardClasses()} ${isSelectionMode && !isSelectionDisabled ? "cursor-pointer" : ""} ${isSelectionMode && isSelected ? "cursor-pointer" : ""}`}
+        onClick={isSelectionMode ? ((!isSelectionDisabled || isSelected) ? onToggleSelection : undefined) : undefined}
+      >
         <CardHeader className="p-3 pb-1 pt-0">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-1.5">
@@ -804,40 +817,63 @@ const RegionCard = ({
             {displayName}
           </CardTitle>
           <div className="flex items-center gap-0.5">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-5 w-5" 
-                    onClick={onTogglePin}
-                  >
-                    <Pin className={`h-3 w-3 ${isPinned ? "fill-current" : ""}`} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  {isPinned ? "Unpin from board" : "Pin to board"}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-5 w-5" 
-                    onClick={onRemove}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  Remove from board
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {isSelectionMode ? (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onToggleSelection?.(); }}
+                disabled={isSelectionDisabled && !isSelected}
+                className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-colors ${
+                  isSelected
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : isSelectionDisabled
+                      ? "border-muted-foreground/30 cursor-not-allowed opacity-40"
+                      : "border-muted-foreground/50 hover:border-primary cursor-pointer"
+                }`}
+              >
+                {isSelected && (
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </button>
+            ) : (
+              <>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-5 w-5" 
+                        onClick={onTogglePin}
+                      >
+                        <Pin className={`h-3 w-3 ${isPinned ? "fill-current" : ""}`} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      {isPinned ? "Unpin from board" : "Pin to board"}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-5 w-5" 
+                        onClick={onRemove}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      Remove from board
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -912,6 +948,14 @@ export function KwhCalculator() {
   const [isAnalysisCollapsed, setIsAnalysisCollapsed] = useState(false)
   const [expandedFollowUpIndex, setExpandedFollowUpIndex] = useState<number | null>(null)
   const [isPriceDriversExpanded, setIsPriceDriversExpanded] = useState(false)
+  const [isPriceDriversSelecting, setIsPriceDriversSelecting] = useState(false)
+  const [selectedForComparison, setSelectedForComparison] = useState<Set<string>>(new Set())
+  const [preSelectionFilterState, setPreSelectionFilterState] = useState<{
+    category: FilterCategory
+    order: FilterOrder
+    mode: "filter" | "individual"
+    visibleCount: number
+  }>({ category: "price", order: "highest", mode: "filter", visibleCount: 4 })
   
   const [pendingFilterChange, setPendingFilterChange] = useState<{ type: 'category' | 'order'; value: string } | null>(null)
   const [filterChangeDialogOpen, setFilterChangeDialogOpen] = useState(false)
@@ -1322,8 +1366,8 @@ setAnalysis(null)
         </div>
       </div>
 
-      {/* Filter Controls - Mobile Dropdowns - hidden in expanded view */}
-      {!isPriceDriversExpanded && (
+      {/* Filter Controls - Mobile Dropdowns - hidden in expanded view and selection mode */}
+      {!isPriceDriversExpanded && !isPriceDriversSelecting && (
       <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
         <Select
           value={filterCategory}
@@ -1372,20 +1416,27 @@ setAnalysis(null)
       </div>
       )}
 
-{/* Filter Controls - visible but disabled during analysis, replaced by Select New States when complete (desktop only) */}
+{/* Filter Controls - visible but disabled during analysis, hidden in selection mode (desktop only) */}
+      {!isPriceDriversSelecting && (
       <div className={`hidden lg:flex flex-col gap-2 items-center justify-center`}>
-        {/* Select New States button - shown when analysis is complete (desktop only), secondary and left-aligned */}
+        {/* Close button - shown when analysis is complete (desktop only) */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
           <Button
             variant="secondary"
             className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
+                setIsPriceDriversSelecting(false)
+                setSelectedForComparison(new Set())
                 setAnalysis(null)
+                // Restore pre-selection state
+                setFilterCategory(preSelectionFilterState.category)
+                setFilterOrder(preSelectionFilterState.order)
+                setSelectionMode(preSelectionFilterState.mode)
+                setVisibleFilterCount(preSelectionFilterState.visibleCount)
               }}
             >
-              <Sun className="h-4 w-4" />
-              Select New States
+              Close
             </Button>
           )}
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
@@ -1589,22 +1640,92 @@ setAnalysis(null)
           </PopoverContent>
         </Popover>
       </div>
+      )}
 
-      {/* Price Drivers Button & Factor Headers */}
-      <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"}`}>
+      {/* Selection Mode UI - shown when user clicks Explore Price Drivers */}
+      {isPriceDriversSelecting && !isPriceDriversExpanded && (
+        <div className="flex items-center justify-center gap-4">
+          <p className="text-sm text-foreground">Select up to 3 states for comparison</p>
+          <Button
+            variant="default"
+            size="sm"
+            disabled={selectedForComparison.size < 2}
+            onClick={() => {
+              // Run analysis with selected states only
+              const selectedRegions = Array.from(selectedForComparison).map((key) => ({
+                key,
+                displayName: key.split(" ").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+              }))
+              
+              // Set up analysis with only selected regions
+              const regionsForAnalysis = selectedRegions.map((r) => ({
+                name: r.displayName,
+                price: regionData[r.key].priceUSD,
+                energyMix: regionData[r.key].energyMix as Record<string, number>,
+              }))
+              
+              setAnalysis(null)
+              setFollowUpMessages([])
+              setIsAnalysisCollapsed(false)
+              setIsAnalyzing(true)
+              setAnalysisError(null)
+              setShowFullAnalysis(false)
+              setIsPriceDriversExpanded(true)
+              
+              const avgPrice = regionsForAnalysis.reduce((sum, r) => sum + r.price, 0) / regionsForAnalysis.length
+              analyzeRegionPricing(regionsForAnalysis, avgPrice).then((result) => {
+                if (result.success && result.data) {
+                  setAnalysis(result.data)
+                  setLastAnalyzedRegions(selectedRegions.map((r) => r.key))
+                  setRegionsChangedSinceAnalysis(false)
+                } else {
+                  setAnalysisError("Failed to generate analysis")
+                }
+              }).catch((error) => {
+                setAnalysisError(`Error analyzing regions: ${error instanceof Error ? error.message : "Unknown error"}`)
+              }).finally(() => {
+                setIsAnalyzing(false)
+                setHasInitialAnalysisRun(true)
+              })
+            }}
+            className="flex items-center gap-2"
+          >
+            Compare {selectedForComparison.size}/3
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsPriceDriversSelecting(false)
+              setSelectedForComparison(new Set())
+            }}
+          >
+            Close
+          </Button>
+        </div>
+      )}
+
+      {/* Price Drivers Button & Factor Headers - hidden when in selection mode (not yet expanded) */}
+      <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"} ${isPriceDriversSelecting && !isPriceDriversExpanded ? "hidden" : ""}`}>
         <div className="flex items-center gap-2">
-          {/* Mobile/Tablet: Show Select New States when analysis complete */}
+          {/* Mobile/Tablet: Show Close when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
               variant="secondary"
               className="flex lg:hidden items-center gap-2 animate-in fade-in duration-1000"
               onClick={() => {
                 setIsPriceDriversExpanded(false)
+                setIsPriceDriversSelecting(false)
+                setSelectedForComparison(new Set())
                 setAnalysis(null)
+                // Restore pre-selection state
+                setFilterCategory(preSelectionFilterState.category)
+                setFilterOrder(preSelectionFilterState.order)
+                setSelectionMode(preSelectionFilterState.mode)
+                setVisibleFilterCount(preSelectionFilterState.visibleCount)
               }}
             >
-              <Sun className="h-4 w-4" />
-              Select New States
+              Close
             </Button>
           ) : null}
           
@@ -1625,10 +1746,17 @@ setAnalysis(null)
             variant="secondary"
             className={`flex items-center gap-2  ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}
             onClick={() => {
-              runAnalysis()
-              setIsPriceDriversExpanded(true)
+              // Save current state before entering selection mode
+              setPreSelectionFilterState({
+                category: filterCategory,
+                order: filterOrder,
+                mode: selectionMode,
+                visibleCount: visibleFilterCount,
+              })
+              setSelectedForComparison(new Set())
+              setIsPriceDriversSelecting(true)
             }}
-            disabled={isAnalyzing || totalDisplayedStates === 0 || (analysis !== null && !regionsChangedSinceAnalysis)}
+            disabled={isAnalyzing || isPriceDriversSelecting || totalDisplayedStates === 0 || (analysis !== null && !regionsChangedSinceAnalysis)}
           >
             {isAnalyzing ? (
               <RefreshCw className="h-4 w-4 animate-spin" />
@@ -1713,6 +1841,17 @@ setAnalysis(null)
                   isPinned={true}
                   onTogglePin={() => togglePinRegion(key)}
                   layoutId={`card-${key}`}
+                  isSelectionMode={isPriceDriversSelecting}
+                  isSelected={selectedForComparison.has(key)}
+                  isSelectionDisabled={selectedForComparison.size >= 3}
+                  onToggleSelection={() => {
+                    setSelectedForComparison((prev) => {
+                      const next = new Set(prev)
+                      if (next.has(key)) next.delete(key)
+                      else if (next.size < 3) next.add(key)
+                      return next
+                    })
+                  }}
                 />
               )
             })}
@@ -1730,6 +1869,17 @@ setAnalysis(null)
               isPinned={pinnedRegions.has(state.key)}
               onTogglePin={() => togglePinRegion(state.key)}
               layoutId={`card-${state.key}`}
+              isSelectionMode={isPriceDriversSelecting}
+              isSelected={selectedForComparison.has(state.key)}
+              isSelectionDisabled={selectedForComparison.size >= 3}
+              onToggleSelection={() => {
+                setSelectedForComparison((prev) => {
+                  const next = new Set(prev)
+                  if (next.has(state.key)) next.delete(state.key)
+                  else if (next.size < 3) next.add(state.key)
+                  return next
+                })
+              }}
             />
           ))}
           {/* Non-pinned user-added regions */}
@@ -1747,14 +1897,25 @@ setAnalysis(null)
                 isPinned={false}
                 onTogglePin={() => togglePinRegion(region.key)}
                 layoutId={`card-${region.key}`}
+                isSelectionMode={isPriceDriversSelecting}
+                isSelected={selectedForComparison.has(region.key)}
+                isSelectionDisabled={selectedForComparison.size >= 3}
+                onToggleSelection={() => {
+                  setSelectedForComparison((prev) => {
+                    const next = new Set(prev)
+                    if (next.has(region.key)) next.delete(region.key)
+                    else if (next.size < 3) next.add(region.key)
+                    return next
+                  })
+                }}
               />
                 ))}
 
         </div>
       )}
 
-      {/* Show more affordance - only in filter mode when there are more states available */}
-      {selectionMode === "filter" && !isPriceDriversExpanded && (() => {
+      {/* Show more affordance - only in filter mode when there are more states available, hidden in selection mode */}
+      {selectionMode === "filter" && !isPriceDriversExpanded && !isPriceDriversSelecting && (() => {
         const totalAvailable = Object.entries(regionData)
           .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
           .length
