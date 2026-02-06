@@ -1615,9 +1615,9 @@ setAnalysis(null)
               className="hidden lg:flex items-center gap-2"
               disabled={true}
             >
-              <TrendingUp className="h-4 w-4" />
-              Price Drivers
-            </Button>
+  <TrendingUp className="h-4 w-4" />
+  Explore Price Drivers
+  </Button>
           ) : null}
           
           {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
@@ -1639,9 +1639,9 @@ setAnalysis(null)
               <span className="inline-flex w-[100px]">
                 Analyzing<span className="w-[18px] text-left">{".".repeat(ellipsisCount)}</span>
               </span>
-            ) : (
-              "Price Drivers"
-            )}
+  ) : (
+  "Explore Price Drivers"
+  )}
           </Button>
 <Popover>
   <PopoverTrigger asChild>
