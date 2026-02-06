@@ -629,7 +629,7 @@ const EnergyBreakdown = ({ energyMix, compact = false }: { energyMix: RegionData
 
   return (
     <div className={compact ? "space-y-1" : "space-y-2"}>
-      <h4 className={`font-medium text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}>Energy Mix</h4>
+      <h4 className={`font-medium text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}>Electricity Sources</h4>
       <div className="h-3 w-full rounded-full overflow-hidden flex">
         {entries.map(([key, value]) => (
           <div
@@ -1848,7 +1848,7 @@ setAnalysis(null)
                               <div className="text-muted-foreground text-xs">per kWh (USD)</div>
                             </div>
 
-                            {/* Energy Mix */}
+                            {/* Electricity Sources */}
                             <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
 
                             {/* Data Sources */}
@@ -2070,7 +2070,7 @@ setAnalysis(null)
                               <div className="text-muted-foreground text-xs">per kWh (USD)</div>
                             </div>
 
-                            {/* Energy Mix */}
+                            {/* Electricity Sources */}
                             <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
 
                             {/* Data Sources */}
@@ -2555,9 +2555,9 @@ setAnalysis(null)
                 </SheetHeader>
 
                 <div className="py-4 space-y-4">
-                  {/* Energy Mix */}
+                  {/* Electricity Sources */}
                   <div>
-                    <h4 className="font-semibold text-sm mb-2">Energy Mix</h4>
+                    <h4 className="font-semibold text-sm mb-2">Electricity Sources</h4>
                     <div className="flex flex-wrap gap-1.5">
                       {Object.entries(data.energyMix)
                         .filter(([, v]) => v > 0)
