@@ -1312,7 +1312,9 @@ setAnalysis(null)
   }
 
   return (
-    <div className="w-full max-w-5xl space-y-6">
+    <div className="w-full max-w-5xl">
+      {/* Sticky Header Section */}
+      <div className="sticky top-0 z-30 bg-background pb-4 space-y-6">
       {/* Header Section */}
       <div className="py-0">
         <div className="flex items-center justify-center gap-3">
@@ -1687,7 +1689,9 @@ setAnalysis(null)
           </div>
         )}
       </div>
+      </div>{/* End sticky header */}
 
+      <div className="space-y-6 pt-2">
       <LayoutGroup>
       {/* Normal Grid View */}
       {!isPriceDriversExpanded && (
@@ -2653,6 +2657,7 @@ setAnalysis(null)
           })()}
         </SheetContent>
       </Sheet>
+    </div>{/* End scrollable content */}
     </div>
   )
 }
