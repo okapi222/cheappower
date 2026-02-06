@@ -887,7 +887,7 @@ export function KwhCalculator() {
   const [hiddenRegions, setHiddenRegions] = useState<Set<string>>(new Set())
   const [removedFilterSlots, setRemovedFilterSlots] = useState(0)
   const [selectedRegions, setSelectedRegions] = useState<{ key: string; displayName: string }[]>(() => {
-    const randomKeys = getRandomRegions(3)
+    const randomKeys = getRandomRegions(4)
     return randomKeys.map((key) => ({
       key,
       displayName: key
@@ -921,6 +921,7 @@ export function KwhCalculator() {
   const [filterBarSearchValue, setFilterBarSearchValue] = useState("")
   const [selectionMode, setSelectionMode] = useState<"filter" | "individual">("filter")
   const [previousFilterState, setPreviousFilterState] = useState<{ category: FilterCategory; order: FilterOrder }>({ category: "price", order: "highest" })
+  const [visibleFilterCount, setVisibleFilterCount] = useState(4)
   const [mobileDetailRegion, setMobileDetailRegion] = useState<string | null>(null)
 
   // Calculate filter value for a region based on category
@@ -957,11 +958,8 @@ export function KwhCalculator() {
   const occupiedSlots = pinnedCount + nonPinnedUserAdded
   const availableForFilter = Math.max(0, 6 - occupiedSlots)
   
-  // Show up to (3 - removedFilterSlots) filtered states, capped by available slots
-  // removedFilterSlots tracks pinned/hidden states from current filter
-  const maxFilterSlots = Math.min(Math.max(0, 3 - removedFilterSlots), availableForFilter)
-  
-  const newFilteredStates = Object.entries(regionData)
+  // Fetch all matching filtered states (not sliced) so we can paginate
+  const allFilteredStates = Object.entries(regionData)
   .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
   .map(([key, data]) => ({
   key,
@@ -969,10 +967,13 @@ export function KwhCalculator() {
   value: getFilterValue(data, filterCategory),
   }))
   .sort((a, b) => filterOrder === "highest" ? b.value - a.value : a.value - b.value)
-  .slice(0, maxFilterSlots)
+  
+  // Limit to visibleFilterCount, capped by available slots
+  const maxFilterSlots = Math.min(visibleFilterCount, Math.max(0, availableForFilter - removedFilterSlots))
+  const newFilteredStates = allFilteredStates.slice(0, maxFilterSlots)
   
   setFilteredStates(newFilteredStates)
-  }, [filterCategory, filterOrder, pinnedRegions, hiddenRegions, userAddedRegions, removedFilterSlots, selectionMode])
+  }, [filterCategory, filterOrder, pinnedRegions, hiddenRegions, userAddedRegions, removedFilterSlots, selectionMode, visibleFilterCount])
 
   useEffect(() => {
     if (!isAnalyzing) return
@@ -1160,6 +1161,7 @@ setAnalysis(null)
     setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
     setHiddenRegions(new Set())
     setRemovedFilterSlots(0)
+    setVisibleFilterCount(4)
   }
 
   const togglePinRegion = (key: string) => {
@@ -1223,6 +1225,7 @@ setAnalysis(null)
       setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
       setHiddenRegions(new Set())
       setRemovedFilterSlots(0)
+      setVisibleFilterCount(4)
       setIsPriceDriversExpanded(false)
       setPendingFilterChange(null)
       setFilterChangeDialogOpen(false)
@@ -1752,6 +1755,54 @@ setAnalysis(null)
           )}
         </div>
       )}
+
+      {/* Show more affordance - only in filter mode when there are more states available */}
+      {selectionMode === "filter" && !isPriceDriversExpanded && (() => {
+        const totalAvailable = Object.entries(regionData)
+          .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
+          .length
+        const currentlyShowing = filteredStates.length
+        const remaining = totalAvailable - currentlyShowing
+        
+        if (remaining <= 0 || totalDisplayedStates >= 6) return null
+        
+        const maxCanShow = 6 - (pinnedRegions.size + userAddedRegions.filter(r => !pinnedRegions.has(r.key)).length)
+        
+        return (
+          <div className="flex items-center justify-center gap-3 py-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                Showing {currentlyShowing} of {totalAvailable} states
+              </span>
+              <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                {[4, 8, 12].filter(n => n <= Math.min(totalAvailable, maxCanShow)).map((count) => (
+                  <button
+                    key={count}
+                    onClick={() => setVisibleFilterCount(count)}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+                      visibleFilterCount === count && visibleFilterCount !== totalAvailable
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {count}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setVisibleFilterCount(Math.min(totalAvailable, maxCanShow))}
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+                    visibleFilterCount >= totalAvailable || visibleFilterCount >= maxCanShow
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  All
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Expanded Price Drivers View */}
       {isPriceDriversExpanded && (
