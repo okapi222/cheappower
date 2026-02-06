@@ -934,6 +934,8 @@ export function KwhCalculator() {
   const [filterChangeDialogOpen, setFilterChangeDialogOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [dialogSearchValue, setDialogSearchValue] = useState("")
+  const [isFilterBarSearchOpen, setIsFilterBarSearchOpen] = useState(false)
+  const [filterBarSearchValue, setFilterBarSearchValue] = useState("")
   const [mobileDetailRegion, setMobileDetailRegion] = useState<string | null>(null)
 
   // Calculate filter value for a region based on category
@@ -1455,11 +1457,11 @@ setAnalysis(null)
               <div className="flex flex-col gap-2 items-center">
                 <p className="text-sm text-foreground">Or select states individually</p>
                 
-                {!isSearchOpen ? (
+                {!isFilterBarSearchOpen ? (
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setIsSearchOpen(true)}
+                    onClick={() => setIsFilterBarSearchOpen(true)}
                     className="flex items-center gap-2"
                     disabled={isAnalyzing || totalDisplayedStates >= 6}
                   >
@@ -1467,36 +1469,79 @@ setAnalysis(null)
                     Add a State
                   </Button>
                 ) : (
-                  <div className="relative">
-                    <Input
-                      placeholder="Search for a US state..."
-                      value={searchValue}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && suggestions.length > 0) {
-                          addRegion(suggestions[0])
-                          setSearchValue("")
-                          setIsSearchOpen(false)
-                        }
-                        if (e.key === "Escape") {
-                          setIsSearchOpen(false)
-                          setSearchValue("")
-                        }
-                      }}
-                      autoFocus
-                      className="pr-10"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-                      onClick={() => {
-                        setIsSearchOpen(false)
-                        setSearchValue("")
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                  <div className="w-full space-y-2">
+                    <div className="relative">
+                      <Input
+                        placeholder="Search for a US state..."
+                        value={filterBarSearchValue}
+                        onChange={(e) => setFilterBarSearchValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          const fbSuggestions = filterBarSearchValue.trim()
+                            ? Object.keys(regionData)
+                                .filter(
+                                  (key) =>
+                                    key.toLowerCase().includes(filterBarSearchValue.toLowerCase()) &&
+                                    !filteredStates.some((s) => s.key === key) &&
+                                    !userAddedRegions.some((r) => r.key === key)
+                                )
+                                .slice(0, 5)
+                            : []
+                          if (e.key === "Enter" && fbSuggestions.length > 0) {
+                            addRegion(fbSuggestions[0])
+                            setFilterBarSearchValue("")
+                            setIsFilterBarSearchOpen(false)
+                          }
+                          if (e.key === "Escape") {
+                            setIsFilterBarSearchOpen(false)
+                            setFilterBarSearchValue("")
+                          }
+                        }}
+                        autoFocus
+                        className="pr-10"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                        onClick={() => {
+                          setIsFilterBarSearchOpen(false)
+                          setFilterBarSearchValue("")
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {filterBarSearchValue.trim() && (() => {
+                      const fbSuggestions = Object.keys(regionData)
+                        .filter(
+                          (key) =>
+                            key.toLowerCase().includes(filterBarSearchValue.toLowerCase()) &&
+                            !filteredStates.some((s) => s.key === key) &&
+                            !userAddedRegions.some((r) => r.key === key)
+                        )
+                        .slice(0, 5)
+                      return fbSuggestions.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {fbSuggestions.map((key) => (
+                            <Badge
+                              key={key}
+                              variant="secondary"
+                              className="cursor-pointer hover:bg-secondary/80"
+                              onClick={() => {
+                                addRegion(key)
+                                setFilterBarSearchValue("")
+                                setIsFilterBarSearchOpen(false)
+                              }}
+                            >
+                              {key
+                                .split(" ")
+                                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                                .join(" ")}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : null
+                    })()}
                   </div>
                 )}
               </div>
