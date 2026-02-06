@@ -955,9 +955,6 @@ export function KwhCalculator() {
   // Calculate how many slots are available for filtered states (max 6 total)
   const pinnedCount = pinnedRegions.size
   const nonPinnedUserAdded = userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).length
-  const occupiedSlots = pinnedCount + nonPinnedUserAdded
-  const availableForFilter = Math.max(0, 6 - occupiedSlots)
-  
   // Fetch all matching filtered states (not sliced) so we can paginate
   const allFilteredStates = Object.entries(regionData)
   .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
@@ -968,8 +965,8 @@ export function KwhCalculator() {
   }))
   .sort((a, b) => filterOrder === "highest" ? b.value - a.value : a.value - b.value)
   
-  // Limit to visibleFilterCount, capped by available slots
-  const maxFilterSlots = Math.min(visibleFilterCount, Math.max(0, availableForFilter - removedFilterSlots))
+  // Limit to visibleFilterCount
+  const maxFilterSlots = Math.max(0, visibleFilterCount - removedFilterSlots)
   const newFilteredStates = allFilteredStates.slice(0, maxFilterSlots)
   
   setFilteredStates(newFilteredStates)
@@ -1130,9 +1127,9 @@ setAnalysis(null)
     const isInUserAdded = userAddedRegions.some((r) => r.key === key)
     const isInPinned = pinnedRegions.has(key)
     
-    if (!isInFiltered && !isInUserAdded && !isInPinned && totalDisplayedStates < 6) {
-      setUserAddedRegions((prev) => [...prev, { key, displayName }])
-    }
+  if (!isInFiltered && !isInUserAdded && !isInPinned) {
+  setUserAddedRegions((prev) => [...prev, { key, displayName }])
+  }
   }
 
   const removeUserRegion = (key: string) => {
@@ -1325,13 +1322,13 @@ setAnalysis(null)
 
       {/* Filter Controls - Mobile Dropdowns - hidden in expanded view */}
       {!isPriceDriversExpanded && (
-      <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
+      <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
         <Select
           value={filterCategory}
           onValueChange={(value: FilterCategory) => handleFilterChange('category', value)}
-          disabled={isAnalyzing || totalDisplayedStates >= 6}
-        >
-          <SelectTrigger className="w-[140px]">
+  disabled={isAnalyzing}
+  >
+  <SelectTrigger className="w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -1346,9 +1343,9 @@ setAnalysis(null)
         <Select
           value={filterOrder}
           onValueChange={(value: FilterOrder) => handleFilterChange('order', value)}
-          disabled={isAnalyzing || totalDisplayedStates >= 6}
-        >
-          <SelectTrigger className="w-[100px]">
+  disabled={isAnalyzing}
+  >
+  <SelectTrigger className="w-[100px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -1393,7 +1390,7 @@ setAnalysis(null)
         {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
           <div className="flex flex-col gap-2 items-center">
             {/* Filter buttons and Add a State button row */}
-            <div className={`flex flex-row gap-3 items-start transition-opacity duration-300 ${isAnalyzing || totalDisplayedStates >= 6 ? "opacity-50 pointer-events-none" : ""}`}>
+            <div className={`flex flex-row gap-3 items-start transition-opacity duration-300 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
               {/* Filter group with help text */}
               <div className="flex flex-col gap-2 items-center">
                 <p className="text-sm text-foreground">Rank states by price and energy mix</p>
@@ -1406,7 +1403,7 @@ setAnalysis(null)
                         {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
                           <button
                             key={category}
-                            disabled={isAnalyzing || totalDisplayedStates >= 6}
+                            disabled={isAnalyzing}
                             onClick={() => handleFilterChange('category', category)}
                             className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                               selectionMode === "filter" && filterCategory === category
@@ -1433,7 +1430,7 @@ setAnalysis(null)
                         {(["highest", "lowest"] as FilterOrder[]).map((order) => (
                           <button
                             key={order}
-                            disabled={isAnalyzing || totalDisplayedStates >= 6}
+                            disabled={isAnalyzing}
                             onClick={() => handleFilterChange('order', order)}
                             className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                               selectionMode === "filter" && filterOrder === order
@@ -1477,7 +1474,7 @@ setAnalysis(null)
                       setRemovedFilterSlots(0)
                     }}
                     className="flex items-center gap-2"
-                    disabled={isAnalyzing || totalDisplayedStates >= 6}
+                    disabled={isAnalyzing}
                   >
                     <Search className="h-4 w-4" />
                     Add a State
@@ -1748,11 +1745,7 @@ setAnalysis(null)
                 layoutId={`card-${region.key}`}
               />
                 ))}
-              {totalDisplayedStates >= 6 && (
-            <div className="col-span-full text-center py-3 text-sm text-muted-foreground">
-              Maximum of 6 states reached. Remove a state to add another.
-            </div>
-          )}
+
         </div>
       )}
 
@@ -1764,9 +1757,7 @@ setAnalysis(null)
         const currentlyShowing = filteredStates.length
         const remaining = totalAvailable - currentlyShowing
         
-        if (remaining <= 0 || totalDisplayedStates >= 6) return null
-        
-        const maxCanShow = 6 - (pinnedRegions.size + userAddedRegions.filter(r => !pinnedRegions.has(r.key)).length)
+        if (remaining <= 0) return null
         
         return (
           <div className="flex items-center justify-center gap-3 py-2">
@@ -1775,7 +1766,7 @@ setAnalysis(null)
                 Showing {currentlyShowing} of {totalAvailable} states
               </span>
               <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-                {[4, 8, 12].filter(n => n <= Math.min(totalAvailable, maxCanShow)).map((count) => (
+                {[4, 8, 12, 24].filter(n => n <= totalAvailable).map((count) => (
                   <button
                     key={count}
                     onClick={() => setVisibleFilterCount(count)}
@@ -1789,9 +1780,9 @@ setAnalysis(null)
                   </button>
                 ))}
                 <button
-                  onClick={() => setVisibleFilterCount(Math.min(totalAvailable, maxCanShow))}
+                  onClick={() => setVisibleFilterCount(totalAvailable)}
                   className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
-                    visibleFilterCount >= totalAvailable || visibleFilterCount >= maxCanShow
+                    visibleFilterCount >= totalAvailable
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
