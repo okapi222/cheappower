@@ -1419,7 +1419,7 @@ setAnalysis(null)
 {/* Filter Controls - visible but disabled during analysis, hidden in selection mode (desktop only) */}
       {!isPriceDriversSelecting && (
       <div className={`hidden lg:flex flex-col gap-2 items-center justify-center`}>
-        {/* Close button - shown when analysis is complete (desktop only) */}
+        {/* Select New States button - shown when analysis is complete (desktop only) */}
         {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
           <Button
             variant="secondary"
@@ -1436,7 +1436,8 @@ setAnalysis(null)
                 setVisibleFilterCount(preSelectionFilterState.visibleCount)
               }}
             >
-              Close
+              <Sun className="h-4 w-4" />
+              Select New States
             </Button>
           )}
         {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
@@ -1708,7 +1709,7 @@ setAnalysis(null)
       {/* Price Drivers Button & Factor Headers - hidden when in selection mode (not yet expanded) */}
       <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"} ${isPriceDriversSelecting && !isPriceDriversExpanded ? "hidden" : ""}`}>
         <div className="flex items-center gap-2">
-          {/* Mobile/Tablet: Show Close when analysis complete */}
+          {/* Mobile/Tablet: Show Select New States when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
               variant="secondary"
@@ -1725,20 +1726,31 @@ setAnalysis(null)
                 setVisibleFilterCount(preSelectionFilterState.visibleCount)
               }}
             >
-              Close
+              <Sun className="h-4 w-4" />
+              Select New States
             </Button>
           ) : null}
           
-          {/* Desktop: Show disabled secondary Price Drivers button when analysis complete */}
+          {/* Desktop: Show Select New States when analysis complete */}
           {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
             <Button
               variant="secondary"
-              className="hidden lg:flex items-center gap-2"
-              disabled={true}
+              className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
+              onClick={() => {
+                setIsPriceDriversExpanded(false)
+                setIsPriceDriversSelecting(false)
+                setSelectedForComparison(new Set())
+                setAnalysis(null)
+                // Restore pre-selection state
+                setFilterCategory(preSelectionFilterState.category)
+                setFilterOrder(preSelectionFilterState.order)
+                setSelectionMode(preSelectionFilterState.mode)
+                setVisibleFilterCount(preSelectionFilterState.visibleCount)
+              }}
             >
-  <TrendingUp className="h-4 w-4" />
-  Explore Price Drivers
-  </Button>
+              <Sun className="h-4 w-4" />
+              Select New States
+            </Button>
           ) : null}
           
           {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
