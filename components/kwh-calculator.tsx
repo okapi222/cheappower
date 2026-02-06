@@ -937,6 +937,7 @@ export function KwhCalculator() {
   const [isFilterBarSearchOpen, setIsFilterBarSearchOpen] = useState(false)
   const [filterBarSearchValue, setFilterBarSearchValue] = useState("")
   const [selectionMode, setSelectionMode] = useState<"filter" | "individual">("filter")
+  const [previousFilterState, setPreviousFilterState] = useState<{ category: FilterCategory; order: FilterOrder }>({ category: "price", order: "highest" })
   const [mobileDetailRegion, setMobileDetailRegion] = useState<string | null>(null)
 
   // Calculate filter value for a region based on category
@@ -1476,6 +1477,8 @@ setAnalysis(null)
                     variant="outline"
                     size="sm"
                     onClick={() => {
+                      // Save current filter state before switching to individual mode
+                      setPreviousFilterState({ category: filterCategory, order: filterOrder })
                       setIsFilterBarSearchOpen(true)
                       // Enter individual add mode
                       setSelectionMode("individual")
@@ -1519,6 +1522,12 @@ setAnalysis(null)
                           if (e.key === "Escape") {
                             setIsFilterBarSearchOpen(false)
                             setFilterBarSearchValue("")
+                            // If no states are displayed, revert to previous filter state
+                            if (totalDisplayedStates === 0) {
+                              setSelectionMode("filter")
+                              setFilterCategory(previousFilterState.category)
+                              setFilterOrder(previousFilterState.order)
+                            }
                           }
                         }}
                         autoFocus
@@ -1531,6 +1540,12 @@ setAnalysis(null)
                         onClick={() => {
                           setIsFilterBarSearchOpen(false)
                           setFilterBarSearchValue("")
+                          // If no states are displayed, revert to previous filter state
+                          if (totalDisplayedStates === 0) {
+                            setSelectionMode("filter")
+                            setFilterCategory(previousFilterState.category)
+                            setFilterOrder(previousFilterState.order)
+                          }
                         }}
                       >
                         <X className="h-4 w-4" />
