@@ -660,99 +660,82 @@ const EnergyBreakdown = ({ energyMix, compact = false }: { energyMix: RegionData
   )
 }
 
-const PlaceholderCard = ({
-  onSelectRegion,
+const PlaceholderCard = ({ 
+  onSelectRegion, 
   compact = false,
-  isAnalyzing = false,
-}: {
+  isAnalyzing = false 
+}: { 
   onSelectRegion: (key: string) => void
   compact?: boolean
-  isAnalyzing?: boolean
+  isAnalyzing?: boolean 
 }) => {
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
-  
-  const suggestions = searchValue.trim()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const suggestions = searchValue
     ? Object.keys(regionData)
         .filter((key) => key.toLowerCase().includes(searchValue.toLowerCase()))
-        .slice(0, 5)
+        .slice(0, 6)
     : []
 
-  const handleSelect = (key: string) => {
-    onSelectRegion(key)
-    setSearchValue("")
-    setIsSearchOpen(false)
-  }
-
   return (
-    <Card className="border-dashed border-2">
-      <CardContent className="flex flex-col items-center justify-center py-6 px-4">
-        {!isSearchOpen ? (
-          <div className="text-center space-y-5">
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              className="gap-2"
-              onClick={() => setIsSearchOpen(true)}
-              disabled={isAnalyzing}
-            >
-              <Search className="h-4 w-4" />
-              Add a State               
-            </Button>
-            <div className="text-xs text-muted-foreground space-y-1 text-left">
-              <div className="flex items-center gap-1.5">
-                <Plus className="h-3 w-3" />
-                <span>Add up to 6 states</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Pin className="h-3 w-3" />
-                <span>Pin to preserve when filtering</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <X className="h-3 w-3" />
-                <span>Remove from comparison</span>
-              </div>
-            </div>
-          </div>
+    <Card className={`h-[280px] border-dashed border-2 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
+      <CardContent className="p-3 h-full flex flex-col items-center justify-center">
+        {!isOpen ? (
+          <Button
+            variant="ghost"
+            className="h-full w-full flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
+            onClick={() => setIsOpen(true)}
+            disabled={isAnalyzing}
+          >
+            <Plus className="h-8 w-8" />
+            <span className="text-sm">Add State</span>
+          </Button>
         ) : (
           <div className="w-full space-y-2">
             <div className="relative">
               <Input
-                placeholder="Search for a US state..."
+                placeholder="Search states..."
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && suggestions.length > 0) {
-                    handleSelect(suggestions[0])
+                    onSelectRegion(suggestions[0])
+                    setSearchValue("")
+                    setIsOpen(false)
                   }
                   if (e.key === "Escape") {
-                    setIsSearchOpen(false)
                     setSearchValue("")
+                    setIsOpen(false)
                   }
                 }}
                 autoFocus
-                className="pr-10"
+                className="pr-8"
               />
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                className="absolute right-0 top-0 h-full"
                 onClick={() => {
-                  setIsSearchOpen(false)
                   setSearchValue("")
+                  setIsOpen(false)
                 }}
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
             {suggestions.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 max-h-[180px] overflow-y-auto">
                 {suggestions.map((key) => (
                   <Badge
                     key={key}
                     variant="secondary"
                     className="cursor-pointer hover:bg-secondary/80"
-                    onClick={() => handleSelect(key)}
+                    onClick={() => {
+                      onSelectRegion(key)
+                      setSearchValue("")
+                      setIsOpen(false)
+                    }}
                   >
                     {key
                       .split(" ")
@@ -1761,11 +1744,8 @@ setAnalysis(null)
                 onTogglePin={() => togglePinRegion(region.key)}
                 layoutId={`card-${region.key}`}
               />
-            ))}
-          {totalDisplayedStates < 6 && (
-            <PlaceholderCard onSelectRegion={addRegion} compact={compact} isAnalyzing={isAnalyzing} />
-          )}
-          {totalDisplayedStates >= 6 && (
+                ))}
+              {totalDisplayedStates >= 6 && (
             <div className="col-span-full text-center py-3 text-sm text-muted-foreground">
               Maximum of 6 states reached. Remove a state to add another.
             </div>
