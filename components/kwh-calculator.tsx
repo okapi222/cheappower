@@ -1449,7 +1449,7 @@ setAnalysis(null)
               </div>
               
               {/* Vertical separator */}
-              <div className="h-20 w-px bg-border" />
+              <div className="h-20 w-px bg-foreground/20" />
               
               {/* Add a State group with help text */}
               <div className="flex flex-col gap-2 items-center">
@@ -1459,13 +1459,7 @@ setAnalysis(null)
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    // Scroll to add state section or trigger add state action
-                    const addStateCards = document.querySelector('[data-add-state-section]');
-                    if (addStateCards) {
-                      addStateCards.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
+                  onClick={() => setIsSearchOpen(true)}
                   className="flex items-center gap-2"
                   disabled={isAnalyzing || totalDisplayedStates >= 6}
                 >
