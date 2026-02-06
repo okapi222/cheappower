@@ -1127,7 +1127,7 @@ setAnalysis(null)
     }
   }, [isPriceDriversExpanded, totalDisplayedStates])
 
-  const addRegion = (key: string, fromFilterBar: boolean = false) => {
+  const addRegion = (key: string) => {
     const displayName = key
       .split(" ")
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
@@ -1140,12 +1140,6 @@ setAnalysis(null)
     
     if (!isInFiltered && !isInUserAdded && !isInPinned && totalDisplayedStates < 6) {
       setUserAddedRegions((prev) => [...prev, { key, displayName }])
-      
-      // If adding from filter bar search, clear non-pinned filtered states
-      if (fromFilterBar) {
-        setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
-        setHiddenRegions(new Set())
-      }
     }
   }
 
@@ -1493,7 +1487,7 @@ setAnalysis(null)
                                 .slice(0, 5)
                             : []
                           if (e.key === "Enter" && fbSuggestions.length > 0) {
-                            addRegion(fbSuggestions[0], true)
+                            addRegion(fbSuggestions[0])
                             setFilterBarSearchValue("")
                             setIsFilterBarSearchOpen(false)
                           }
@@ -1534,7 +1528,7 @@ setAnalysis(null)
                               variant="secondary"
                               className="cursor-pointer hover:bg-secondary/80"
                               onClick={() => {
-                                addRegion(key, true)
+                                addRegion(key)
                                 setFilterBarSearchValue("")
                                 setIsFilterBarSearchOpen(false)
                               }}
