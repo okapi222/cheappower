@@ -1099,13 +1099,12 @@ setAnalysis(null)
     setIsLoadingFullAnalysis(true)
     
     try {
-      const displayedRegions = getDisplayedRegions()
-      const regionsForAnalysis = displayedRegions
-        .filter(r => lastAnalyzedRegions.includes(r.key))
-        .map((r) => ({
-          name: r.displayName,
-          price: regionData[r.key].priceUSD,
-          energyMix: regionData[r.key].energyMix as Record<string, number>,
+      const regionsForAnalysis = Array.from(selectedForComparison)
+        .filter(key => lastAnalyzedRegions.includes(key) && regionData[key])
+        .map((key) => ({
+          name: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+          price: regionData[key].priceUSD,
+          energyMix: regionData[key].energyMix as Record<string, number>,
         }))
       
       const result = await generateFactorAnalyses(regionsForAnalysis, analysis.scoreTable)
@@ -1998,7 +1997,7 @@ setAnalysis(null)
                   isUserAdded: true,
                   isPinned: false,
                 })),
-              ]
+              ].filter((r) => selectedForComparison.has(r.key))
 
               // Calculate overall score for each region
               const getOverallScore = (regionKey: string, displayName: string) => {
@@ -2234,7 +2233,7 @@ setAnalysis(null)
                   isUserAdded: true,
                   isPinned: false,
                 })),
-              ]
+              ].filter((r) => selectedForComparison.has(r.key))
 
               // Helper to get factor score for a region
               const getFactorScore = (regionKey: string, displayName: string, factorIndex: number) => {
@@ -2436,7 +2435,7 @@ setAnalysis(null)
 
           {/* Desktop Stacked Region Cards with Factor Scores (lg+) */}
           <div className="hidden lg:flex flex-col gap-2">
-            {/* All displayed regions */}
+            {/* Only selected regions for comparison */}
             {(() => {
               const allRegions = [
                 ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
@@ -2457,7 +2456,7 @@ setAnalysis(null)
                   isUserAdded: true,
                   isPinned: false,
                 })),
-              ]
+              ].filter((r) => selectedForComparison.has(r.key))
 
               return allRegions.map((region, idx) => (
                 <motion.div
