@@ -1461,7 +1461,15 @@ setAnalysis(null)
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setIsFilterBarSearchOpen(true)}
+                    onClick={() => {
+                      setIsFilterBarSearchOpen(true)
+                      // Reset filter bar
+                      setFilterCategory("price")
+                      setFilterOrder("highest")
+                      // Clear non-pinned filter-based states
+                      setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
+                      setHiddenRegions(new Set())
+                    }}
                     className="flex items-center gap-2"
                     disabled={isAnalyzing || totalDisplayedStates >= 6}
                   >
