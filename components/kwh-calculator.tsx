@@ -1455,17 +1455,52 @@ setAnalysis(null)
               <div className="flex flex-col gap-2 items-center">
                 <p className="text-sm text-foreground">Or select states individually</p>
                 
-                {/* "Add a State" button with magnifying glass */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsSearchOpen(true)}
-                  className="flex items-center gap-2"
-                  disabled={isAnalyzing || totalDisplayedStates >= 6}
-                >
-                  <Search className="h-4 w-4" />
-                  Add a State
-                </Button>
+                {!isSearchOpen ? (
+                  // "Add a State" button with magnifying glass
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsSearchOpen(true)}
+                    className="flex items-center gap-2"
+                    disabled={isAnalyzing || totalDisplayedStates >= 6}
+                  >
+                    <Search className="h-4 w-4" />
+                    Add a State
+                  </Button>
+                ) : (
+                  // Search input that replaces button
+                  <div className="relative w-full max-w-sm">
+                    <Input
+                      placeholder="Search for a US state..."
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && suggestions.length > 0) {
+                          addRegion(suggestions[0])
+                          setSearchValue("")
+                          setIsSearchOpen(false)
+                        }
+                        if (e.key === "Escape") {
+                          setIsSearchOpen(false)
+                          setSearchValue("")
+                        }
+                      }}
+                      autoFocus
+                      className="pr-10"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                      onClick={() => {
+                        setIsSearchOpen(false)
+                        setSearchValue("")
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
