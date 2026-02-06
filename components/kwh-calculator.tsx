@@ -936,6 +936,7 @@ export function KwhCalculator() {
   const [dialogSearchValue, setDialogSearchValue] = useState("")
   const [isFilterBarSearchOpen, setIsFilterBarSearchOpen] = useState(false)
   const [filterBarSearchValue, setFilterBarSearchValue] = useState("")
+  const [selectionMode, setSelectionMode] = useState<"filter" | "individual">("filter")
   const [mobileDetailRegion, setMobileDetailRegion] = useState<string | null>(null)
 
   // Calculate filter value for a region based on category
@@ -960,28 +961,34 @@ export function KwhCalculator() {
   const [filteredStates, setFilteredStates] = useState<{ key: string; displayName: string; value: number }[]>([])
 
   useEffect(() => {
-    // Calculate how many slots are available for filtered states (max 6 total)
-    const pinnedCount = pinnedRegions.size
-    const nonPinnedUserAdded = userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).length
-    const occupiedSlots = pinnedCount + nonPinnedUserAdded
-    const availableForFilter = Math.max(0, 6 - occupiedSlots)
-    
-    // Show up to (3 - removedFilterSlots) filtered states, capped by available slots
-    // removedFilterSlots tracks pinned/hidden states from current filter
-    const maxFilterSlots = Math.min(Math.max(0, 3 - removedFilterSlots), availableForFilter)
-
-    const newFilteredStates = Object.entries(regionData)
-      .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
-      .map(([key, data]) => ({
-        key,
-        displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-        value: getFilterValue(data, filterCategory),
-      }))
-      .sort((a, b) => filterOrder === "highest" ? b.value - a.value : a.value - b.value)
-      .slice(0, maxFilterSlots)
-
-    setFilteredStates(newFilteredStates)
-  }, [filterCategory, filterOrder, pinnedRegions, hiddenRegions, userAddedRegions, removedFilterSlots])
+  // In individual add mode, don't populate filtered states
+  if (selectionMode === "individual") {
+    setFilteredStates([])
+    return
+  }
+  
+  // Calculate how many slots are available for filtered states (max 6 total)
+  const pinnedCount = pinnedRegions.size
+  const nonPinnedUserAdded = userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).length
+  const occupiedSlots = pinnedCount + nonPinnedUserAdded
+  const availableForFilter = Math.max(0, 6 - occupiedSlots)
+  
+  // Show up to (3 - removedFilterSlots) filtered states, capped by available slots
+  // removedFilterSlots tracks pinned/hidden states from current filter
+  const maxFilterSlots = Math.min(Math.max(0, 3 - removedFilterSlots), availableForFilter)
+  
+  const newFilteredStates = Object.entries(regionData)
+  .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
+  .map(([key, data]) => ({
+  key,
+  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+  value: getFilterValue(data, filterCategory),
+  }))
+  .sort((a, b) => filterOrder === "highest" ? b.value - a.value : a.value - b.value)
+  .slice(0, maxFilterSlots)
+  
+  setFilteredStates(newFilteredStates)
+  }, [filterCategory, filterOrder, pinnedRegions, hiddenRegions, userAddedRegions, removedFilterSlots, selectionMode])
 
   useEffect(() => {
     if (!isAnalyzing) return
@@ -1153,15 +1160,19 @@ setAnalysis(null)
     })
   }
 
-  // Handle filter change - exits expanded mode if active
+  // Handle filter change - enters filter mode, exits expanded mode if active
   const handleFilterChange = (type: 'category' | 'order', value: string) => {
     setIsPriceDriversExpanded(false)
+    setSelectionMode("filter")
+    setIsFilterBarSearchOpen(false)
+    setFilterBarSearchValue("")
     if (type === 'category') {
       setFilterCategory(value as FilterCategory)
       setFilterOrder("highest")
     } else {
       setFilterOrder(value as FilterOrder)
     }
+    // Remove non-pinned individually added states
     setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
     setHiddenRegions(new Set())
     setRemovedFilterSlots(0)
@@ -1216,6 +1227,9 @@ setAnalysis(null)
 
   const confirmFilterChange = () => {
     if (pendingFilterChange) {
+      setSelectionMode("filter")
+      setIsFilterBarSearchOpen(false)
+      setFilterBarSearchValue("")
       if (pendingFilterChange.type === 'category') {
         setFilterCategory(pendingFilterChange.value as FilterCategory)
         setFilterOrder("highest")
@@ -1408,7 +1422,7 @@ setAnalysis(null)
                             disabled={isAnalyzing || totalDisplayedStates >= 6}
                             onClick={() => handleFilterChange('category', category)}
                             className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                              filterCategory === category
+                              selectionMode === "filter" && filterCategory === category
                                 ? "bg-primary text-primary-foreground shadow-sm"
                                 : "text-muted-foreground hover:text-foreground"
                             } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
@@ -1435,7 +1449,7 @@ setAnalysis(null)
                             disabled={isAnalyzing || totalDisplayedStates >= 6}
                             onClick={() => handleFilterChange('order', order)}
                             className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                              filterOrder === order
+                              selectionMode === "filter" && filterOrder === order
                                 ? "bg-primary text-primary-foreground shadow-sm"
                                 : "text-muted-foreground hover:text-foreground"
                             } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
@@ -1463,12 +1477,15 @@ setAnalysis(null)
                     size="sm"
                     onClick={() => {
                       setIsFilterBarSearchOpen(true)
-                      // Reset filter bar
+                      // Enter individual add mode
+                      setSelectionMode("individual")
+                      // Reset filter bar so no filters appear selected
                       setFilterCategory("price")
                       setFilterOrder("highest")
-                      // Clear non-pinned filter-based states
-                      setUserAddedRegions((prev) => prev.filter((r) => pinnedRegions.has(r.key)))
+                      // Clear filtered states and non-pinned filter-based states
+                      setFilteredStates([])
                       setHiddenRegions(new Set())
+                      setRemovedFilterSlots(0)
                     }}
                     className="flex items-center gap-2"
                     disabled={isAnalyzing || totalDisplayedStates >= 6}
