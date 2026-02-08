@@ -1479,9 +1479,10 @@ export function KwhCalculator() {
                     setRemovedFilterSlots(0)
                   }}
                   disabled={isAnalyzing}
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 sm:w-auto sm:px-3 sm:gap-2"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4 shrink-0" />
+                  <span className="hidden sm:inline text-sm">Add a State</span>
                 </Button>
               )}
             </div>
