@@ -1367,7 +1367,7 @@ export function KwhCalculator() {
       {/* Filter Controls - Mobile/Tablet - hidden in expanded view, selection mode, and desktop */}
       {!isPriceDriversExpanded && !isPriceDriversSelecting && (
       <div className="flex lg:hidden flex-col gap-2 items-center">
-            <p className="text-base font-medium text-foreground text-center">Rank states or add them individually</p>
+            <p className="text-base font-medium text-foreground/70 text-center">Rank states or add them individually</p>
             <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
               {/* Filter dropdowns - highlighted when filter mode is active, unchecked when inactive */}
               <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : "opacity-60"}`}>
