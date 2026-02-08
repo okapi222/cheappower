@@ -1366,9 +1366,9 @@ export function KwhCalculator() {
 
       {/* Filter Controls - Mobile/Tablet - hidden in expanded view, selection mode, and desktop */}
       {!isPriceDriversExpanded && !isPriceDriversSelecting && (
-      <div className="flex lg:hidden flex-col gap-2 items-center relative">
+      <div className="flex lg:hidden flex-col gap-2 items-center">
             <p className="text-base font-medium text-foreground text-center">Rank states or add them individually</p>
-            <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
+            <div className={`relative flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
               {/* Filter dropdowns - highlighted when filter mode is active, unchecked when inactive */}
               <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : "opacity-60"}`}>
                 <Select
@@ -1493,29 +1493,29 @@ export function KwhCalculator() {
                   <span className="hidden sm:inline text-sm">Add a State</span>
                 </Button>
               )}
+              {/* Search suggestions - absolute overlay, anchored to controls row */}
+              {selectionMode === "individual" && isFilterBarSearchOpen && filterBarSearchValue.trim() && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 z-20 flex flex-wrap gap-2 justify-center bg-background border border-border py-2 px-3 rounded-lg shadow-lg mt-1 min-w-[280px]">
+                  {Object.keys(regionData)
+                    .filter((key) => key.toLowerCase().includes(filterBarSearchValue.toLowerCase()))
+                    .filter((key) => !pinnedRegions.has(key) && !userAddedRegions.some((r) => r.key === key) && !filteredStates.some((s) => s.key === key))
+                    .slice(0, 5)
+                    .map((key) => (
+                      <Badge
+                        key={key}
+                        variant="secondary"
+                        className="cursor-pointer hover:bg-secondary/80"
+                        onClick={() => {
+                          addRegion(key)
+                          setFilterBarSearchValue("")
+                        }}
+                      >
+                        {key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
+                      </Badge>
+                    ))}
+                </div>
+              )}
             </div>
-        {/* Mobile search suggestions dropdown - absolute to avoid pushing content */}
-        {selectionMode === "individual" && isFilterBarSearchOpen && filterBarSearchValue.trim() && (
-          <div className="absolute top-full left-0 right-0 z-20 flex flex-wrap gap-2 justify-center bg-background/95 backdrop-blur-sm py-2 px-1 rounded-b-lg shadow-md">
-                {Object.keys(regionData)
-                  .filter((key) => key.toLowerCase().includes(filterBarSearchValue.toLowerCase()))
-                  .filter((key) => !pinnedRegions.has(key) && !userAddedRegions.some((r) => r.key === key) && !filteredStates.some((s) => s.key === key))
-                  .slice(0, 5)
-                  .map((key) => (
-                    <Badge
-                      key={key}
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-secondary/80"
-                      onClick={() => {
-                        addRegion(key)
-                        setFilterBarSearchValue("")
-                      }}
-                    >
-                      {key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
-                    </Badge>
-                  ))}
-              </div>
-            )}
           </div>
         )}
 
