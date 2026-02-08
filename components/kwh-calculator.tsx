@@ -1368,7 +1368,7 @@ setAnalysis(null)
       {/* Filter Controls - Mobile - hidden in expanded view and selection mode */}
       {!isPriceDriversExpanded && !isPriceDriversSelecting && (
       <div className="flex sm:hidden flex-col gap-2 items-center">
-        <p className="text-xs text-muted-foreground text-center">Ranks states or add individually</p>
+        <p className="text-sm text-foreground text-center">Ranks states or add individually</p>
         <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Select
