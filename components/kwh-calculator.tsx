@@ -1644,64 +1644,66 @@ setAnalysis(null)
 
       {/* Selection Mode UI - shown when user clicks Explore Price Drivers */}
       {isPriceDriversSelecting && !isPriceDriversExpanded && (
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex flex-col gap-2 items-center lg:items-start">
           <p className="text-sm text-foreground">Select up to 3 states for comparison</p>
-          <Button
-            variant="default"
-            size="sm"
-            disabled={selectedForComparison.size < 2}
-            onClick={() => {
-              // Run analysis with selected states only
-              const selectedRegions = Array.from(selectedForComparison).map((key) => ({
-                key,
-                displayName: key.split(" ").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-              }))
-              
-              // Set up analysis with only selected regions
-              const regionsForAnalysis = selectedRegions.map((r) => ({
-                name: r.displayName,
-                price: regionData[r.key].priceUSD,
-                energyMix: regionData[r.key].energyMix as Record<string, number>,
-              }))
-              
-              setAnalysis(null)
-              setFollowUpMessages([])
-              setIsAnalysisCollapsed(false)
-              setIsAnalyzing(true)
-              setAnalysisError(null)
-              setShowFullAnalysis(false)
-              setIsPriceDriversExpanded(true)
-              
-              const avgPrice = regionsForAnalysis.reduce((sum, r) => sum + r.price, 0) / regionsForAnalysis.length
-              analyzeRegionPricing(regionsForAnalysis, avgPrice).then((result) => {
-                if (result.success && result.data) {
-                  setAnalysis(result.data)
-                  setLastAnalyzedRegions(selectedRegions.map((r) => r.key))
-                  setRegionsChangedSinceAnalysis(false)
-                } else {
-                  setAnalysisError("Failed to generate analysis")
-                }
-              }).catch((error) => {
-                setAnalysisError(`Error analyzing regions: ${error instanceof Error ? error.message : "Unknown error"}`)
-              }).finally(() => {
-                setIsAnalyzing(false)
-                setHasInitialAnalysisRun(true)
-              })
-            }}
-            className="flex items-center gap-2"
-          >
-            Compare {selectedForComparison.size}/3
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setIsPriceDriversSelecting(false)
-              setSelectedForComparison(new Set())
-            }}
-          >
-            Close
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="default"
+              size="sm"
+              disabled={selectedForComparison.size < 2}
+              onClick={() => {
+                // Run analysis with selected states only
+                const selectedRegions = Array.from(selectedForComparison).map((key) => ({
+                  key,
+                  displayName: key.split(" ").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                }))
+                
+                // Set up analysis with only selected regions
+                const regionsForAnalysis = selectedRegions.map((r) => ({
+                  name: r.displayName,
+                  price: regionData[r.key].priceUSD,
+                  energyMix: regionData[r.key].energyMix as Record<string, number>,
+                }))
+                
+                setAnalysis(null)
+                setFollowUpMessages([])
+                setIsAnalysisCollapsed(false)
+                setIsAnalyzing(true)
+                setAnalysisError(null)
+                setShowFullAnalysis(false)
+                setIsPriceDriversExpanded(true)
+                
+                const avgPrice = regionsForAnalysis.reduce((sum, r) => sum + r.price, 0) / regionsForAnalysis.length
+                analyzeRegionPricing(regionsForAnalysis, avgPrice).then((result) => {
+                  if (result.success && result.data) {
+                    setAnalysis(result.data)
+                    setLastAnalyzedRegions(selectedRegions.map((r) => r.key))
+                    setRegionsChangedSinceAnalysis(false)
+                  } else {
+                    setAnalysisError("Failed to generate analysis")
+                  }
+                }).catch((error) => {
+                  setAnalysisError(`Error analyzing regions: ${error instanceof Error ? error.message : "Unknown error"}`)
+                }).finally(() => {
+                  setIsAnalyzing(false)
+                  setHasInitialAnalysisRun(true)
+                })
+              }}
+              className="flex items-center gap-2"
+            >
+              Compare {selectedForComparison.size}/3
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setIsPriceDriversSelecting(false)
+                setSelectedForComparison(new Set())
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       )}
 
