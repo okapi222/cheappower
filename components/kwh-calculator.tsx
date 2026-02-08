@@ -1480,10 +1480,9 @@ setAnalysis(null)
                 setRemovedFilterSlots(0)
               }}
               disabled={isAnalyzing}
-              className="flex items-center gap-2"
+              className="h-8 w-8 p-0"
             >
               <Plus className="h-4 w-4" />
-              <span>Add</span>
             </Button>
           )}
         </div>
