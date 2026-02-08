@@ -1370,7 +1370,8 @@ setAnalysis(null)
       <div className="flex sm:hidden flex-col gap-2 items-center">
         <p className="text-sm text-foreground text-center">Ranks states or add individually</p>
         <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
-          <div className="flex items-center gap-2">
+          {/* Filter dropdowns - highlighted when filter mode is active */}
+          <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : ""}`}>
             <Select
               value={filterCategory}
               onValueChange={(value: FilterCategory) => handleFilterChange('category', value)}
@@ -1415,33 +1416,99 @@ setAnalysis(null)
             </Select>
           </div>
           
-          <div className="h-8 w-px bg-border" />
+          <div className="h-8 w-px bg-foreground/30" />
           
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setPreSelectionFilterState({
-                category: filterCategory,
-                order: filterOrder,
-                mode: selectionMode,
-                visibleCount: visibleFilterCount,
-              })
-              setIsFilterBarSearchOpen(true)
-              setSelectionMode("individual")
-              setFilterCategory("price")
-              setFilterOrder("highest")
-              setFilteredStates([])
-              setHiddenRegions(new Set())
-              setRemovedFilterSlots(0)
-            }}
-            disabled={isAnalyzing}
-            className="flex items-center gap-2"
-          >
-            <Search className="h-4 w-4" />
-            <span>Add State</span>
-          </Button>
+          {/* Add button / inline search */}
+          {selectionMode === "individual" && isFilterBarSearchOpen ? (
+            <div className="relative flex items-center">
+              <Input
+                placeholder="Search state..."
+                value={filterBarSearchValue}
+                onChange={(e) => setFilterBarSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const match = Object.keys(regionData).find((key) =>
+                      key.toLowerCase().includes(filterBarSearchValue.toLowerCase())
+                    )
+                    if (match) {
+                      addRegion(match)
+                      setFilterBarSearchValue("")
+                    }
+                  }
+                  if (e.key === "Escape") {
+                    setIsFilterBarSearchOpen(false)
+                    setFilterBarSearchValue("")
+                    if (totalDisplayedStates === 0) {
+                      setSelectionMode("filter")
+                      setFilterCategory(previousFilterState.category)
+                      setFilterOrder(previousFilterState.order)
+                    }
+                  }
+                }}
+                autoFocus
+                className="w-[130px] h-8 pr-7 text-sm"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6"
+                onClick={() => {
+                  setIsFilterBarSearchOpen(false)
+                  setFilterBarSearchValue("")
+                  if (totalDisplayedStates === 0) {
+                    setSelectionMode("filter")
+                    setFilterCategory(previousFilterState.category)
+                    setFilterOrder(previousFilterState.order)
+                  }
+                }}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setPreviousFilterState({ category: filterCategory, order: filterOrder })
+                setIsFilterBarSearchOpen(true)
+                setSelectionMode("individual")
+                setFilterCategory("price")
+                setFilterOrder("highest")
+                setFilteredStates([])
+                setHiddenRegions(new Set())
+                setRemovedFilterSlots(0)
+              }}
+              disabled={isAnalyzing}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add</span>
+            </Button>
+          )}
         </div>
+        {/* Mobile search suggestions dropdown */}
+        {selectionMode === "individual" && isFilterBarSearchOpen && filterBarSearchValue.trim() && (
+          <div className="flex flex-wrap gap-2 justify-center">
+            {Object.keys(regionData)
+              .filter((key) => key.toLowerCase().includes(filterBarSearchValue.toLowerCase()))
+              .filter((key) => !pinnedRegions.has(key) && !userAddedRegions.some((r) => r.key === key) && !filteredStates.some((s) => s.key === key))
+              .slice(0, 5)
+              .map((key) => (
+                <Badge
+                  key={key}
+                  variant="secondary"
+                  className="cursor-pointer hover:bg-secondary/80"
+                  onClick={() => {
+                    addRegion(key)
+                    setFilterBarSearchValue("")
+                  }}
+                >
+                  {key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
+                </Badge>
+              ))}
+          </div>
+        )}
       </div>
       )}
 
