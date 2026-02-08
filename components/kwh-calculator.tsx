@@ -649,7 +649,7 @@ const EnergyBreakdown = ({ energyMix, compact = false }: { energyMix: RegionData
               className={`rounded-full ${compact ? "h-2 w-2" : "h-2.5 w-2.5"}`}
               style={{ backgroundColor: energyColors[key] || "#94a3b8" }}
             />
-            <span className={`text-muted-foreground ${compact ? "text-xs" : "text-xs"}`}>
+            <span className={`text-muted-foreground whitespace-nowrap ${compact ? "text-xs" : "text-xs"}`}>
               {energyLabels[key] || key}
             </span>
             <span className={`font-medium ${compact ? "text-xs" : "text-xs"}`}>{value}%</span>
