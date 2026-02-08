@@ -1394,9 +1394,9 @@ setAnalysis(null)
               onValueChange={(value: FilterOrder) => handleFilterChange('order', value)}
               disabled={isAnalyzing}
             >
-              <SelectTrigger className="w-[60px]">
+              <SelectTrigger className="w-[76px]">
                 <SelectValue>
-                  {filterOrder === "highest" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+                  {filterOrder === "highest" ? <ArrowUp className="h-4 w-4 shrink-0" /> : <ArrowDown className="h-4 w-4 shrink-0" />}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
