@@ -1368,7 +1368,7 @@ setAnalysis(null)
       {/* Filter Controls - Mobile - hidden in expanded view and selection mode */}
       {!isPriceDriversExpanded && !isPriceDriversSelecting && (
       <div className="flex sm:hidden flex-col gap-2 items-center">
-        <p className="text-sm text-foreground text-center">Ranks states or add individually</p>
+        <p className="text-base font-medium text-foreground text-center">Rank states or add them individually</p>
         <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
           {/* Filter dropdowns - highlighted when filter mode is active */}
           <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : ""}`}>
