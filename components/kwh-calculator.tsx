@@ -2344,7 +2344,7 @@ export function KwhCalculator() {
 
                   return (
                     <>
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-3 gap-3 items-stretch">
                         <AnimatePresence mode="wait">
                         {allRegions.map((region, idx) => {
                           const isAnalyzed = lastAnalyzedRegions.includes(region.key)
@@ -2361,22 +2361,23 @@ export function KwhCalculator() {
                                 damping: 28,
                                 delay: idx * 0.1,
                               }}
+                              className="flex"
                             >
                             <Card
-                              className={`w-full ${region.isPinned ? "bg-indigo-50/50 border-indigo-200" :
+                              className={`w-full flex flex-col overflow-hidden ${region.isPinned ? "bg-indigo-50/50 border-indigo-200" :
                                   region.isUserAdded ? "bg-sky-50/50 border-sky-200" :
                                     ""
                                 }`}
                             >
-                              <CardHeader className="p-3 pb-1 pt-3">
+                              <CardHeader className="p-3 pb-1 pt-3 shrink-0">
                                 <CardTitle className="text-base flex items-center gap-1.5">
-                                  <MapPin className="h-3.5 w-3.5" />
-                                  {region.displayName}
+                                  <MapPin className="h-3.5 w-3.5 shrink-0" />
+                                  <span className="truncate">{region.displayName}</span>
                                 </CardTitle>
                               </CardHeader>
-                              <CardContent className="p-3 pt-0 space-y-2">
+                              <CardContent className="p-3 pt-0 space-y-2 flex-1 flex flex-col overflow-hidden">
                                 {/* Price display */}
-                                <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
+                                <div className={`rounded-lg p-2 text-center shrink-0 ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
                                   <motion.div 
                                     className="font-bold text-2xl" 
                                     style={{ color: "#00f" }}
@@ -2390,10 +2391,12 @@ export function KwhCalculator() {
                                 </div>
 
                                 {/* Electricity Sources */}
-                                <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+                                <div className="shrink-0">
+                                  <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+                                </div>
 
                                 {/* Data Sources */}
-                                <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+                                <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground shrink-0">
                                   <a
                                     href={regionData[region.key].priceSourceUrl}
                                     target="_blank"
@@ -2424,7 +2427,7 @@ export function KwhCalculator() {
                                       delay: idx * 0.15,
                                       ease: [0.25, 0.1, 0.25, 1]
                                     }}
-                                    className="w-full border-t pt-2 space-y-3 overflow-hidden"
+                                    className="w-full border-t pt-2 space-y-3 overflow-hidden flex-1 min-h-0"
                                   >
                                     {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
                                       const score = getFactorScore(region.key, region.displayName, factorIdx)
@@ -2441,10 +2444,10 @@ export function KwhCalculator() {
                                             duration: 0.35
                                           }}
                                         >
-                                          <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium">{factor.factor}</span>
+                                          <div className="flex items-center justify-between gap-2">
+                                            <span className="text-sm font-medium truncate">{factor.factor}</span>
                                             <motion.span 
-                                              className={`text-sm font-bold px-2 py-0.5 rounded ${score && score > 0 ? "bg-green-100 text-green-700" :
+                                              className={`text-sm font-bold px-2 py-0.5 rounded shrink-0 ${score && score > 0 ? "bg-green-100 text-green-700" :
                                                 score && score < 0 ? "bg-red-100 text-red-700" :
                                                   "bg-gray-100 text-gray-600"
                                               }`}
@@ -2461,7 +2464,7 @@ export function KwhCalculator() {
                                             </motion.span>
                                           </div>
                                           {justification ? (
-                                            <p className="text-sm leading-relaxed text-foreground">{justification}</p>
+                                            <p className="text-xs leading-relaxed text-foreground line-clamp-3">{justification}</p>
                                           ) : (
                                             <p className="text-xs text-muted-foreground">No explanation available.</p>
                                           )}
@@ -2475,7 +2478,7 @@ export function KwhCalculator() {
                                 {/* Loading skeleton for factors */}
                                 {isAnalyzing && (
                                   <motion.div 
-                                    className="space-y-2 border-t pt-2"
+                                    className="space-y-2 border-t pt-2 flex-1"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ duration: 0.3 }}
