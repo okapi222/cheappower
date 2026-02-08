@@ -1369,15 +1369,19 @@ export function KwhCalculator() {
       <div className="flex lg:hidden flex-col gap-2 items-center">
             <p className="text-base font-medium text-foreground text-center">Rank states or add them individually</p>
             <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
-              {/* Filter dropdowns - highlighted when filter mode is active */}
-              <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : ""}`}>
+              {/* Filter dropdowns - highlighted when filter mode is active, unchecked when inactive */}
+              <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : "opacity-60"}`}>
                 <Select
-                  value={filterCategory}
+                  value={selectionMode === "filter" ? filterCategory : ""}
                   onValueChange={(value: FilterCategory) => handleFilterChange('category', value)}
                   disabled={isAnalyzing}
                 >
                   <SelectTrigger className="w-[120px]">
-                    <SelectValue />
+                    {selectionMode === "filter" ? (
+                      <SelectValue />
+                    ) : (
+                      <span className="text-muted-foreground text-sm">Rank by...</span>
+                    )}
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="price">Price</SelectItem>
@@ -1389,14 +1393,18 @@ export function KwhCalculator() {
                 </Select>
 
                 <Select
-                  value={filterOrder}
+                  value={selectionMode === "filter" ? filterOrder : ""}
                   onValueChange={(value: FilterOrder) => handleFilterChange('order', value)}
                   disabled={isAnalyzing}
                 >
                   <SelectTrigger className="w-[76px]">
-                    <SelectValue>
-                      {filterOrder === "highest" ? <ArrowUp className="h-4 w-4 shrink-0" /> : <ArrowDown className="h-4 w-4 shrink-0" />}
-                    </SelectValue>
+                    {selectionMode === "filter" ? (
+                      <SelectValue>
+                        {filterOrder === "highest" ? <ArrowUp className="h-4 w-4 shrink-0" /> : <ArrowDown className="h-4 w-4 shrink-0" />}
+                      </SelectValue>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">--</span>
+                    )}
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="highest">
