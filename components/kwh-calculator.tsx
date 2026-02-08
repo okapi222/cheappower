@@ -623,7 +623,7 @@ const EnergyBreakdown = ({ energyMix, compact = false }: { energyMix: RegionData
 
   // Limit to top 6 energy sources by proportion for display
   const entries = allEntries.slice(0, 6)
-  
+
   // Use all entries for total calculation (for accurate bar proportions)
   const total = allEntries.reduce((sum, [, value]) => sum + (value || 0), 0)
 
@@ -660,22 +660,22 @@ const EnergyBreakdown = ({ energyMix, compact = false }: { energyMix: RegionData
   )
 }
 
-const PlaceholderCard = ({ 
-  onSelectRegion, 
+const PlaceholderCard = ({
+  onSelectRegion,
   compact = false,
-  isAnalyzing = false 
-}: { 
+  isAnalyzing = false
+}: {
   onSelectRegion: (key: string) => void
   compact?: boolean
-  isAnalyzing?: boolean 
+  isAnalyzing?: boolean
 }) => {
   const [searchValue, setSearchValue] = useState("")
   const [isOpen, setIsOpen] = useState(false)
 
   const suggestions = searchValue
     ? Object.keys(regionData)
-        .filter((key) => key.toLowerCase().includes(searchValue.toLowerCase()))
-        .slice(0, 6)
+      .filter((key) => key.toLowerCase().includes(searchValue.toLowerCase()))
+      .slice(0, 6)
     : []
 
   return (
@@ -806,105 +806,104 @@ const RegionCard = ({
       layout
       transition={{ type: "spring", stiffness: 25, damping: 12 }}
     >
-      <Card 
+      <Card
         className={`leading-6 h-[280px] ${getCardClasses()} ${isSelectionMode && !isSelectionDisabled ? "cursor-pointer" : ""} ${isSelectionMode && isSelected ? "cursor-pointer" : ""}`}
         onClick={isSelectionMode ? ((!isSelectionDisabled || isSelected) ? onToggleSelection : undefined) : undefined}
       >
         <CardHeader className="p-3 pb-1 pt-0">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5" />
-            {displayName}
-          </CardTitle>
-          <div className="flex items-center gap-0.5">
-            {isSelectionMode ? (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onToggleSelection?.(); }}
-                disabled={isSelectionDisabled && !isSelected}
-                className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-colors ${
-                  isSelected
-                    ? "bg-primary border-primary text-primary-foreground"
-                    : isSelectionDisabled
-                      ? "border-muted-foreground/30 cursor-not-allowed opacity-40"
-                      : "border-muted-foreground/50 hover:border-primary cursor-pointer"
-                }`}
-              >
-                {isSelected && (
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                )}
-              </button>
-            ) : (
-              <>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-5 w-5" 
-                        onClick={onTogglePin}
-                      >
-                        <Pin className={`h-3 w-3 ${isPinned ? "fill-current" : ""}`} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      {isPinned ? "Unpin from board" : "Pin to board"}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-5 w-5" 
-                        onClick={onRemove}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      Remove from board
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </>
-            )}
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5" />
+              {displayName}
+            </CardTitle>
+            <div className="flex items-center gap-0.5">
+              {isSelectionMode ? (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onToggleSelection?.(); }}
+                  disabled={isSelectionDisabled && !isSelected}
+                  className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-colors ${isSelected
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : isSelectionDisabled
+                        ? "border-muted-foreground/30 cursor-not-allowed opacity-40"
+                        : "border-muted-foreground/50 hover:border-primary cursor-pointer"
+                    }`}
+                >
+                  {isSelected && (
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </button>
+              ) : (
+                <>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5"
+                          onClick={onTogglePin}
+                        >
+                          <Pin className={`h-3 w-3 ${isPinned ? "fill-current" : ""}`} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        {isPinned ? "Unpin from board" : "Pin to board"}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5"
+                          onClick={onRemove}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        Remove from board
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-3 pt-0 space-y-2 pb-0">
-        <div className={`rounded-lg p-2 text-center ${getPriceDivClasses()}`}>
-          <div className="font-bold text-2xl" style={{ color: "#00f" }}>
-            ${data.priceUSD.toFixed(2)}
+        </CardHeader>
+        <CardContent className="p-3 pt-0 space-y-2 pb-0">
+          <div className={`rounded-lg p-2 text-center ${getPriceDivClasses()}`}>
+            <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+              ${data.priceUSD.toFixed(2)}
+            </div>
+            <div className="text-muted-foreground text-xs">per kWh (USD)</div>
           </div>
-          <div className="text-muted-foreground text-xs">per kWh (USD)</div>
-        </div>
 
-        <EnergyBreakdown energyMix={data.energyMix} compact={true} />
+          <EnergyBreakdown energyMix={data.energyMix} compact={true} />
 
-        <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
-          <a
-            href={data.priceSourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline truncate"
-          >
-            Price: {data.priceSource}
-          </a>
-          <a
-            href={data.energySourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline truncate"
-          >
-            Mix: {data.energySource}
-          </a>
-        </div>
+          <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+            <a
+              href={data.priceSourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline truncate"
+            >
+              Price: {data.priceSource}
+            </a>
+            <a
+              href={data.energySourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline truncate"
+            >
+              Mix: {data.energySource}
+            </a>
+          </div>
         </CardContent>
       </Card>
     </motion.div>
@@ -956,7 +955,7 @@ export function KwhCalculator() {
     mode: "filter" | "individual"
     visibleCount: number
   }>({ category: "price", order: "highest", mode: "filter", visibleCount: 4 })
-  
+
   const [pendingFilterChange, setPendingFilterChange] = useState<{ type: 'category' | 'order'; value: string } | null>(null)
   const [filterChangeDialogOpen, setFilterChangeDialogOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -990,30 +989,30 @@ export function KwhCalculator() {
   const [filteredStates, setFilteredStates] = useState<{ key: string; displayName: string; value: number }[]>([])
 
   useEffect(() => {
-  // In individual add mode, don't populate filtered states
-  if (selectionMode === "individual") {
-    setFilteredStates([])
-    return
-  }
-  
-  // Calculate how many slots are available for filtered states (max 6 total)
-  const pinnedCount = pinnedRegions.size
-  const nonPinnedUserAdded = userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).length
-  // Fetch all matching filtered states (not sliced) so we can paginate
-  const allFilteredStates = Object.entries(regionData)
-  .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
-  .map(([key, data]) => ({
-  key,
-  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-  value: getFilterValue(data, filterCategory),
-  }))
-  .sort((a, b) => filterOrder === "highest" ? b.value - a.value : a.value - b.value)
-  
-  // Limit to visibleFilterCount
-  const maxFilterSlots = Math.max(0, visibleFilterCount - removedFilterSlots)
-  const newFilteredStates = allFilteredStates.slice(0, maxFilterSlots)
-  
-  setFilteredStates(newFilteredStates)
+    // In individual add mode, don't populate filtered states
+    if (selectionMode === "individual") {
+      setFilteredStates([])
+      return
+    }
+
+    // Calculate how many slots are available for filtered states (max 6 total)
+    const pinnedCount = pinnedRegions.size
+    const nonPinnedUserAdded = userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).length
+    // Fetch all matching filtered states (not sliced) so we can paginate
+    const allFilteredStates = Object.entries(regionData)
+      .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
+      .map(([key, data]) => ({
+        key,
+        displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+        value: getFilterValue(data, filterCategory),
+      }))
+      .sort((a, b) => filterOrder === "highest" ? b.value - a.value : a.value - b.value)
+
+    // Limit to visibleFilterCount
+    const maxFilterSlots = Math.max(0, visibleFilterCount - removedFilterSlots)
+    const newFilteredStates = allFilteredStates.slice(0, maxFilterSlots)
+
+    setFilteredStates(newFilteredStates)
   }, [filterCategory, filterOrder, pinnedRegions, hiddenRegions, userAddedRegions, removedFilterSlots, selectionMode, visibleFilterCount])
 
   useEffect(() => {
@@ -1027,7 +1026,7 @@ export function KwhCalculator() {
   // Get all currently displayed regions (pinned + filtered + user-added)
   const getDisplayedRegions = () => {
     const displayed: { key: string; displayName: string }[] = []
-    
+
     // Pinned regions first
     Array.from(pinnedRegions).forEach((key) => {
       if (regionData[key]) {
@@ -1037,21 +1036,21 @@ export function KwhCalculator() {
         })
       }
     })
-    
+
     // Filtered states (not already in pinned)
     filteredStates.forEach((state) => {
       if (!pinnedRegions.has(state.key)) {
         displayed.push({ key: state.key, displayName: state.displayName })
       }
     })
-    
+
     // User-added regions (not already in pinned)
     userAddedRegions.forEach((region) => {
       if (!pinnedRegions.has(region.key)) {
         displayed.push(region)
       }
     })
-    
+
     return displayed
   }
 
@@ -1063,12 +1062,12 @@ export function KwhCalculator() {
       return
     }
 
-setAnalysis(null)
-  setFollowUpMessages([]) // Clear follow-up messages
-  setIsAnalysisCollapsed(false) // Expand analysis
-  setIsAnalyzing(true)
-  setAnalysisError(null)
-  setShowFullAnalysis(false) // Reset full analysis state
+    setAnalysis(null)
+    setFollowUpMessages([]) // Clear follow-up messages
+    setIsAnalysisCollapsed(false) // Expand analysis
+    setIsAnalyzing(true)
+    setAnalysisError(null)
+    setShowFullAnalysis(false) // Reset full analysis state
 
     try {
       const regionsForAnalysis = displayedRegions.map((r) => ({
@@ -1095,9 +1094,9 @@ setAnalysis(null)
 
   const loadFullAnalysis = async () => {
     if (!analysis?.scoreTable || isLoadingFullAnalysis) return
-    
+
     setIsLoadingFullAnalysis(true)
-    
+
     try {
       const regionsForAnalysis = Array.from(selectedForComparison)
         .filter(key => lastAnalyzedRegions.includes(key) && regionData[key])
@@ -1106,9 +1105,9 @@ setAnalysis(null)
           price: regionData[key].priceUSD,
           energyMix: regionData[key].energyMix as Record<string, number>,
         }))
-      
+
       const result = await generateFactorAnalyses(regionsForAnalysis, analysis.scoreTable)
-      
+
       if (result.success && result.data) {
         setAnalysis(prev => prev ? { ...prev, factorAnalyses: result.data } : null)
         setShowFullAnalysis(true)
@@ -1139,12 +1138,12 @@ setAnalysis(null)
 
   const suggestions = searchValue
     ? Object.keys(regionData)
-        .filter(
-          (key) => key.toLowerCase().includes(searchValue.toLowerCase()) && 
-            !filteredStates.some((s) => s.key === key) &&
-            !userAddedRegions.some((r) => r.key === key),
-        )
-        .slice(0, 6)
+      .filter(
+        (key) => key.toLowerCase().includes(searchValue.toLowerCase()) &&
+          !filteredStates.some((s) => s.key === key) &&
+          !userAddedRegions.some((r) => r.key === key),
+      )
+      .slice(0, 6)
     : []
 
   // Calculate total displayed: pinned + filtered (3) + non-pinned user-added
@@ -1169,10 +1168,10 @@ setAnalysis(null)
     const isInFiltered = filteredStates.some((s) => s.key === key)
     const isInUserAdded = userAddedRegions.some((r) => r.key === key)
     const isInPinned = pinnedRegions.has(key)
-    
-  if (!isInFiltered && !isInUserAdded && !isInPinned) {
-  setUserAddedRegions((prev) => [...prev, { key, displayName }])
-  }
+
+    if (!isInFiltered && !isInUserAdded && !isInPinned) {
+      setUserAddedRegions((prev) => [...prev, { key, displayName }])
+    }
   }
 
   const removeUserRegion = (key: string) => {
@@ -1208,7 +1207,7 @@ setAnalysis(null)
     // Check if this is a filtered state being pinned (not already pinned)
     const isFilteredState = filteredStates.some(s => s.key === key)
     const isCurrentlyPinned = pinnedRegions.has(key)
-    
+
     setPinnedRegions((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(key)) {
@@ -1224,7 +1223,7 @@ setAnalysis(null)
       newSet.delete(key)
       return newSet
     })
-    
+
     // Increment removedFilterSlots when pinning a filtered state
     if (isFilteredState && !isCurrentlyPinned) {
       setRemovedFilterSlots(prev => prev + 1)
@@ -1358,1353 +1357,1371 @@ setAnalysis(null)
     <div className="w-full max-w-5xl">
       {/* Sticky Header Section */}
       <div className="sticky top-0 z-30 bg-background pb-4 space-y-6">
-      {/* Header Section */}
-      <div className="py-0">
-        <div className="flex items-center justify-center gap-3">
-          <h1 className="font-semibold text-3xl">Compare State Electricity Prices and Their Drivers</h1>
-        </div>
-      </div>
-
-      {/* Filter Controls - Mobile - hidden in expanded view and selection mode */}
-      {!isPriceDriversExpanded && !isPriceDriversSelecting && (
-      <div className="flex sm:hidden flex-col gap-2 items-center">
-        <p className="text-base font-medium text-foreground text-center">Rank states or add them individually</p>
-        <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
-          {/* Filter dropdowns - highlighted when filter mode is active */}
-          <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : ""}`}>
-            <Select
-              value={filterCategory}
-              onValueChange={(value: FilterCategory) => handleFilterChange('category', value)}
-              disabled={isAnalyzing}
-            >
-              <SelectTrigger className="w-[120px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="price">Price</SelectItem>
-                <SelectItem value="renewables">Renewables</SelectItem>
-                <SelectItem value="nuclear">Nuclear</SelectItem>
-                <SelectItem value="fossilFuels">Fossil Fuels</SelectItem>
-                <SelectItem value="coal">Coal</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={filterOrder}
-              onValueChange={(value: FilterOrder) => handleFilterChange('order', value)}
-              disabled={isAnalyzing}
-            >
-              <SelectTrigger className="w-[76px]">
-                <SelectValue>
-                  {filterOrder === "highest" ? <ArrowUp className="h-4 w-4 shrink-0" /> : <ArrowDown className="h-4 w-4 shrink-0" />}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="highest">
-                  <div className="flex items-center gap-2">
-                    <ArrowUp className="h-4 w-4" />
-                    <span>Highest</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="lowest">
-                  <div className="flex items-center gap-2">
-                    <ArrowDown className="h-4 w-4" />
-                    <span>Lowest</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+        {/* Header Section */}
+        <div className="py-0">
+          <div className="flex items-center justify-center gap-3">
+            <h1 className="font-semibold text-3xl">Compare State Electricity Prices and Their Drivers</h1>
           </div>
-          
-          <div className="h-8 w-px bg-foreground/30" />
-          
-          {/* Add button / inline search */}
-          {selectionMode === "individual" && isFilterBarSearchOpen ? (
-            <div className="relative flex items-center">
-              <Input
-                placeholder="Search state..."
-                value={filterBarSearchValue}
-                onChange={(e) => setFilterBarSearchValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    const match = Object.keys(regionData).find((key) =>
-                      key.toLowerCase().includes(filterBarSearchValue.toLowerCase())
-                    )
-                    if (match) {
-                      addRegion(match)
+        </div>
+
+      {/* Filter Controls - Mobile/Tablet - hidden in expanded view, selection mode, and desktop */}
+      {!isPriceDriversExpanded && !isPriceDriversSelecting && (
+      <div className="flex lg:hidden flex-col gap-2 items-center">
+            <p className="text-base font-medium text-foreground text-center">Rank states or add them individually</p>
+            <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
+              {/* Filter dropdowns - highlighted when filter mode is active */}
+              <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : ""}`}>
+                <Select
+                  value={filterCategory}
+                  onValueChange={(value: FilterCategory) => handleFilterChange('category', value)}
+                  disabled={isAnalyzing}
+                >
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="price">Price</SelectItem>
+                    <SelectItem value="renewables">Renewables</SelectItem>
+                    <SelectItem value="nuclear">Nuclear</SelectItem>
+                    <SelectItem value="fossilFuels">Fossil Fuels</SelectItem>
+                    <SelectItem value="coal">Coal</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={filterOrder}
+                  onValueChange={(value: FilterOrder) => handleFilterChange('order', value)}
+                  disabled={isAnalyzing}
+                >
+                  <SelectTrigger className="w-[76px]">
+                    <SelectValue>
+                      {filterOrder === "highest" ? <ArrowUp className="h-4 w-4 shrink-0" /> : <ArrowDown className="h-4 w-4 shrink-0" />}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="highest">
+                      <div className="flex items-center gap-2">
+                        <ArrowUp className="h-4 w-4" />
+                        <span>Highest</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="lowest">
+                      <div className="flex items-center gap-2">
+                        <ArrowDown className="h-4 w-4" />
+                        <span>Lowest</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="h-8 w-px bg-foreground/30" />
+
+              {/* Add button / inline search */}
+              {selectionMode === "individual" && isFilterBarSearchOpen ? (
+                <div className="relative flex items-center">
+                  <Input
+                    placeholder="Search state..."
+                    value={filterBarSearchValue}
+                    onChange={(e) => setFilterBarSearchValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        const match = Object.keys(regionData).find((key) =>
+                          key.toLowerCase().includes(filterBarSearchValue.toLowerCase())
+                        )
+                        if (match) {
+                          addRegion(match)
+                          setFilterBarSearchValue("")
+                        }
+                      }
+                      if (e.key === "Escape") {
+                        setIsFilterBarSearchOpen(false)
+                        setFilterBarSearchValue("")
+                        if (totalDisplayedStates === 0) {
+                          setSelectionMode("filter")
+                          setFilterCategory(previousFilterState.category)
+                          setFilterOrder(previousFilterState.order)
+                        }
+                      }
+                    }}
+                    autoFocus
+                    className="w-[130px] h-8 pr-7 text-sm"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6"
+                    onClick={() => {
+                      setIsFilterBarSearchOpen(false)
                       setFilterBarSearchValue("")
-                    }
-                  }
-                  if (e.key === "Escape") {
-                    setIsFilterBarSearchOpen(false)
-                    setFilterBarSearchValue("")
-                    if (totalDisplayedStates === 0) {
-                      setSelectionMode("filter")
-                      setFilterCategory(previousFilterState.category)
-                      setFilterOrder(previousFilterState.order)
-                    }
-                  }
-                }}
-                autoFocus
-                className="w-[130px] h-8 pr-7 text-sm"
-              />
+                      if (totalDisplayedStates === 0) {
+                        setSelectionMode("filter")
+                        setFilterCategory(previousFilterState.category)
+                        setFilterOrder(previousFilterState.order)
+                      }
+                    }}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setPreviousFilterState({ category: filterCategory, order: filterOrder })
+                    setIsFilterBarSearchOpen(true)
+                    setSelectionMode("individual")
+                    setFilterCategory("price")
+                    setFilterOrder("highest")
+                    setFilteredStates([])
+                    setHiddenRegions(new Set())
+                    setRemovedFilterSlots(0)
+                  }}
+                  disabled={isAnalyzing}
+                  className="h-8 w-8 p-0"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+            {/* Mobile search suggestions dropdown */}
+            {selectionMode === "individual" && isFilterBarSearchOpen && filterBarSearchValue.trim() && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                {Object.keys(regionData)
+                  .filter((key) => key.toLowerCase().includes(filterBarSearchValue.toLowerCase()))
+                  .filter((key) => !pinnedRegions.has(key) && !userAddedRegions.some((r) => r.key === key) && !filteredStates.some((s) => s.key === key))
+                  .slice(0, 5)
+                  .map((key) => (
+                    <Badge
+                      key={key}
+                      variant="secondary"
+                      className="cursor-pointer hover:bg-secondary/80"
+                      onClick={() => {
+                        addRegion(key)
+                        setFilterBarSearchValue("")
+                      }}
+                    >
+                      {key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
+                    </Badge>
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Filter Controls - visible but disabled during analysis, hidden in selection mode (desktop only) */}
+        {!isPriceDriversSelecting && (
+          <div className={`hidden lg:flex flex-col gap-2 items-center justify-center`}>
+            {/* Select New States button - shown when analysis is complete (desktop only) */}
+            {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
               <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6"
+                variant="secondary"
+                className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
                 onClick={() => {
-                  setIsFilterBarSearchOpen(false)
-                  setFilterBarSearchValue("")
-                  if (totalDisplayedStates === 0) {
-                    setSelectionMode("filter")
-                    setFilterCategory(previousFilterState.category)
-                    setFilterOrder(previousFilterState.order)
-                  }
+                  setIsPriceDriversExpanded(false)
+                  setIsPriceDriversSelecting(false)
+                  setSelectedForComparison(new Set())
+                  setAnalysis(null)
+                  // Restore pre-selection state
+                  setFilterCategory(preSelectionFilterState.category)
+                  setFilterOrder(preSelectionFilterState.order)
+                  setSelectionMode(preSelectionFilterState.mode)
+                  setVisibleFilterCount(preSelectionFilterState.visibleCount)
                 }}
               >
-                <X className="h-3 w-3" />
+                <Sun className="h-4 w-4" />
+                Select New States
               </Button>
-            </div>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setPreviousFilterState({ category: filterCategory, order: filterOrder })
-                setIsFilterBarSearchOpen(true)
-                setSelectionMode("individual")
-                setFilterCategory("price")
-                setFilterOrder("highest")
-                setFilteredStates([])
-                setHiddenRegions(new Set())
-                setRemovedFilterSlots(0)
-              }}
-              disabled={isAnalyzing}
-              className="h-8 w-8 p-0"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-        {/* Mobile search suggestions dropdown */}
-        {selectionMode === "individual" && isFilterBarSearchOpen && filterBarSearchValue.trim() && (
-          <div className="flex flex-wrap gap-2 justify-center">
-            {Object.keys(regionData)
-              .filter((key) => key.toLowerCase().includes(filterBarSearchValue.toLowerCase()))
-              .filter((key) => !pinnedRegions.has(key) && !userAddedRegions.some((r) => r.key === key) && !filteredStates.some((s) => s.key === key))
-              .slice(0, 5)
-              .map((key) => (
-                <Badge
-                  key={key}
-                  variant="secondary"
-                  className="cursor-pointer hover:bg-secondary/80"
-                  onClick={() => {
-                    addRegion(key)
-                    setFilterBarSearchValue("")
-                  }}
-                >
-                  {key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
-                </Badge>
-              ))}
-          </div>
-        )}
-      </div>
-      )}
-
-{/* Filter Controls - visible but disabled during analysis, hidden in selection mode (desktop only) */}
-      {!isPriceDriversSelecting && (
-      <div className={`hidden lg:flex flex-col gap-2 items-center justify-center`}>
-        {/* Select New States button - shown when analysis is complete (desktop only) */}
-        {isPriceDriversExpanded && analysis !== null && !isAnalyzing && (
-          <Button
-            variant="secondary"
-            className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
-              onClick={() => {
-                setIsPriceDriversExpanded(false)
-                setIsPriceDriversSelecting(false)
-                setSelectedForComparison(new Set())
-                setAnalysis(null)
-                // Restore pre-selection state
-                setFilterCategory(preSelectionFilterState.category)
-                setFilterOrder(preSelectionFilterState.order)
-                setSelectionMode(preSelectionFilterState.mode)
-                setVisibleFilterCount(preSelectionFilterState.visibleCount)
-              }}
-            >
-              <Sun className="h-4 w-4" />
-              Select New States
-            </Button>
-          )}
-        {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
-        {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
-          <div className="flex flex-col gap-2 items-center">
-            {/* Filter buttons and Add a State button row */}
-            <div className={`flex flex-row gap-3 items-start transition-opacity duration-300 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
-              {/* Filter group with help text */}
+            )}
+            {/* Filter Controls - visible when not expanded OR during analysis, disabled during analysis */}
+            {(!isPriceDriversExpanded || (isPriceDriversExpanded && isAnalyzing)) && (
               <div className="flex flex-col gap-2 items-center">
-                <p className="text-sm text-foreground">Rank states by price and energy mix</p>
-                
-                <div className="flex flex-row gap-3 items-center">
-                  {/* Category Filter */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-                        {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
-                          <button
-                            key={category}
-                            disabled={isAnalyzing}
-                            onClick={() => handleFilterChange('category', category)}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                              selectionMode === "filter" && filterCategory === category
-                                ? "bg-primary text-primary-foreground shadow-sm"
-                                : "text-muted-foreground hover:text-foreground"
-                            } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
-                          >
-                            {category === "price" && "Price"}
-                            {category === "renewables" && "Renewables"}
-                            {category === "nuclear" && "Nuclear"}
-                            {category === "fossilFuels" && "Fossil Fuels"}
-                            {category === "coal" && "Coal"}
-                          </button>
-                        ))}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">Select category to filter by</TooltipContent>
-                  </Tooltip>
+                {/* Filter buttons and Add a State button row */}
+                <div className={`flex flex-row gap-3 items-start transition-opacity duration-300 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
+                  {/* Filter group with help text */}
+                  <div className="flex flex-col gap-2 items-center">
+                    <p className="text-sm text-foreground">Rank states by price and energy mix</p>
 
-                  {/* Order Filter */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-                        {(["highest", "lowest"] as FilterOrder[]).map((order) => (
-                          <button
-                            key={order}
-                            disabled={isAnalyzing}
-                            onClick={() => handleFilterChange('order', order)}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                              selectionMode === "filter" && filterOrder === order
-                                ? "bg-primary text-primary-foreground shadow-sm"
-                                : "text-muted-foreground hover:text-foreground"
-                            } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
-                          >
-                            {order === "highest" ? "Highest" : "Lowest"}
-                          </button>
-                        ))}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">Sort by highest or lowest</TooltipContent>
-                  </Tooltip>
-                </div>
-              </div>
-              
-              {/* Vertical separator */}
-              <div className="h-20 w-px bg-foreground/20" />
-              
-              {/* Add a State group with help text */}
-              <div className="flex flex-col gap-2 items-center">
-                <p className="text-sm text-foreground">Or select states individually</p>
-                
-                {!isFilterBarSearchOpen ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      // Save current filter state before switching to individual mode
-                      setPreviousFilterState({ category: filterCategory, order: filterOrder })
-                      setIsFilterBarSearchOpen(true)
-                      // Enter individual add mode
-                      setSelectionMode("individual")
-                      // Reset filter bar so no filters appear selected
-                      setFilterCategory("price")
-                      setFilterOrder("highest")
-                      // Clear filtered states and non-pinned filter-based states
-                      setFilteredStates([])
-                      setHiddenRegions(new Set())
-                      setRemovedFilterSlots(0)
-                    }}
-                    className="flex items-center gap-2"
-                    disabled={isAnalyzing}
-                  >
-                    <Search className="h-4 w-4" />
-                    Add a State
-                  </Button>
-                ) : (
-                  <div className="w-full space-y-2">
-                    <div className="relative">
-                      <Input
-                        placeholder="Search for a US state..."
-                        value={filterBarSearchValue}
-                        onChange={(e) => setFilterBarSearchValue(e.target.value)}
-                        onKeyDown={(e) => {
-                          const fbSuggestions = filterBarSearchValue.trim()
-                            ? Object.keys(regionData)
-                                .filter(
-                                  (key) =>
-                                    key.toLowerCase().includes(filterBarSearchValue.toLowerCase()) &&
-                                    !filteredStates.some((s) => s.key === key) &&
-                                    !userAddedRegions.some((r) => r.key === key)
-                                )
-                                .slice(0, 5)
-                            : []
-                          if (e.key === "Enter" && fbSuggestions.length > 0) {
-                            addRegion(fbSuggestions[0])
-                            setFilterBarSearchValue("")
-                            setIsFilterBarSearchOpen(false)
-                          }
-                          if (e.key === "Escape") {
-                            setIsFilterBarSearchOpen(false)
-                            setFilterBarSearchValue("")
-                            // If no states are displayed, revert to previous filter state
-                            if (totalDisplayedStates === 0) {
-                              setSelectionMode("filter")
-                              setFilterCategory(previousFilterState.category)
-                              setFilterOrder(previousFilterState.order)
-                            }
-                          }
-                        }}
-                        autoFocus
-                        className="pr-10"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-                        onClick={() => {
-                          setIsFilterBarSearchOpen(false)
-                          setFilterBarSearchValue("")
-                          // If no states are displayed, revert to previous filter state
-                          if (totalDisplayedStates === 0) {
-                            setSelectionMode("filter")
-                            setFilterCategory(previousFilterState.category)
-                            setFilterOrder(previousFilterState.order)
-                          }
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+                    <div className="flex flex-row gap-3 items-center">
+                      {/* Category Filter */}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                            {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
+                              <button
+                                key={category}
+                                disabled={isAnalyzing}
+                                onClick={() => handleFilterChange('category', category)}
+                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${selectionMode === "filter" && filterCategory === category
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground"
+                                  } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                              >
+                                {category === "price" && "Price"}
+                                {category === "renewables" && "Renewables"}
+                                {category === "nuclear" && "Nuclear"}
+                                {category === "fossilFuels" && "Fossil Fuels"}
+                                {category === "coal" && "Coal"}
+                              </button>
+                            ))}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">Select category to filter by</TooltipContent>
+                      </Tooltip>
+
+                      {/* Order Filter */}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                            {(["highest", "lowest"] as FilterOrder[]).map((order) => (
+                              <button
+                                key={order}
+                                disabled={isAnalyzing}
+                                onClick={() => handleFilterChange('order', order)}
+                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${selectionMode === "filter" && filterOrder === order
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground"
+                                  } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                              >
+                                {order === "highest" ? "Highest" : "Lowest"}
+                              </button>
+                            ))}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">Sort by highest or lowest</TooltipContent>
+                      </Tooltip>
                     </div>
-                    {filterBarSearchValue.trim() && (() => {
-                      const fbSuggestions = Object.keys(regionData)
-                        .filter(
-                          (key) =>
-                            key.toLowerCase().includes(filterBarSearchValue.toLowerCase()) &&
-                            !filteredStates.some((s) => s.key === key) &&
-                            !userAddedRegions.some((r) => r.key === key)
-                        )
-                        .slice(0, 5)
-                      return fbSuggestions.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {fbSuggestions.map((key) => (
-                            <Badge
-                              key={key}
-                              variant="secondary"
-                              className="cursor-pointer hover:bg-secondary/80"
-                              onClick={() => {
-                                addRegion(key)
+                  </div>
+
+                  {/* Vertical separator */}
+                  <div className="h-20 w-px bg-foreground/20" />
+
+                  {/* Add a State group with help text */}
+                  <div className="flex flex-col gap-2 items-center">
+                    <p className="text-sm text-foreground">Or select states individually</p>
+
+                    {!isFilterBarSearchOpen ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // Save current filter state before switching to individual mode
+                          setPreviousFilterState({ category: filterCategory, order: filterOrder })
+                          setIsFilterBarSearchOpen(true)
+                          // Enter individual add mode
+                          setSelectionMode("individual")
+                          // Reset filter bar so no filters appear selected
+                          setFilterCategory("price")
+                          setFilterOrder("highest")
+                          // Clear filtered states and non-pinned filter-based states
+                          setFilteredStates([])
+                          setHiddenRegions(new Set())
+                          setRemovedFilterSlots(0)
+                        }}
+                        className="flex items-center gap-2"
+                        disabled={isAnalyzing}
+                      >
+                        <Search className="h-4 w-4" />
+                        Add a State
+                      </Button>
+                    ) : (
+                      <div className="w-full space-y-2">
+                        <div className="relative">
+                          <Input
+                            placeholder="Search for a US state..."
+                            value={filterBarSearchValue}
+                            onChange={(e) => setFilterBarSearchValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              const fbSuggestions = filterBarSearchValue.trim()
+                                ? Object.keys(regionData)
+                                  .filter(
+                                    (key) =>
+                                      key.toLowerCase().includes(filterBarSearchValue.toLowerCase()) &&
+                                      !filteredStates.some((s) => s.key === key) &&
+                                      !userAddedRegions.some((r) => r.key === key)
+                                  )
+                                  .slice(0, 5)
+                                : []
+                              if (e.key === "Enter" && fbSuggestions.length > 0) {
+                                addRegion(fbSuggestions[0])
                                 setFilterBarSearchValue("")
                                 setIsFilterBarSearchOpen(false)
-                              }}
-                            >
-                              {key
-                                .split(" ")
-                                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                                .join(" ")}
-                            </Badge>
-                          ))}
+                              }
+                              if (e.key === "Escape") {
+                                setIsFilterBarSearchOpen(false)
+                                setFilterBarSearchValue("")
+                                // If no states are displayed, revert to previous filter state
+                                if (totalDisplayedStates === 0) {
+                                  setSelectionMode("filter")
+                                  setFilterCategory(previousFilterState.category)
+                                  setFilterOrder(previousFilterState.order)
+                                }
+                              }
+                            }}
+                            autoFocus
+                            className="pr-10"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                            onClick={() => {
+                              setIsFilterBarSearchOpen(false)
+                              setFilterBarSearchValue("")
+                              // If no states are displayed, revert to previous filter state
+                              if (totalDisplayedStates === 0) {
+                                setSelectionMode("filter")
+                                setFilterCategory(previousFilterState.category)
+                                setFilterOrder(previousFilterState.order)
+                              }
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
                         </div>
-                      ) : null
-                    })()}
+                        {filterBarSearchValue.trim() && (() => {
+                          const fbSuggestions = Object.keys(regionData)
+                            .filter(
+                              (key) =>
+                                key.toLowerCase().includes(filterBarSearchValue.toLowerCase()) &&
+                                !filteredStates.some((s) => s.key === key) &&
+                                !userAddedRegions.some((r) => r.key === key)
+                            )
+                            .slice(0, 5)
+                          return fbSuggestions.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                              {fbSuggestions.map((key) => (
+                                <Badge
+                                  key={key}
+                                  variant="secondary"
+                                  className="cursor-pointer hover:bg-secondary/80"
+                                  onClick={() => {
+                                    addRegion(key)
+                                    setFilterBarSearchValue("")
+                                    setIsFilterBarSearchOpen(false)
+                                  }}
+                                >
+                                  {key
+                                    .split(" ")
+                                    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                                    .join(" ")}
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : null
+                        })()}
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
+            )}
+
+            {/* Info icon - mobile/tablet only (below lg) */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                >
+                  <Info className="size-6" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent side="bottom" className="max-w-[200px] text-center text-sm p-3 text-popover-foreground bg-amber-50">
+                Rank and select states by price and energy mix
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
+
+        {/* Selection Mode UI - shown when user clicks Explore Price Drivers */}
+        {isPriceDriversSelecting && !isPriceDriversExpanded && (
+          <div className="flex flex-col gap-2 items-center lg:items-start">
+            <p className="text-sm text-foreground">Select up to 3 states for comparison</p>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="default"
+                size="sm"
+                disabled={selectedForComparison.size < 2}
+                onClick={() => {
+                  // Run analysis with selected states only
+                  const selectedRegions = Array.from(selectedForComparison).map((key) => ({
+                    key,
+                    displayName: key.split(" ").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                  }))
+
+                  // Set up analysis with only selected regions
+                  const regionsForAnalysis = selectedRegions.map((r) => ({
+                    name: r.displayName,
+                    price: regionData[r.key].priceUSD,
+                    energyMix: regionData[r.key].energyMix as Record<string, number>,
+                  }))
+
+                  setAnalysis(null)
+                  setFollowUpMessages([])
+                  setIsAnalysisCollapsed(false)
+                  setIsAnalyzing(true)
+                  setAnalysisError(null)
+                  setShowFullAnalysis(false)
+                  setIsPriceDriversExpanded(true)
+
+                  const avgPrice = regionsForAnalysis.reduce((sum, r) => sum + r.price, 0) / regionsForAnalysis.length
+                  analyzeRegionPricing(regionsForAnalysis, avgPrice).then((result) => {
+                    if (result.success && result.data) {
+                      setAnalysis(result.data)
+                      setLastAnalyzedRegions(selectedRegions.map((r) => r.key))
+                      setRegionsChangedSinceAnalysis(false)
+                    } else {
+                      setAnalysisError("Failed to generate analysis")
+                    }
+                  }).catch((error) => {
+                    setAnalysisError(`Error analyzing regions: ${error instanceof Error ? error.message : "Unknown error"}`)
+                  }).finally(() => {
+                    setIsAnalyzing(false)
+                    setHasInitialAnalysisRun(true)
+                  })
+                }}
+                className="flex items-center gap-2"
+              >
+                Compare {selectedForComparison.size}/3
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsPriceDriversSelecting(false)
+                  setSelectedForComparison(new Set())
+                }}
+              >
+                Cancel
+              </Button>
             </div>
           </div>
         )}
-        
-        {/* Info icon - mobile/tablet only (below lg) */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              className="lg:hidden p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-            >
-              <Info className="size-6" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent side="bottom" className="max-w-[200px] text-center text-sm p-3 text-popover-foreground bg-amber-50">
-            Rank and select states by price and energy mix
-          </PopoverContent>
-        </Popover>
-      </div>
-      )}
 
-      {/* Selection Mode UI - shown when user clicks Explore Price Drivers */}
-      {isPriceDriversSelecting && !isPriceDriversExpanded && (
-        <div className="flex flex-col gap-2 items-center lg:items-start">
-          <p className="text-sm text-foreground">Select up to 3 states for comparison</p>
-          <div className="flex items-center gap-3">
+        {/* Price Drivers Button & Factor Headers - hidden when in selection mode (not yet expanded) */}
+        <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"} ${isPriceDriversSelecting && !isPriceDriversExpanded ? "hidden" : ""}`}>
+          <div className="flex items-center gap-2">
+            {/* Mobile/Tablet: Show Select New States when analysis complete */}
+            {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
+              <Button
+                variant="secondary"
+                className="flex lg:hidden items-center gap-2 animate-in fade-in duration-1000"
+                onClick={() => {
+                  setIsPriceDriversExpanded(false)
+                  setIsPriceDriversSelecting(false)
+                  setSelectedForComparison(new Set())
+                  setAnalysis(null)
+                  // Restore pre-selection state
+                  setFilterCategory(preSelectionFilterState.category)
+                  setFilterOrder(preSelectionFilterState.order)
+                  setSelectionMode(preSelectionFilterState.mode)
+                  setVisibleFilterCount(preSelectionFilterState.visibleCount)
+                }}
+              >
+                <Sun className="h-4 w-4" />
+                Select New States
+              </Button>
+            ) : null}
+
+            {/* Desktop: Show Select New States when analysis complete */}
+            {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
+              <Button
+                variant="secondary"
+                className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
+                onClick={() => {
+                  setIsPriceDriversExpanded(false)
+                  setIsPriceDriversSelecting(false)
+                  setSelectedForComparison(new Set())
+                  setAnalysis(null)
+                  // Restore pre-selection state
+                  setFilterCategory(preSelectionFilterState.category)
+                  setFilterOrder(preSelectionFilterState.order)
+                  setSelectionMode(preSelectionFilterState.mode)
+                  setVisibleFilterCount(preSelectionFilterState.visibleCount)
+                }}
+              >
+                <Sun className="h-4 w-4" />
+                Select New States
+              </Button>
+            ) : null}
+
+            {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
             <Button
-              variant="default"
-              size="sm"
-              disabled={selectedForComparison.size < 2}
+              variant="secondary"
+              className={`flex items-center gap-2  ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}
               onClick={() => {
-                // Run analysis with selected states only
-                const selectedRegions = Array.from(selectedForComparison).map((key) => ({
-                  key,
-                  displayName: key.split(" ").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-                }))
-                
-                // Set up analysis with only selected regions
-                const regionsForAnalysis = selectedRegions.map((r) => ({
-                  name: r.displayName,
-                  price: regionData[r.key].priceUSD,
-                  energyMix: regionData[r.key].energyMix as Record<string, number>,
-                }))
-                
-                setAnalysis(null)
-                setFollowUpMessages([])
-                setIsAnalysisCollapsed(false)
-                setIsAnalyzing(true)
-                setAnalysisError(null)
-                setShowFullAnalysis(false)
-                setIsPriceDriversExpanded(true)
-                
-                const avgPrice = regionsForAnalysis.reduce((sum, r) => sum + r.price, 0) / regionsForAnalysis.length
-                analyzeRegionPricing(regionsForAnalysis, avgPrice).then((result) => {
-                  if (result.success && result.data) {
-                    setAnalysis(result.data)
-                    setLastAnalyzedRegions(selectedRegions.map((r) => r.key))
-                    setRegionsChangedSinceAnalysis(false)
-                  } else {
-                    setAnalysisError("Failed to generate analysis")
-                  }
-                }).catch((error) => {
-                  setAnalysisError(`Error analyzing regions: ${error instanceof Error ? error.message : "Unknown error"}`)
-                }).finally(() => {
-                  setIsAnalyzing(false)
-                  setHasInitialAnalysisRun(true)
+                // Save current state before entering selection mode
+                setPreSelectionFilterState({
+                  category: filterCategory,
+                  order: filterOrder,
+                  mode: selectionMode,
+                  visibleCount: visibleFilterCount,
                 })
-              }}
-              className="flex items-center gap-2"
-            >
-              Compare {selectedForComparison.size}/3
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setIsPriceDriversSelecting(false)
                 setSelectedForComparison(new Set())
+                setIsPriceDriversSelecting(true)
               }}
+              disabled={isAnalyzing || isPriceDriversSelecting || totalDisplayedStates === 0 || (analysis !== null && !regionsChangedSinceAnalysis)}
             >
-              Cancel
+              {isAnalyzing ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <TrendingUp className="h-4 w-4" />
+              )}
+              {isAnalyzing ? (
+                <span className="inline-flex w-[100px]">
+                  Analyzing<span className="w-[18px] text-left">{".".repeat(ellipsisCount)}</span>
+                </span>
+              ) : (
+                "Explore Price Drivers"
+              )}
             </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="p-3 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                >
+                  <Info className="size-6" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent side="bottom" className="w-[320px] p-4 text-left text-popover-foreground bg-amber-50">
+                <p className="text-sm mb-3"><span className="font-semibold">Price Drivers</span> compares regions across the key factors that influence electricity prices. Using public data from grid operators and regulators, we assess how regions differ and whether those differences help or hinder low-cost power across seven cost drivers:</p>
+                <ul className="text-sm space-y-1 mb-3 list-disc list-inside">
+                  <li>Fuel and generation costs</li>
+                  <li>Transmission and distribution</li>
+                  <li>Regulatory structure and utility model</li>
+                  <li>State and federal policies</li>
+                  <li>Wholesale market conditions</li>
+                  <li>Geography and local conditions</li>
+                  <li>Reliability and resilience costs</li>
+                </ul>
+                <p className="text-sm">From this list we select the <span className="font-semibold">3 factors that best explain price differences</span> between the selected regions are shown.</p>
+              </PopoverContent>
+            </Popover>
           </div>
-        </div>
-      )}
 
-      {/* Price Drivers Button & Factor Headers - hidden when in selection mode (not yet expanded) */}
-      <div className={`flex items-center gap-2 pt-0 ${isPriceDriversExpanded ? "mt-0 lg:grid lg:grid-cols-4 lg:gap-4" : "mt-2"} ${isPriceDriversSelecting && !isPriceDriversExpanded ? "hidden" : ""}`}>
-        <div className="flex items-center gap-2">
-          {/* Mobile/Tablet: Show Select New States when analysis complete */}
-          {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
-            <Button
-              variant="secondary"
-              className="flex lg:hidden items-center gap-2 animate-in fade-in duration-1000"
-              onClick={() => {
-                setIsPriceDriversExpanded(false)
-                setIsPriceDriversSelecting(false)
-                setSelectedForComparison(new Set())
-                setAnalysis(null)
-                // Restore pre-selection state
-                setFilterCategory(preSelectionFilterState.category)
-                setFilterOrder(preSelectionFilterState.order)
-                setSelectionMode(preSelectionFilterState.mode)
-                setVisibleFilterCount(preSelectionFilterState.visibleCount)
-              }}
-            >
-              <Sun className="h-4 w-4" />
-              Select New States
-            </Button>
-          ) : null}
-          
-          {/* Desktop: Show Select New States when analysis complete */}
-          {isPriceDriversExpanded && analysis !== null && !isAnalyzing ? (
-            <Button
-              variant="secondary"
-              className="hidden lg:flex items-center gap-2 animate-in fade-in duration-1000"
-              onClick={() => {
-                setIsPriceDriversExpanded(false)
-                setIsPriceDriversSelecting(false)
-                setSelectedForComparison(new Set())
-                setAnalysis(null)
-                // Restore pre-selection state
-                setFilterCategory(preSelectionFilterState.category)
-                setFilterOrder(preSelectionFilterState.order)
-                setSelectionMode(preSelectionFilterState.mode)
-                setVisibleFilterCount(preSelectionFilterState.visibleCount)
-              }}
-            >
-              <Sun className="h-4 w-4" />
-              Select New States
-            </Button>
-          ) : null}
-          
-          {/* Price Drivers button - hidden on all views when expanded and analysis complete */}
-          <Button
-            variant="secondary"
-            className={`flex items-center gap-2  ${isPriceDriversExpanded && analysis !== null && !isAnalyzing ? "hidden" : ""}`}
-            onClick={() => {
-              // Save current state before entering selection mode
-              setPreSelectionFilterState({
-                category: filterCategory,
-                order: filterOrder,
-                mode: selectionMode,
-                visibleCount: visibleFilterCount,
-              })
-              setSelectedForComparison(new Set())
-              setIsPriceDriversSelecting(true)
-            }}
-            disabled={isAnalyzing || isPriceDriversSelecting || totalDisplayedStates === 0 || (analysis !== null && !regionsChangedSinceAnalysis)}
-          >
-            {isAnalyzing ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <TrendingUp className="h-4 w-4" />
-            )}
-            {isAnalyzing ? (
-              <span className="inline-flex w-[100px]">
-                Analyzing<span className="w-[18px] text-left">{".".repeat(ellipsisCount)}</span>
-              </span>
-  ) : (
-  "Explore Price Drivers"
-  )}
-          </Button>
-<Popover>
-  <PopoverTrigger asChild>
-  <button
-  type="button"
-  className="p-3 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-  >
-  <Info className="size-6" />
-  </button>
-  </PopoverTrigger>
-  <PopoverContent side="bottom" className="w-[380px] p-4 text-left text-popover-foreground bg-amber-50">
-  <p className="text-sm mb-3"><span className="font-semibold">Price Drivers</span> compares regions across the key factors that influence electricity prices. Using public data from grid operators and regulators, we assess how regions differ and whether those differences help or hinder low-cost power across seven cost drivers:</p>
-  <ul className="text-sm space-y-1 mb-3 list-disc list-inside">
-    <li>Fuel and generation costs</li>
-    <li>Transmission and distribution</li>
-    <li>Regulatory structure and utility model</li>
-    <li>State and federal policies</li>
-    <li>Wholesale market conditions</li>
-    <li>Geography and local conditions</li>
-    <li>Reliability and resilience costs</li>
-  </ul>
-  <p className="text-sm">From this list we select the <span className="font-semibold">3 factors that best explain price differences</span> between the selected regions are shown.</p>
-  </PopoverContent>
-  </Popover>
+          {/* Factor Column Headers - only visible in expanded view on desktop (lg+) */}
+          {isPriceDriversExpanded && (
+            <div className="hidden lg:contents">
+              {isAnalyzing ? (
+                // Skeleton headers while loading
+                [0, 1, 2].map((idx) => (
+                  <div key={idx} className="flex justify-center">
+                    <Skeleton className="h-5 w-32" />
+                  </div>
+                ))
+              ) : (
+                // Actual factor headers
+                analysis?.scoreTable?.slice(0, 3).map((row, idx) => (
+                  <div key={idx} className="text-center text-black text-sm font-semibold">
+                    {row.factor}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
-        
-        {/* Factor Column Headers - only visible in expanded view on desktop (lg+) */}
-        {isPriceDriversExpanded && (
-          <div className="hidden lg:contents">
-            {isAnalyzing ? (
-              // Skeleton headers while loading
-              [0, 1, 2].map((idx) => (
-                <div key={idx} className="flex justify-center">
-                  <Skeleton className="h-5 w-32" />
-                </div>
-              ))
-            ) : (
-              // Actual factor headers
-              analysis?.scoreTable?.slice(0, 3).map((row, idx) => (
-                <div key={idx} className="text-center text-black text-sm font-semibold">
-                  {row.factor}
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </div>
       </div>{/* End sticky header */}
 
       <div className="space-y-6 pt-2">
-      <LayoutGroup>
-      {/* Normal Grid View */}
-      {!isPriceDriversExpanded && (
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {/* All pinned regions first (both user-added and filter-generated) */}
-          {Array.from(pinnedRegions)
-            .filter((key) => regionData[key])
-            .map((key) => {
-              const isUserAddedRegion = userAddedRegions.some((r) => r.key === key)
-              return (
+        <LayoutGroup>
+          {/* Normal Grid View */}
+          {!isPriceDriversExpanded && (
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4">
+              {/* All pinned regions first (both user-added and filter-generated) */}
+              {Array.from(pinnedRegions)
+                .filter((key) => regionData[key])
+                .map((key) => {
+                  const isUserAddedRegion = userAddedRegions.some((r) => r.key === key)
+                  return (
+                    <RegionCard
+                      key={key}
+                      regionKey={key}
+                      displayName={key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
+                      data={regionData[key]}
+                      onRemove={() => isUserAddedRegion ? removeUserRegion(key) : hideFilterRegion(key)}
+                      compact={compact}
+                      isUserAdded={isUserAddedRegion}
+                      isPinned={true}
+                      onTogglePin={() => togglePinRegion(key)}
+                      layoutId={`card-${key}`}
+                      isSelectionMode={isPriceDriversSelecting}
+                      isSelected={selectedForComparison.has(key)}
+                      isSelectionDisabled={selectedForComparison.size >= 3}
+                      onToggleSelection={() => {
+                        setSelectedForComparison((prev) => {
+                          const next = new Set(prev)
+                          if (next.has(key)) next.delete(key)
+                          else if (next.size < 3) next.add(key)
+                          return next
+                        })
+                      }}
+                    />
+                  )
+                })}
+              {/* Filtered states (excluding pinned) */}
+              {filteredStates.map((state) => (
                 <RegionCard
-                  key={key}
-                  regionKey={key}
-                  displayName={key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
-                  data={regionData[key]}
-                  onRemove={() => isUserAddedRegion ? removeUserRegion(key) : hideFilterRegion(key)}
+                  key={state.key}
+                  regionKey={state.key}
+                  displayName={state.displayName}
+                  data={regionData[state.key]}
+                  onRemove={() => hideFilterRegion(state.key)}
                   compact={compact}
-                  isUserAdded={isUserAddedRegion}
-                  isPinned={true}
-                  onTogglePin={() => togglePinRegion(key)}
-                  layoutId={`card-${key}`}
+                  filterValue={filterCategory !== "price" ? `${state.value}%` : undefined}
+                  filterLabel={filterCategory !== "price" ? filterCategory : undefined}
+                  isPinned={pinnedRegions.has(state.key)}
+                  onTogglePin={() => togglePinRegion(state.key)}
+                  layoutId={`card-${state.key}`}
                   isSelectionMode={isPriceDriversSelecting}
-                  isSelected={selectedForComparison.has(key)}
+                  isSelected={selectedForComparison.has(state.key)}
                   isSelectionDisabled={selectedForComparison.size >= 3}
                   onToggleSelection={() => {
                     setSelectedForComparison((prev) => {
                       const next = new Set(prev)
-                      if (next.has(key)) next.delete(key)
-                      else if (next.size < 3) next.add(key)
+                      if (next.has(state.key)) next.delete(state.key)
+                      else if (next.size < 3) next.add(state.key)
                       return next
                     })
                   }}
                 />
-              )
-            })}
-          {/* Filtered states (excluding pinned) */}
-          {filteredStates.map((state) => (
-            <RegionCard
-              key={state.key}
-              regionKey={state.key}
-              displayName={state.displayName}
-              data={regionData[state.key]}
-              onRemove={() => hideFilterRegion(state.key)}
-              compact={compact}
-              filterValue={filterCategory !== "price" ? `${state.value}%` : undefined}
-              filterLabel={filterCategory !== "price" ? filterCategory : undefined}
-              isPinned={pinnedRegions.has(state.key)}
-              onTogglePin={() => togglePinRegion(state.key)}
-              layoutId={`card-${state.key}`}
-              isSelectionMode={isPriceDriversSelecting}
-              isSelected={selectedForComparison.has(state.key)}
-              isSelectionDisabled={selectedForComparison.size >= 3}
-              onToggleSelection={() => {
-                setSelectedForComparison((prev) => {
-                  const next = new Set(prev)
-                  if (next.has(state.key)) next.delete(state.key)
-                  else if (next.size < 3) next.add(state.key)
-                  return next
-                })
-              }}
-            />
-          ))}
-          {/* Non-pinned user-added regions */}
-          {userAddedRegions
-            .filter((region) => !pinnedRegions.has(region.key))
-            .map((region) => (
-              <RegionCard
-                key={region.key}
-                regionKey={region.key}
-                displayName={region.displayName}
-                data={regionData[region.key]}
-                onRemove={() => removeUserRegion(region.key)}
-                compact={compact}
-                isUserAdded={true}
-                isPinned={false}
-                onTogglePin={() => togglePinRegion(region.key)}
-                layoutId={`card-${region.key}`}
-                isSelectionMode={isPriceDriversSelecting}
-                isSelected={selectedForComparison.has(region.key)}
-                isSelectionDisabled={selectedForComparison.size >= 3}
-                onToggleSelection={() => {
-                  setSelectedForComparison((prev) => {
-                    const next = new Set(prev)
-                    if (next.has(region.key)) next.delete(region.key)
-                    else if (next.size < 3) next.add(region.key)
-                    return next
-                  })
-                }}
-              />
+              ))}
+              {/* Non-pinned user-added regions */}
+              {userAddedRegions
+                .filter((region) => !pinnedRegions.has(region.key))
+                .map((region) => (
+                  <RegionCard
+                    key={region.key}
+                    regionKey={region.key}
+                    displayName={region.displayName}
+                    data={regionData[region.key]}
+                    onRemove={() => removeUserRegion(region.key)}
+                    compact={compact}
+                    isUserAdded={true}
+                    isPinned={false}
+                    onTogglePin={() => togglePinRegion(region.key)}
+                    layoutId={`card-${region.key}`}
+                    isSelectionMode={isPriceDriversSelecting}
+                    isSelected={selectedForComparison.has(region.key)}
+                    isSelectionDisabled={selectedForComparison.size >= 3}
+                    onToggleSelection={() => {
+                      setSelectedForComparison((prev) => {
+                        const next = new Set(prev)
+                        if (next.has(region.key)) next.delete(region.key)
+                        else if (next.size < 3) next.add(region.key)
+                        return next
+                      })
+                    }}
+                  />
                 ))}
 
-        </div>
-      )}
-
-      {/* Show more affordance - only in filter mode when there are more states available, hidden in selection mode */}
-      {selectionMode === "filter" && !isPriceDriversExpanded && !isPriceDriversSelecting && (() => {
-        const totalAvailable = Object.entries(regionData)
-          .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
-          .length
-        const currentlyShowing = filteredStates.length
-        const remaining = totalAvailable - currentlyShowing
-        
-        if (remaining <= 0) return null
-        
-        return (
-          <div className="flex items-center justify-center gap-3 py-2">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                Showing {currentlyShowing} of {totalAvailable} states
-              </span>
-              <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-                {[4, 8, 12, 24].filter(n => n <= totalAvailable).map((count) => (
-                  <button
-                    key={count}
-                    onClick={() => setVisibleFilterCount(count)}
-                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
-                      visibleFilterCount === count && visibleFilterCount !== totalAvailable
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {count}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setVisibleFilterCount(totalAvailable)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
-                    visibleFilterCount >= totalAvailable
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  All
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      })()}
-
-      {/* Expanded Price Drivers View */}
-      {isPriceDriversExpanded && (
-        <div className="space-y-2 animate-in fade-in duration-300">
-          
-          {/* Phone Summary View */}
-          <div className="sm:hidden space-y-3">
-            {(() => {
-              const allRegions = [
-                ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
-                  key,
-                  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-                  isUserAdded: userAddedRegions.some((r) => r.key === key),
-                  isPinned: true,
-                })),
-                ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
-                  key: state.key,
-                  displayName: state.displayName,
-                  isUserAdded: false,
-                  isPinned: false,
-                })),
-                ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
-                  key: region.key,
-                  displayName: region.displayName,
-                  isUserAdded: true,
-                  isPinned: false,
-                })),
-              ].filter((r) => selectedForComparison.has(r.key))
-
-              // Calculate overall score for each region
-              const getOverallScore = (regionKey: string, displayName: string) => {
-                if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
-                let total = 0
-                let count = 0
-                for (const factor of analysis.scoreTable.slice(0, 3)) {
-                  const score = factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
-                  total += score
-                  count++
-                }
-                return count > 0 ? total : null
-              }
-
-              // Helper to get factor score for a region
-              const getFactorScore = (regionKey: string, displayName: string, factorIndex: number) => {
-                if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
-                const factor = analysis.scoreTable[factorIndex]
-                if (!factor) return null
-                return factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
-              }
-
-              // Helper to get price div background classes matching unexpanded cards
-              const getPriceDivClasses = (isPinned: boolean, isUserAdded: boolean) => {
-                if (isPinned) return "bg-indigo-100"
-                if (isUserAdded) return "bg-sky-100"
-                return "bg-slate-100"
-              }
-
-              return (
-                <>
-                  {/* Expanded Region Cards with Factor Accordions */}
-                  <div className="space-y-3">
-                    {allRegions.map((region, idx) => {
-                      const isAnalyzed = lastAnalyzedRegions.includes(region.key)
-                      
-                      return (
-                        <Card
-                          key={region.key}
-                          className={`w-full ${
-                            region.isPinned ? "bg-indigo-50/50 border-indigo-200" : 
-                            region.isUserAdded ? "bg-sky-50/50 border-sky-200" : 
-                            ""
-                          }`}
-                          style={{
-                            animation: `morphToColumn 0.4s ease-out ${idx * 0.08}s both`,
-                          }}
-                        >
-                          <CardHeader className="p-3 pb-1 pt-3">
-                            <CardTitle className="text-base flex items-center gap-1.5">
-                              <MapPin className="h-3.5 w-3.5" />
-                              {region.displayName}
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="p-3 pt-0 space-y-2">
-                            {/* Price display matching unexpanded cards */}
-                            <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
-                              <div className="font-bold text-2xl" style={{ color: "#00f" }}>
-                                ${regionData[region.key].priceUSD.toFixed(2)}
-                              </div>
-                              <div className="text-muted-foreground text-xs">per kWh (USD)</div>
-                            </div>
-
-                            {/* Electricity Sources */}
-                            <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
-
-                            {/* Data Sources */}
-                            <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
-                              <a
-                                href={regionData[region.key].priceSourceUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline truncate"
-                              >
-                                Price: {regionData[region.key].priceSource}
-                              </a>
-                              <a
-                                href={regionData[region.key].energySourceUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline truncate"
-                              >
-                                Mix: {regionData[region.key].energySource}
-                              </a>
-                            </div>
-
-                            {/* Factor Analysis - below sources */}
-                            {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
-                              <div className="w-full border-t pt-2 space-y-3">
-                                {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
-                                  const score = getFactorScore(region.key, region.displayName, factorIdx)
-                                  const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
-                                  
-                                  return (
-                                    <div key={factorIdx} className="space-y-1">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium">{factor.factor}</span>
-                                        <span className={`text-sm font-bold px-2 py-0.5 rounded ${
-                                          score && score > 0 ? "bg-green-100 text-green-700" :
-                                          score && score < 0 ? "bg-red-100 text-red-700" :
-                                          "bg-gray-100 text-gray-600"
-                                        }`}>
-                                          {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
-                                        </span>
-                                      </div>
-                                      {justification ? (
-                                        <p className="text-sm leading-relaxed text-foreground">{justification}</p>
-                                      ) : (
-                                        <p className="text-xs text-muted-foreground">No explanation available.</p>
-                                      )}
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            )}
-
-                            {/* Loading skeleton for factors */}
-                            {isAnalyzing && (
-                              <div className="space-y-2 border-t pt-2">
-                                {[0, 1, 2].map((i) => (
-                                  <Skeleton key={i} className="h-10 w-full" />
-                                ))}
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
-                  </div>
-
-                  {/* Full Analysis Button - Phone */}
-                  {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
-                    <div className="flex justify-center">
-                      <Button
-                        variant="outline"
-                        onClick={loadFullAnalysis}
-                        disabled={isLoadingFullAnalysis}
-                        className="gap-2 bg-transparent"
-                      >
-                        {isLoadingFullAnalysis ? (
-                          <>
-                            <RefreshCw className="h-4 w-4 animate-spin" />
-                            Loading...
-                          </>
-                        ) : (
-                          <>
-                            <FileText className="h-4 w-4" />
-                            Full Analysis
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Detailed Factor Analysis - Phone */}
-                  {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
-                    <div className="space-y-3">
-                      <h4 className="font-semibold text-sm">Detailed Factor Analysis</h4>
-                      {analysis.factorAnalyses.map((factor, idx) => (
-                        <Card key={idx}>
-                          <CardContent className="p-3">
-                            <h5 className="text-sm mb-2 font-semibold">{factor.factor}</h5>
-                            <p className="text-xs leading-relaxed text-foreground">{factor.analysis}</p>
-                            {factor.sources && factor.sources.length > 0 && (
-                              <div className="mt-2 flex flex-wrap gap-1.5">
-                                {factor.sources.map((source, sIdx) => (
-                                  <a 
-                                    key={sIdx} 
-                                    href={source.url} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-blue-600 hover:underline"
-                                  >
-                                    [{source.label}]
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Synthesis Summary */}
-                  {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
-                    <Card className="bg-slate-50">
-                      <CardContent className="p-3">
-                        <h4 className="text-sm mb-2 font-semibold">Summary</h4>
-                        <p className="text-sm text-foreground">{analysis.synthesis}</p>
-                        {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {analysis.synthesisSources.map((source, idx) => (
-                              <a 
-                                key={idx} 
-                                href={source.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:underline"
-                              >
-                                [{source.label}]
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )}
-                </>
-              )
-            })()}
-          </div>
-
-          {/* Tablet View - 2 column grid with accordion cards (sm to lg) */}
-          <div className="hidden sm:block lg:hidden">
-            {(() => {
-              const allRegions = [
-                ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
-                  key,
-                  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-                  isUserAdded: userAddedRegions.some((r) => r.key === key),
-                  isPinned: true,
-                })),
-                ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
-                  key: state.key,
-                  displayName: state.displayName,
-                  isUserAdded: false,
-                  isPinned: false,
-                })),
-                ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
-                  key: region.key,
-                  displayName: region.displayName,
-                  isUserAdded: true,
-                  isPinned: false,
-                })),
-              ].filter((r) => selectedForComparison.has(r.key))
-
-              // Helper to get factor score for a region
-              const getFactorScore = (regionKey: string, displayName: string, factorIndex: number) => {
-                if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
-                const factor = analysis.scoreTable[factorIndex]
-                if (!factor) return null
-                return factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
-              }
-
-              // Helper to get price div background classes
-              const getPriceDivClasses = (isPinned: boolean, isUserAdded: boolean) => {
-                if (isPinned) return "bg-indigo-100"
-                if (isUserAdded) return "bg-sky-100"
-                return "bg-slate-100"
-              }
-
-              return (
-                <>
-                  <div className="grid grid-cols-3 gap-3">
-                    {allRegions.map((region, idx) => {
-                      const isAnalyzed = lastAnalyzedRegions.includes(region.key)
-                      
-                      return (
-                        <Card
-                          key={region.key}
-                          className={`w-full ${
-                            region.isPinned ? "bg-indigo-50/50 border-indigo-200" : 
-                            region.isUserAdded ? "bg-sky-50/50 border-sky-200" : 
-                            ""
-                          }`}
-                          style={{
-                            animation: `morphToColumn 0.4s ease-out ${idx * 0.08}s both`,
-                          }}
-                        >
-                          <CardHeader className="p-3 pb-1 pt-3">
-                            <CardTitle className="text-base flex items-center gap-1.5">
-                              <MapPin className="h-3.5 w-3.5" />
-                              {region.displayName}
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="p-3 pt-0 space-y-2">
-                            {/* Price display */}
-                            <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
-                              <div className="font-bold text-2xl" style={{ color: "#00f" }}>
-                                ${regionData[region.key].priceUSD.toFixed(2)}
-                              </div>
-                              <div className="text-muted-foreground text-xs">per kWh (USD)</div>
-                            </div>
-
-                            {/* Electricity Sources */}
-                            <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
-
-                            {/* Data Sources */}
-                            <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
-                              <a
-                                href={regionData[region.key].priceSourceUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline truncate"
-                              >
-                                Price: {regionData[region.key].priceSource}
-                              </a>
-                              <a
-                                href={regionData[region.key].energySourceUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline truncate"
-                              >
-                                Mix: {regionData[region.key].energySource}
-                              </a>
-                            </div>
-
-                            {/* Factor Analysis */}
-                            {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
-                              <div className="w-full border-t pt-2 space-y-3">
-                                {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
-                                  const score = getFactorScore(region.key, region.displayName, factorIdx)
-                                  const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
-                                  
-                                  return (
-                                    <div key={factorIdx} className="space-y-1">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium">{factor.factor}</span>
-                                        <span className={`text-sm font-bold px-2 py-0.5 rounded ${
-                                          score && score > 0 ? "bg-green-100 text-green-700" :
-                                          score && score < 0 ? "bg-red-100 text-red-700" :
-                                          "bg-gray-100 text-gray-600"
-                                        }`}>
-                                          {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
-                                        </span>
-                                      </div>
-                                      {justification ? (
-                                        <p className="text-sm leading-relaxed text-foreground">{justification}</p>
-                                      ) : (
-                                        <p className="text-xs text-muted-foreground">No explanation available.</p>
-                                      )}
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            )}
-
-                            {/* Loading skeleton for factors */}
-                            {isAnalyzing && (
-                              <div className="space-y-2 border-t pt-2">
-                                {[0, 1, 2].map((i) => (
-                                  <Skeleton key={i} className="h-10 w-full" />
-                                ))}
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
-                  </div>
-
-                  {/* Full Analysis Button - Tablet */}
-                  {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
-                    <div className="flex justify-center mt-3">
-                      <Button
-                        variant="outline"
-                        onClick={loadFullAnalysis}
-                        disabled={isLoadingFullAnalysis}
-                        className="gap-2 bg-transparent"
-                      >
-                        {isLoadingFullAnalysis ? (
-                          <>
-                            <RefreshCw className="h-4 w-4 animate-spin" />
-                            Loading...
-                          </>
-                        ) : (
-                          <>
-                            <FileText className="h-4 w-4" />
-                            Full Analysis
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Detailed Factor Analysis - Tablet */}
-                  {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
-                    <div className="space-y-3 mt-3">
-                      <h4 className="font-semibold text-sm">Detailed Factor Analysis</h4>
-                      {analysis.factorAnalyses.map((factor, idx) => (
-                        <Card key={idx}>
-                          <CardContent className="p-3">
-                            <h5 className="text-sm mb-2 font-semibold">{factor.factor}</h5>
-                            <p className="leading-relaxed text-sm text-foreground">{factor.analysis}</p>
-                            {factor.sources && factor.sources.length > 0 && (
-                              <div className="mt-2 flex flex-wrap gap-1.5">
-                                {factor.sources.map((source, sIdx) => (
-                                  <a 
-                                    key={sIdx} 
-                                    href={source.url} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-blue-600 hover:underline"
-                                  >
-                                    [{source.label}]
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Synthesis Summary for tablet */}
-                  {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
-                    <Card className="bg-slate-50 mt-3">
-                      <CardContent className="p-3">
-                        <h4 className="text-sm mb-2 font-semibold">Summary</h4>
-                        <p className="text-sm text-foreground">{analysis.synthesis}</p>
-                        {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {analysis.synthesisSources.map((source, idx) => (
-                              <a 
-                                key={idx} 
-                                href={source.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:underline"
-                              >
-                                [{source.label}]
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )}
-                </>
-              )
-            })()}
-          </div>
-
-          {/* Desktop Stacked Region Cards with Factor Scores (lg+) */}
-          <div className="hidden lg:flex flex-col gap-2">
-            {/* Only selected regions for comparison */}
-            {(() => {
-              const allRegions = [
-                ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
-                  key,
-                  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-                  isUserAdded: userAddedRegions.some((r) => r.key === key),
-                  isPinned: true,
-                })),
-                ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
-                  key: state.key,
-                  displayName: state.displayName,
-                  isUserAdded: false,
-                  isPinned: false,
-                })),
-                ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
-                  key: region.key,
-                  displayName: region.displayName,
-                  isUserAdded: true,
-                  isPinned: false,
-                })),
-              ].filter((r) => selectedForComparison.has(r.key))
-
-              return allRegions.map((region, idx) => (
-                <motion.div
-                  key={region.key}
-                  layoutId={`card-${region.key}`}
-                  layout
-                  transition={{ type: "spring", stiffness: 25, damping: 12 }}
-                >
-                  <Card 
-                    className={`w-full ${region.isPinned ? "bg-indigo-50/50 border-indigo-200" : region.isUserAdded ? "bg-sky-50/50 border-sky-200" : ""}`}
-                  >
-                    <CardContent className="p-3 py-0">
-                    <div className="grid grid-cols-4 gap-4 items-start">
-                      {/* Column 1: Original Card Content */}
-                      <div className="space-y-2">
-                        {/* Header with name */}
-                        <div className="flex items-center gap-1.5">
-                          <MapPin className="h-3.5 w-3.5" />
-                          <span className="font-semibold text-base">{region.displayName}</span>
-                        </div>
-                        
-                        {/* Price display */}
-                        <div className={`rounded-lg p-2 text-center ${region.isPinned ? "bg-indigo-100" : region.isUserAdded ? "bg-sky-100" : "bg-slate-100"}`}>
-                          <div className="font-bold text-2xl" style={{ color: "#00f" }}>
-                            ${regionData[region.key].priceUSD.toFixed(2)}
-                          </div>
-                          <div className="text-muted-foreground text-xs">per kWh (USD)</div>
-                        </div>
-                        
-                        {/* Energy Sources Chart */}
-                        <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
-                        
-                        {/* Data Sources */}
-                        <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
-                          <a
-                            href={regionData[region.key].priceSourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline truncate"
-                          >
-                            Price: {regionData[region.key].priceSource}
-                          </a>
-                          <a
-                            href={regionData[region.key].energySourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline truncate"
-                          >
-                            Mix: {regionData[region.key].energySource}
-                          </a>
-                        </div>
-                      </div>
-
-                      {/* Columns 2, 3, 4: Factor Scores or Skeleton Loading */}
-                      {isAnalyzing ? (
-                        // Skeleton shimmer loading state
-                        <>
-                          {[0, 1, 2].map((idx) => (
-<div key={idx} className="flex flex-col items-center justify-start gap-2 pt-10">
-                              <Skeleton className="w-10 h-10 rounded-full" />
-                              <div className="space-y-2 w-full">
-                                <Skeleton className="h-3 w-full" />
-                                <Skeleton className="h-3 w-4/5 mx-auto" />
-                                <Skeleton className="h-3 w-3/5 mx-auto" />
-                              </div>
-                            </div>
-                          ))}
-                        </>
-                      ) : !lastAnalyzedRegions.includes(region.key) ? (
-                        // Placeholder for newly added regions (not yet analyzed)
-                        [0, 1, 2].map((idx) => (
-                          <div key={idx} className="flex flex-col items-center justify-start gap-2 pt-10">
-                            <div className="w-10 h-10 rounded-full bg-slate-200" />
-                            <div className="space-y-2 w-full">
-                              <div className="h-3 w-full rounded bg-slate-200" />
-                              <div className="h-3 w-4/5 mx-auto rounded bg-slate-200" />
-                              <div className="h-3 w-3/5 mx-auto rounded bg-slate-200" />
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        // Actual factor scores
-                        analysis?.scoreTable?.slice(0, 3).map((row, factorIdx) => {
-                          const score = row.scores[region.displayName] ?? row.scores[region.key] ?? 0
-                          const justification = row.justifications?.[region.displayName] ?? row.justifications?.[region.key] ?? ""
-                          
-                          return (
-                            <div key={factorIdx} className="flex flex-col items-center justify-start gap-2 pt-10">
-                              <span className={`inline-flex items-center justify-center w-10 h-10 rounded-full text-lg font-bold ${
-                                score === 1 ? "bg-green-100 text-green-700" :
-                                score === -1 ? "bg-red-100 text-red-700" :
-                                "bg-gray-100 text-gray-600"
-                              }`}>
-                                {score > 0 ? `+${score}` : score}
-                              </span>
-                              {justification && (
-                                <p className="text-center text-foreground text-sm pt-4">{justification}</p>
-                              )}
-                            </div>
-                          )
-                        })
-                      )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))
-            })()}
-          </div>
-
-          {/* Full Analysis Button - Desktop */}
-          {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
-            <div className="hidden lg:flex justify-start mt-6">
-              <Button
-                variant="outline"
-                onClick={loadFullAnalysis}
-                disabled={isLoadingFullAnalysis}
-                className="gap-2 bg-transparent"
-              >
-                {isLoadingFullAnalysis ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    <FileText className="h-4 w-4" />
-                    Full Analysis
-                  </>
-                )}
-              </Button>
             </div>
           )}
 
-          {/* Factor Analysis Paragraphs - Desktop */}
-          {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
-            <div className="hidden lg:block mt-6 space-y-4">
-              <h4 className="font-semibold text-lg">Detailed Factor Analysis</h4>
-              {analysis.factorAnalyses.map((factor, idx) => (
-                <Card key={idx}>
+          {/* Show more affordance - only in filter mode when there are more states available, hidden in selection mode */}
+          {selectionMode === "filter" && !isPriceDriversExpanded && !isPriceDriversSelecting && (() => {
+            const totalAvailable = Object.entries(regionData)
+              .filter(([key]) => !pinnedRegions.has(key) && !hiddenRegions.has(key) && !userAddedRegions.some(r => r.key === key))
+              .length
+            const currentlyShowing = filteredStates.length
+            const remaining = totalAvailable - currentlyShowing
+
+            if (remaining <= 0) return null
+
+            return (
+              <div className="flex items-center justify-center gap-3 py-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    Showing {currentlyShowing} of {totalAvailable} states
+                  </span>
+                  <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                    {[4, 8, 12, 24].filter(n => n <= totalAvailable).map((count) => (
+                      <button
+                        key={count}
+                        onClick={() => setVisibleFilterCount(count)}
+                        className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${visibleFilterCount === count && visibleFilterCount !== totalAvailable
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                          }`}
+                      >
+                        {count}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => setVisibleFilterCount(totalAvailable)}
+                      className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${visibleFilterCount >= totalAvailable
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                        }`}
+                    >
+                      All
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* Expanded Price Drivers View */}
+          {isPriceDriversExpanded && (
+            <div className="space-y-2 animate-in fade-in duration-300">
+
+              {/* Phone Summary View */}
+              <div className="sm:hidden space-y-3">
+                {(() => {
+                  const allRegions = [
+                    ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
+                      key,
+                      displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                      isUserAdded: userAddedRegions.some((r) => r.key === key),
+                      isPinned: true,
+                    })),
+                    ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                      key: state.key,
+                      displayName: state.displayName,
+                      isUserAdded: false,
+                      isPinned: false,
+                    })),
+                    ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
+                      key: region.key,
+                      displayName: region.displayName,
+                      isUserAdded: true,
+                      isPinned: false,
+                    })),
+                  ].filter((r) => selectedForComparison.has(r.key))
+
+                  // Calculate overall score for each region
+                  const getOverallScore = (regionKey: string, displayName: string) => {
+                    if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
+                    let total = 0
+                    let count = 0
+                    for (const factor of analysis.scoreTable.slice(0, 3)) {
+                      const score = factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
+                      total += score
+                      count++
+                    }
+                    return count > 0 ? total : null
+                  }
+
+                  // Helper to get factor score for a region
+                  const getFactorScore = (regionKey: string, displayName: string, factorIndex: number) => {
+                    if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
+                    const factor = analysis.scoreTable[factorIndex]
+                    if (!factor) return null
+                    return factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
+                  }
+
+                  // Helper to get price div background classes matching unexpanded cards
+                  const getPriceDivClasses = (isPinned: boolean, isUserAdded: boolean) => {
+                    if (isPinned) return "bg-indigo-100"
+                    if (isUserAdded) return "bg-sky-100"
+                    return "bg-slate-100"
+                  }
+
+                  return (
+                    <>
+                      {/* Expanded Region Cards with Factor Accordions */}
+                      <div className="space-y-3">
+                        {allRegions.map((region, idx) => {
+                          const isAnalyzed = lastAnalyzedRegions.includes(region.key)
+
+                          return (
+                            <Card
+                              key={region.key}
+                              className={`w-full ${region.isPinned ? "bg-indigo-50/50 border-indigo-200" :
+                                  region.isUserAdded ? "bg-sky-50/50 border-sky-200" :
+                                    ""
+                                }`}
+                              style={{
+                                animation: `morphToColumn 0.4s ease-out ${idx * 0.08}s both`,
+                              }}
+                            >
+                              <CardHeader className="p-3 pb-1 pt-3">
+                                <CardTitle className="text-base flex items-center gap-1.5">
+                                  <MapPin className="h-3.5 w-3.5" />
+                                  {region.displayName}
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className="p-3 pt-0 space-y-2">
+                                {/* Price display matching unexpanded cards */}
+                                <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
+                                  <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+                                    ${regionData[region.key].priceUSD.toFixed(2)}
+                                  </div>
+                                  <div className="text-muted-foreground text-xs">per kWh (USD)</div>
+                                </div>
+
+                                {/* Electricity Sources */}
+                                <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+
+                                {/* Data Sources */}
+                                <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+                                  <a
+                                    href={regionData[region.key].priceSourceUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:underline truncate"
+                                  >
+                                    Price: {regionData[region.key].priceSource}
+                                  </a>
+                                  <a
+                                    href={regionData[region.key].energySourceUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:underline truncate"
+                                  >
+                                    Mix: {regionData[region.key].energySource}
+                                  </a>
+                                </div>
+
+                                {/* Factor Analysis - below sources */}
+                                {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
+                                  <div className="w-full border-t pt-2 space-y-3">
+                                    {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
+                                      const score = getFactorScore(region.key, region.displayName, factorIdx)
+                                      const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
+
+                                      return (
+                                        <div key={factorIdx} className="space-y-1">
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium">{factor.factor}</span>
+                                            <span className={`text-sm font-bold px-2 py-0.5 rounded ${score && score > 0 ? "bg-green-100 text-green-700" :
+                                                score && score < 0 ? "bg-red-100 text-red-700" :
+                                                  "bg-gray-100 text-gray-600"
+                                              }`}>
+                                              {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
+                                            </span>
+                                          </div>
+                                          {justification ? (
+                                            <p className="text-sm leading-relaxed text-foreground">{justification}</p>
+                                          ) : (
+                                            <p className="text-xs text-muted-foreground">No explanation available.</p>
+                                          )}
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                )}
+
+                                {/* Loading skeleton for factors */}
+                                {isAnalyzing && (
+                                  <div className="space-y-2 border-t pt-2">
+                                    {[0, 1, 2].map((i) => (
+                                      <Skeleton key={i} className="h-10 w-full" />
+                                    ))}
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          )
+                        })}
+                      </div>
+
+                      {/* Full Analysis Button - Phone */}
+                      {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
+                        <div className="flex justify-center">
+                          <Button
+                            variant="outline"
+                            onClick={loadFullAnalysis}
+                            disabled={isLoadingFullAnalysis}
+                            className="gap-2 bg-transparent"
+                          >
+                            {isLoadingFullAnalysis ? (
+                              <>
+                                <RefreshCw className="h-4 w-4 animate-spin" />
+                                Loading...
+                              </>
+                            ) : (
+                              <>
+                                <FileText className="h-4 w-4" />
+                                Full Analysis
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Detailed Factor Analysis - Phone */}
+                      {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+                        <div className="space-y-3">
+                          <h4 className="font-semibold text-sm">Detailed Factor Analysis</h4>
+                          {analysis.factorAnalyses.map((factor, idx) => (
+                            <Card key={idx}>
+                              <CardContent className="p-3">
+                                <h5 className="text-sm mb-2 font-semibold">{factor.factor}</h5>
+                                <p className="text-xs leading-relaxed text-foreground">{factor.analysis}</p>
+                                {factor.sources && factor.sources.length > 0 && (
+                                  <div className="mt-2 flex flex-wrap gap-1.5">
+                                    {factor.sources.map((source, sIdx) => (
+                                      <a
+                                        key={sIdx}
+                                        href={source.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-blue-600 hover:underline"
+                                      >
+                                        [{source.label}]
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Synthesis Summary */}
+                      {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
+                        <Card className="bg-slate-50">
+                          <CardContent className="p-3">
+                            <h4 className="text-sm mb-2 font-semibold">Summary</h4>
+                            <p className="text-sm text-foreground">{analysis.synthesis}</p>
+                            {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {analysis.synthesisSources.map((source, idx) => (
+                                  <a
+                                    key={idx}
+                                    href={source.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-blue-600 hover:underline"
+                                  >
+                                    [{source.label}]
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )}
+                    </>
+                  )
+                })()}
+              </div>
+
+              {/* Tablet View - 2 column grid with accordion cards (sm to lg) */}
+              <div className="hidden sm:block lg:hidden">
+                {(() => {
+                  const allRegions = [
+                    ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
+                      key,
+                      displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                      isUserAdded: userAddedRegions.some((r) => r.key === key),
+                      isPinned: true,
+                    })),
+                    ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                      key: state.key,
+                      displayName: state.displayName,
+                      isUserAdded: false,
+                      isPinned: false,
+                    })),
+                    ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
+                      key: region.key,
+                      displayName: region.displayName,
+                      isUserAdded: true,
+                      isPinned: false,
+                    })),
+                  ].filter((r) => selectedForComparison.has(r.key))
+
+                  // Helper to get factor score for a region
+                  const getFactorScore = (regionKey: string, displayName: string, factorIndex: number) => {
+                    if (!analysis?.scoreTable || !lastAnalyzedRegions.includes(regionKey)) return null
+                    const factor = analysis.scoreTable[factorIndex]
+                    if (!factor) return null
+                    return factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
+                  }
+
+                  // Helper to get price div background classes
+                  const getPriceDivClasses = (isPinned: boolean, isUserAdded: boolean) => {
+                    if (isPinned) return "bg-indigo-100"
+                    if (isUserAdded) return "bg-sky-100"
+                    return "bg-slate-100"
+                  }
+
+                  return (
+                    <>
+                      <div className="grid grid-cols-3 gap-3">
+                        {allRegions.map((region, idx) => {
+                          const isAnalyzed = lastAnalyzedRegions.includes(region.key)
+
+                          return (
+                            <Card
+                              key={region.key}
+                              className={`w-full ${region.isPinned ? "bg-indigo-50/50 border-indigo-200" :
+                                  region.isUserAdded ? "bg-sky-50/50 border-sky-200" :
+                                    ""
+                                }`}
+                              style={{
+                                animation: `morphToColumn 0.4s ease-out ${idx * 0.08}s both`,
+                              }}
+                            >
+                              <CardHeader className="p-3 pb-1 pt-3">
+                                <CardTitle className="text-base flex items-center gap-1.5">
+                                  <MapPin className="h-3.5 w-3.5" />
+                                  {region.displayName}
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className="p-3 pt-0 space-y-2">
+                                {/* Price display */}
+                                <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
+                                  <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+                                    ${regionData[region.key].priceUSD.toFixed(2)}
+                                  </div>
+                                  <div className="text-muted-foreground text-xs">per kWh (USD)</div>
+                                </div>
+
+                                {/* Electricity Sources */}
+                                <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+
+                                {/* Data Sources */}
+                                <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+                                  <a
+                                    href={regionData[region.key].priceSourceUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:underline truncate"
+                                  >
+                                    Price: {regionData[region.key].priceSource}
+                                  </a>
+                                  <a
+                                    href={regionData[region.key].energySourceUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:underline truncate"
+                                  >
+                                    Mix: {regionData[region.key].energySource}
+                                  </a>
+                                </div>
+
+                                {/* Factor Analysis */}
+                                {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
+                                  <div className="w-full border-t pt-2 space-y-3">
+                                    {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
+                                      const score = getFactorScore(region.key, region.displayName, factorIdx)
+                                      const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
+
+                                      return (
+                                        <div key={factorIdx} className="space-y-1">
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium">{factor.factor}</span>
+                                            <span className={`text-sm font-bold px-2 py-0.5 rounded ${score && score > 0 ? "bg-green-100 text-green-700" :
+                                                score && score < 0 ? "bg-red-100 text-red-700" :
+                                                  "bg-gray-100 text-gray-600"
+                                              }`}>
+                                              {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
+                                            </span>
+                                          </div>
+                                          {justification ? (
+                                            <p className="text-sm leading-relaxed text-foreground">{justification}</p>
+                                          ) : (
+                                            <p className="text-xs text-muted-foreground">No explanation available.</p>
+                                          )}
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                )}
+
+                                {/* Loading skeleton for factors */}
+                                {isAnalyzing && (
+                                  <div className="space-y-2 border-t pt-2">
+                                    {[0, 1, 2].map((i) => (
+                                      <Skeleton key={i} className="h-10 w-full" />
+                                    ))}
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          )
+                        })}
+                      </div>
+
+                      {/* Full Analysis Button - Tablet */}
+                      {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
+                        <div className="flex justify-center mt-3">
+                          <Button
+                            variant="outline"
+                            onClick={loadFullAnalysis}
+                            disabled={isLoadingFullAnalysis}
+                            className="gap-2 bg-transparent"
+                          >
+                            {isLoadingFullAnalysis ? (
+                              <>
+                                <RefreshCw className="h-4 w-4 animate-spin" />
+                                Loading...
+                              </>
+                            ) : (
+                              <>
+                                <FileText className="h-4 w-4" />
+                                Full Analysis
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Detailed Factor Analysis - Tablet */}
+                      {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+                        <div className="space-y-3 mt-3">
+                          <h4 className="font-semibold text-sm">Detailed Factor Analysis</h4>
+                          {analysis.factorAnalyses.map((factor, idx) => (
+                            <Card key={idx}>
+                              <CardContent className="p-3">
+                                <h5 className="text-sm mb-2 font-semibold">{factor.factor}</h5>
+                                <p className="leading-relaxed text-sm text-foreground">{factor.analysis}</p>
+                                {factor.sources && factor.sources.length > 0 && (
+                                  <div className="mt-2 flex flex-wrap gap-1.5">
+                                    {factor.sources.map((source, sIdx) => (
+                                      <a
+                                        key={sIdx}
+                                        href={source.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-blue-600 hover:underline"
+                                      >
+                                        [{source.label}]
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Synthesis Summary for tablet */}
+                      {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
+                        <Card className="bg-slate-50 mt-3">
+                          <CardContent className="p-3">
+                            <h4 className="text-sm mb-2 font-semibold">Summary</h4>
+                            <p className="text-sm text-foreground">{analysis.synthesis}</p>
+                            {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {analysis.synthesisSources.map((source, idx) => (
+                                  <a
+                                    key={idx}
+                                    href={source.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-blue-600 hover:underline"
+                                  >
+                                    [{source.label}]
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )}
+                    </>
+                  )
+                })()}
+              </div>
+
+              {/* Desktop Stacked Region Cards with Factor Scores (lg+) */}
+              <div className="hidden lg:flex flex-col gap-2">
+                {/* Only selected regions for comparison */}
+                {(() => {
+                  const allRegions = [
+                    ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
+                      key,
+                      displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                      isUserAdded: userAddedRegions.some((r) => r.key === key),
+                      isPinned: true,
+                    })),
+                    ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                      key: state.key,
+                      displayName: state.displayName,
+                      isUserAdded: false,
+                      isPinned: false,
+                    })),
+                    ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
+                      key: region.key,
+                      displayName: region.displayName,
+                      isUserAdded: true,
+                      isPinned: false,
+                    })),
+                  ].filter((r) => selectedForComparison.has(r.key))
+
+                  return allRegions.map((region, idx) => (
+                    <motion.div
+                      key={region.key}
+                      layoutId={`card-${region.key}`}
+                      layout
+                      transition={{ type: "spring", stiffness: 25, damping: 12 }}
+                    >
+                      <Card
+                        className={`w-full ${region.isPinned ? "bg-indigo-50/50 border-indigo-200" : region.isUserAdded ? "bg-sky-50/50 border-sky-200" : ""}`}
+                      >
+                        <CardContent className="p-3 py-0">
+                          <div className="grid grid-cols-4 gap-4 items-start">
+                            {/* Column 1: Original Card Content */}
+                            <div className="space-y-2">
+                              {/* Header with name */}
+                              <div className="flex items-center gap-1.5">
+                                <MapPin className="h-3.5 w-3.5" />
+                                <span className="font-semibold text-base">{region.displayName}</span>
+                              </div>
+
+                              {/* Price display */}
+                              <div className={`rounded-lg p-2 text-center ${region.isPinned ? "bg-indigo-100" : region.isUserAdded ? "bg-sky-100" : "bg-slate-100"}`}>
+                                <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+                                  ${regionData[region.key].priceUSD.toFixed(2)}
+                                </div>
+                                <div className="text-muted-foreground text-xs">per kWh (USD)</div>
+                              </div>
+
+                              {/* Energy Sources Chart */}
+                              <EnergyBreakdown energyMix={regionData[region.key].energyMix} compact={true} />
+
+                              {/* Data Sources */}
+                              <div className="border-t pt-1 flex gap-3 text-xs text-muted-foreground">
+                                <a
+                                  href={regionData[region.key].priceSourceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline truncate"
+                                >
+                                  Price: {regionData[region.key].priceSource}
+                                </a>
+                                <a
+                                  href={regionData[region.key].energySourceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline truncate"
+                                >
+                                  Mix: {regionData[region.key].energySource}
+                                </a>
+                              </div>
+                            </div>
+
+                            {/* Columns 2, 3, 4: Factor Scores or Skeleton Loading */}
+                            {isAnalyzing ? (
+                              // Skeleton shimmer loading state
+                              <>
+                                {[0, 1, 2].map((idx) => (
+                                  <div key={idx} className="flex flex-col items-center justify-start gap-2 pt-10">
+                                    <Skeleton className="w-10 h-10 rounded-full" />
+                                    <div className="space-y-2 w-full">
+                                      <Skeleton className="h-3 w-full" />
+                                      <Skeleton className="h-3 w-4/5 mx-auto" />
+                                      <Skeleton className="h-3 w-3/5 mx-auto" />
+                                    </div>
+                                  </div>
+                                ))}
+                              </>
+                            ) : !lastAnalyzedRegions.includes(region.key) ? (
+                              // Placeholder for newly added regions (not yet analyzed)
+                              [0, 1, 2].map((idx) => (
+                                <div key={idx} className="flex flex-col items-center justify-start gap-2 pt-10">
+                                  <div className="w-10 h-10 rounded-full bg-slate-200" />
+                                  <div className="space-y-2 w-full">
+                                    <div className="h-3 w-full rounded bg-slate-200" />
+                                    <div className="h-3 w-4/5 mx-auto rounded bg-slate-200" />
+                                    <div className="h-3 w-3/5 mx-auto rounded bg-slate-200" />
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              // Actual factor scores
+                              analysis?.scoreTable?.slice(0, 3).map((row, factorIdx) => {
+                                const score = row.scores[region.displayName] ?? row.scores[region.key] ?? 0
+                                const justification = row.justifications?.[region.displayName] ?? row.justifications?.[region.key] ?? ""
+
+                                return (
+                                  <div key={factorIdx} className="flex flex-col items-center justify-start gap-2 pt-10">
+                                    <span className={`inline-flex items-center justify-center w-10 h-10 rounded-full text-lg font-bold ${score === 1 ? "bg-green-100 text-green-700" :
+                                        score === -1 ? "bg-red-100 text-red-700" :
+                                          "bg-gray-100 text-gray-600"
+                                      }`}>
+                                      {score > 0 ? `+${score}` : score}
+                                    </span>
+                                    {justification && (
+                                      <p className="text-center text-foreground text-sm pt-4">{justification}</p>
+                                    )}
+                                  </div>
+                                )
+                              })
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))
+                })()}
+              </div>
+
+              {/* Full Analysis Button - Desktop */}
+              {!isAnalyzing && analysis?.scoreTable && !showFullAnalysis && (
+                <div className="hidden lg:flex justify-start mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={loadFullAnalysis}
+                    disabled={isLoadingFullAnalysis}
+                    className="gap-2 bg-transparent"
+                  >
+                    {isLoadingFullAnalysis ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        <FileText className="h-4 w-4" />
+                        Full Analysis
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Factor Analysis Paragraphs - Desktop */}
+              {!isAnalyzing && showFullAnalysis && analysis?.factorAnalyses && analysis.factorAnalyses.length > 0 && (
+                <div className="hidden lg:block mt-6 space-y-4">
+                  <h4 className="font-semibold text-lg">Detailed Factor Analysis</h4>
+                  {analysis.factorAnalyses.map((factor, idx) => (
+                    <Card key={idx}>
+                      <CardContent className="p-4">
+                        <h5 className="mb-2 font-semibold">{factor.factor}</h5>
+                        <p className="text-sm leading-relaxed text-foreground">{factor.analysis}</p>
+                        {factor.sources && factor.sources.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {factor.sources.map((source, sIdx) => (
+                              <a
+                                key={sIdx}
+                                href={source.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 hover:underline"
+                              >
+                                [{source.label}]
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Synthesis Summary - Desktop */}
+              {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
+                <Card className="hidden md:block bg-slate-50 mt-4">
                   <CardContent className="p-4">
-                    <h5 className="mb-2 font-semibold">{factor.factor}</h5>
-                    <p className="text-sm leading-relaxed text-foreground">{factor.analysis}</p>
-                    {factor.sources && factor.sources.length > 0 && (
+                    <h4 className="font-semibold mb-2">Summary</h4>
+                    <p className="text-sm text-foreground">{analysis.synthesis}</p>
+                    {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {factor.sources.map((source, sIdx) => (
-                          <a 
-                            key={sIdx} 
-                            href={source.url} 
-                            target="_blank" 
+                        {analysis.synthesisSources.map((source, idx) => (
+                          <a
+                            key={idx}
+                            href={source.url}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-xs text-blue-600 hover:underline"
                           >
@@ -2715,219 +2732,191 @@ setAnalysis(null)
                     )}
                   </CardContent>
                 </Card>
-              ))}
+              )}
             </div>
           )}
+        </LayoutGroup>
 
-          {/* Synthesis Summary - Desktop */}
-          {!isAnalyzing && showFullAnalysis && analysis?.synthesis && (
-            <Card className="hidden md:block bg-slate-50 mt-4">
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-2">Summary</h4>
-                <p className="text-sm text-foreground">{analysis.synthesis}</p>
-                {analysis.synthesisSources && analysis.synthesisSources.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {analysis.synthesisSources.map((source, idx) => (
-                      <a 
-                        key={idx} 
-                        href={source.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-xs text-blue-600 hover:underline"
-                      >
-                        [{source.label}]
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      )}
-      </LayoutGroup>
-
-      {/* Search Dialog for Expanded View */}
-      <Dialog open={isSearchOpen} onOpenChange={(open) => {
-        setIsSearchOpen(open)
-        if (!open) setDialogSearchValue("")
-      }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add a State</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="relative">
-              <Input
-                placeholder="Search for a US state..."
-                value={dialogSearchValue}
-                onChange={(e) => setDialogSearchValue(e.target.value)}
-                onKeyDown={(e) => {
-                  const dialogSuggestions = dialogSearchValue
-                    ? Object.keys(regionData)
+        {/* Search Dialog for Expanded View */}
+        <Dialog open={isSearchOpen} onOpenChange={(open) => {
+          setIsSearchOpen(open)
+          if (!open) setDialogSearchValue("")
+        }}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add a State</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="relative">
+                <Input
+                  placeholder="Search for a US state..."
+                  value={dialogSearchValue}
+                  onChange={(e) => setDialogSearchValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    const dialogSuggestions = dialogSearchValue
+                      ? Object.keys(regionData)
                         .filter(
                           (key) => key.toLowerCase().includes(dialogSearchValue.toLowerCase()) &&
                             !filteredStates.some((s) => s.key === key) &&
                             !userAddedRegions.some((r) => r.key === key),
                         )
                         .slice(0, 6)
-                    : []
-                  if (e.key === "Enter" && dialogSuggestions.length > 0) {
-                    addRegion(dialogSuggestions[0])
-                    setDialogSearchValue("")
-                    setIsSearchOpen(false)
-                  }
-                }}
-                autoFocus
-              />
-            </div>
-            {dialogSearchValue && (
-              <div className="flex flex-wrap gap-2">
-                {Object.keys(regionData)
-                  .filter(
-                    (key) => key.toLowerCase().includes(dialogSearchValue.toLowerCase()) &&
-                      !filteredStates.some((s) => s.key === key) &&
-                      !userAddedRegions.some((r) => r.key === key),
-                  )
-                  .slice(0, 6)
-                  .map((key) => (
-                    <Badge
-                      key={key}
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-secondary/80"
-                      onClick={() => {
-                        addRegion(key)
-                        setDialogSearchValue("")
-                        setIsSearchOpen(false)
-                      }}
-                    >
-                      {key
-                        .split(" ")
-                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                        .join(" ")}
-                    </Badge>
-                  ))}
+                      : []
+                    if (e.key === "Enter" && dialogSuggestions.length > 0) {
+                      addRegion(dialogSuggestions[0])
+                      setDialogSearchValue("")
+                      setIsSearchOpen(false)
+                    }
+                  }}
+                  autoFocus
+                />
               </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Mobile Region Detail Sheet */}
-      <Sheet open={!!mobileDetailRegion} onOpenChange={(open) => !open && setMobileDetailRegion(null)}>
-        <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
-          {mobileDetailRegion && (() => {
-            const regionKey = mobileDetailRegion
-            const data = regionData[regionKey]
-            if (!data) return null
-            
-            const displayName = regionKey.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
-            const isPinned = pinnedRegions.has(regionKey)
-            const isUserAdded = userAddedRegions.some((r) => r.key === regionKey)
-            const isAnalyzed = lastAnalyzedRegions.includes(regionKey)
-
-            return (
-              <>
-                <SheetHeader className="pb-4 border-b">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <SheetTitle className="flex items-center gap-2">
-                        {isPinned && <Pin className="h-4 w-4 fill-current text-indigo-600" />}
-                        {displayName}
-                      </SheetTitle>
-                      <div className="text-2xl font-bold text-primary mt-1">
-                        ${data.priceUSD.toFixed(2)}/kWh
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => togglePinRegion(regionKey)}
-                        disabled={isAnalyzing}
-                      >
-                        <Pin className={`h-4 w-4 mr-1 ${isPinned ? "fill-current" : ""}`} />
-                        {isPinned ? "Unpin" : "Pin"}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+              {dialogSearchValue && (
+                <div className="flex flex-wrap gap-2">
+                  {Object.keys(regionData)
+                    .filter(
+                      (key) => key.toLowerCase().includes(dialogSearchValue.toLowerCase()) &&
+                        !filteredStates.some((s) => s.key === key) &&
+                        !userAddedRegions.some((r) => r.key === key),
+                    )
+                    .slice(0, 6)
+                    .map((key) => (
+                      <Badge
+                        key={key}
+                        variant="secondary"
+                        className="cursor-pointer hover:bg-secondary/80"
                         onClick={() => {
-                          isUserAdded ? removeUserRegion(regionKey) : hideFilterRegion(regionKey)
-                          setMobileDetailRegion(null)
+                          addRegion(key)
+                          setDialogSearchValue("")
+                          setIsSearchOpen(false)
                         }}
-                        disabled={isAnalyzing}
                       >
-                        <X className="h-4 w-4 mr-1" />
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
-                </SheetHeader>
-
-                <div className="py-4 space-y-4">
-                  {/* Electricity Sources */}
-                  <div>
-                    <h4 className="font-semibold text-sm mb-2">Electricity Sources</h4>
-                    <div className="flex flex-wrap gap-1.5">
-                      {Object.entries(data.energyMix)
-                        .filter(([, v]) => v > 0)
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([source, pct]) => (
-                          <Badge key={source} variant="secondary" className="text-xs">
-                            {source.charAt(0).toUpperCase() + source.slice(1)} {pct}%
-                          </Badge>
-                        ))}
-                    </div>
-                  </div>
-
-                  {/* Factor Scores */}
-                  <div>
-                    <h4 className="font-semibold text-sm mb-3">Price Driver Scores</h4>
-                    {isAnalyzing ? (
-                      <div className="space-y-3">
-                        {[0, 1, 2].map((i) => (
-                          <div key={i} className="p-3 rounded-lg border">
-                            <Skeleton className="h-5 w-32 mb-2" />
-                            <Skeleton className="h-8 w-8 rounded-full mb-2" />
-                            <Skeleton className="h-12 w-full" />
-                          </div>
-                        ))}
-                      </div>
-                    ) : !isAnalyzed ? (
-                      <p className="text-sm text-muted-foreground p-3 bg-slate-50 rounded-lg">
-                        This region was not included in the current analysis. Tap "Refactor Price Drivers" to include it.
-                      </p>
-                    ) : analysis?.scoreTable?.slice(0, 3).map((factor, idx) => {
-                      const score = factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
-                      const justification = factor.justifications?.[displayName] || factor.justifications?.[regionKey]
-                      
-                      return (
-                        <div key={idx} className="p-3 rounded-lg border mb-3">
-                          <div className="flex items-start justify-between gap-3 mb-2">
-                            <h5 className="font-medium text-sm">{factor.factor}</h5>
-                            <div className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold ${
-                              score === 1 ? "bg-green-100 text-green-700" :
-                              score === -1 ? "bg-red-100 text-red-700" :
-                              "bg-gray-100 text-gray-600"
-                            }`}>
-                              {score > 0 ? `+${score}` : score}
-                            </div>
-                          </div>
-                          {justification && (
-                            <p className="text-sm text-muted-foreground">{justification}</p>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
+                        {key
+                          .split(" ")
+                          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                          .join(" ")}
+                      </Badge>
+                    ))}
                 </div>
-              </>
-            )
-          })()}
-        </SheetContent>
-      </Sheet>
-    </div>{/* End scrollable content */}
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Mobile Region Detail Sheet */}
+        <Sheet open={!!mobileDetailRegion} onOpenChange={(open) => !open && setMobileDetailRegion(null)}>
+          <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
+            {mobileDetailRegion && (() => {
+              const regionKey = mobileDetailRegion
+              const data = regionData[regionKey]
+              if (!data) return null
+
+              const displayName = regionKey.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+              const isPinned = pinnedRegions.has(regionKey)
+              const isUserAdded = userAddedRegions.some((r) => r.key === regionKey)
+              const isAnalyzed = lastAnalyzedRegions.includes(regionKey)
+
+              return (
+                <>
+                  <SheetHeader className="pb-4 border-b">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <SheetTitle className="flex items-center gap-2">
+                          {isPinned && <Pin className="h-4 w-4 fill-current text-indigo-600" />}
+                          {displayName}
+                        </SheetTitle>
+                        <div className="text-2xl font-bold text-primary mt-1">
+                          ${data.priceUSD.toFixed(2)}/kWh
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => togglePinRegion(regionKey)}
+                          disabled={isAnalyzing}
+                        >
+                          <Pin className={`h-4 w-4 mr-1 ${isPinned ? "fill-current" : ""}`} />
+                          {isPinned ? "Unpin" : "Pin"}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            isUserAdded ? removeUserRegion(regionKey) : hideFilterRegion(regionKey)
+                            setMobileDetailRegion(null)
+                          }}
+                          disabled={isAnalyzing}
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetHeader>
+
+                  <div className="py-4 space-y-4">
+                    {/* Electricity Sources */}
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2">Electricity Sources</h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {Object.entries(data.energyMix)
+                          .filter(([, v]) => v > 0)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([source, pct]) => (
+                            <Badge key={source} variant="secondary" className="text-xs">
+                              {source.charAt(0).toUpperCase() + source.slice(1)} {pct}%
+                            </Badge>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Factor Scores */}
+                    <div>
+                      <h4 className="font-semibold text-sm mb-3">Price Driver Scores</h4>
+                      {isAnalyzing ? (
+                        <div className="space-y-3">
+                          {[0, 1, 2].map((i) => (
+                            <div key={i} className="p-3 rounded-lg border">
+                              <Skeleton className="h-5 w-32 mb-2" />
+                              <Skeleton className="h-8 w-8 rounded-full mb-2" />
+                              <Skeleton className="h-12 w-full" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : !isAnalyzed ? (
+                        <p className="text-sm text-muted-foreground p-3 bg-slate-50 rounded-lg">
+                          This region was not included in the current analysis. Tap "Refactor Price Drivers" to include it.
+                        </p>
+                      ) : analysis?.scoreTable?.slice(0, 3).map((factor, idx) => {
+                        const score = factor.scores[displayName] ?? factor.scores[regionKey] ?? 0
+                        const justification = factor.justifications?.[displayName] || factor.justifications?.[regionKey]
+
+                        return (
+                          <div key={idx} className="p-3 rounded-lg border mb-3">
+                            <div className="flex items-start justify-between gap-3 mb-2">
+                              <h5 className="font-medium text-sm">{factor.factor}</h5>
+                              <div className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold ${score === 1 ? "bg-green-100 text-green-700" :
+                                  score === -1 ? "bg-red-100 text-red-700" :
+                                    "bg-gray-100 text-gray-600"
+                                }`}>
+                                {score > 0 ? `+${score}` : score}
+                              </div>
+                            </div>
+                            {justification && (
+                              <p className="text-sm text-muted-foreground">{justification}</p>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </>
+              )
+            })()}
+          </SheetContent>
+        </Sheet>
+      </div>{/* End scrollable content */}
     </div>
   )
 }
