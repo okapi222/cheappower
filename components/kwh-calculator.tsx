@@ -17,7 +17,7 @@ import { AlertDialogContent } from "@/components/ui/alert-dialog"
 import { AlertDialog } from "@/components/ui/alert-dialog"
 
 import { useState, useEffect } from "react"
-import { motion, LayoutGroup } from "framer-motion"
+import { motion, LayoutGroup, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -2303,7 +2303,7 @@ export function KwhCalculator() {
                 })()}
               </div>
 
-              {/* Tablet View - 2 column grid with accordion cards (sm to lg) */}
+              {/* Tablet View - 3 column grid with animated accordion cards (sm to lg) */}
               <div className="hidden sm:block lg:hidden">
                 {(() => {
                   const allRegions = [
@@ -2345,19 +2345,28 @@ export function KwhCalculator() {
                   return (
                     <>
                       <div className="grid grid-cols-3 gap-3">
+                        <AnimatePresence mode="wait">
                         {allRegions.map((region, idx) => {
                           const isAnalyzed = lastAnalyzedRegions.includes(region.key)
 
                           return (
-                            <Card
+                            <motion.div
                               key={region.key}
+                              layoutId={`tablet-card-${region.key}`}
+                              initial={{ opacity: 0, y: 30, scale: 0.92 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 28,
+                                delay: idx * 0.1,
+                              }}
+                            >
+                            <Card
                               className={`w-full ${region.isPinned ? "bg-indigo-50/50 border-indigo-200" :
                                   region.isUserAdded ? "bg-sky-50/50 border-sky-200" :
                                     ""
                                 }`}
-                              style={{
-                                animation: `morphToColumn 0.4s ease-out ${idx * 0.08}s both`,
-                              }}
                             >
                               <CardHeader className="p-3 pb-1 pt-3">
                                 <CardTitle className="text-base flex items-center gap-1.5">
@@ -2368,9 +2377,15 @@ export function KwhCalculator() {
                               <CardContent className="p-3 pt-0 space-y-2">
                                 {/* Price display */}
                                 <div className={`rounded-lg p-2 text-center ${getPriceDivClasses(region.isPinned, region.isUserAdded)}`}>
-                                  <div className="font-bold text-2xl" style={{ color: "#00f" }}>
+                                  <motion.div 
+                                    className="font-bold text-2xl" 
+                                    style={{ color: "#00f" }}
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ delay: idx * 0.1 + 0.2, duration: 0.3 }}
+                                  >
                                     ${regionData[region.key].priceUSD.toFixed(2)}
-                                  </div>
+                                  </motion.div>
                                   <div className="text-muted-foreground text-xs">per kWh (USD)</div>
                                 </div>
 
@@ -2397,47 +2412,85 @@ export function KwhCalculator() {
                                   </a>
                                 </div>
 
-                                {/* Factor Analysis */}
+                                {/* Factor Analysis - animated entrance */}
+                                <AnimatePresence>
                                 {!isAnalyzing && analysis?.scoreTable && isAnalyzed && (
-                                  <div className="w-full border-t pt-2 space-y-3">
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ 
+                                      duration: 0.5, 
+                                      delay: idx * 0.15,
+                                      ease: [0.25, 0.1, 0.25, 1]
+                                    }}
+                                    className="w-full border-t pt-2 space-y-3 overflow-hidden"
+                                  >
                                     {analysis.scoreTable.slice(0, 3).map((factor, factorIdx) => {
                                       const score = getFactorScore(region.key, region.displayName, factorIdx)
                                       const justification = factor.justifications?.[region.displayName] ?? factor.justifications?.[region.key] ?? ""
 
                                       return (
-                                        <div key={factorIdx} className="space-y-1">
+                                        <motion.div 
+                                          key={factorIdx} 
+                                          className="space-y-1"
+                                          initial={{ opacity: 0, x: -10 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          transition={{ 
+                                            delay: idx * 0.15 + factorIdx * 0.12 + 0.3,
+                                            duration: 0.35
+                                          }}
+                                        >
                                           <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium">{factor.factor}</span>
-                                            <span className={`text-sm font-bold px-2 py-0.5 rounded ${score && score > 0 ? "bg-green-100 text-green-700" :
+                                            <motion.span 
+                                              className={`text-sm font-bold px-2 py-0.5 rounded ${score && score > 0 ? "bg-green-100 text-green-700" :
                                                 score && score < 0 ? "bg-red-100 text-red-700" :
                                                   "bg-gray-100 text-gray-600"
-                                              }`}>
-                                              {score !== null ? (score > 0 ? `+${score}` : score) : "—"}
-                                            </span>
+                                              }`}
+                                              initial={{ scale: 0 }}
+                                              animate={{ scale: 1 }}
+                                              transition={{ 
+                                                type: "spring", 
+                                                stiffness: 400, 
+                                                damping: 15,
+                                                delay: idx * 0.15 + factorIdx * 0.12 + 0.4
+                                              }}
+                                            >
+                                              {score !== null ? (score > 0 ? `+${score}` : score) : "\u2014"}
+                                            </motion.span>
                                           </div>
                                           {justification ? (
                                             <p className="text-sm leading-relaxed text-foreground">{justification}</p>
                                           ) : (
                                             <p className="text-xs text-muted-foreground">No explanation available.</p>
                                           )}
-                                        </div>
+                                        </motion.div>
                                       )
                                     })}
-                                  </div>
+                                  </motion.div>
                                 )}
+                                </AnimatePresence>
 
                                 {/* Loading skeleton for factors */}
                                 {isAnalyzing && (
-                                  <div className="space-y-2 border-t pt-2">
+                                  <motion.div 
+                                    className="space-y-2 border-t pt-2"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                  >
                                     {[0, 1, 2].map((i) => (
                                       <Skeleton key={i} className="h-10 w-full" />
                                     ))}
-                                  </div>
+                                  </motion.div>
                                 )}
                               </CardContent>
                             </Card>
+                            </motion.div>
                           )
                         })}
+                        </AnimatePresence>
                       </div>
 
                       {/* Full Analysis Button - Tablet */}
