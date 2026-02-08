@@ -1565,52 +1565,42 @@ export function KwhCalculator() {
 
                     <div className="flex flex-row gap-3 items-center">
                       {/* Category Filter */}
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-                            {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
-                              <button
-                                key={category}
-                                disabled={isAnalyzing}
-                                onClick={() => handleFilterChange('category', category)}
-                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${selectionMode === "filter" && filterCategory === category
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground"
-                                  } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
-                              >
-                                {category === "price" && "Price"}
-                                {category === "renewables" && "Renewables"}
-                                {category === "nuclear" && "Nuclear"}
-                                {category === "fossilFuels" && "Fossil Fuels"}
-                                {category === "coal" && "Coal"}
-                              </button>
-                            ))}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">Select category to filter by</TooltipContent>
-                      </Tooltip>
+                      <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                        {(["price", "renewables", "nuclear", "fossilFuels", "coal"] as FilterCategory[]).map((category) => (
+                          <button
+                            key={category}
+                            disabled={isAnalyzing}
+                            onClick={() => handleFilterChange('category', category)}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${selectionMode === "filter" && filterCategory === category
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
+                              } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                          >
+                            {category === "price" && "Price"}
+                            {category === "renewables" && "Renewables"}
+                            {category === "nuclear" && "Nuclear"}
+                            {category === "fossilFuels" && "Fossil Fuels"}
+                            {category === "coal" && "Coal"}
+                          </button>
+                        ))}
+                      </div>
 
                       {/* Order Filter */}
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
-                            {(["highest", "lowest"] as FilterOrder[]).map((order) => (
-                              <button
-                                key={order}
-                                disabled={isAnalyzing}
-                                onClick={() => handleFilterChange('order', order)}
-                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${selectionMode === "filter" && filterOrder === order
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground"
-                                  } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
-                              >
-                                {order === "highest" ? "Highest" : "Lowest"}
-                              </button>
-                            ))}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">Sort by highest or lowest</TooltipContent>
-                      </Tooltip>
+                      <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+                        {(["highest", "lowest"] as FilterOrder[]).map((order) => (
+                          <button
+                            key={order}
+                            disabled={isAnalyzing}
+                            onClick={() => handleFilterChange('order', order)}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${selectionMode === "filter" && filterOrder === order
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
+                              } ${isAnalyzing ? "cursor-not-allowed" : ""}`}
+                          >
+                            {order === "highest" ? "Highest" : "Lowest"}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
