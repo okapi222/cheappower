@@ -1366,7 +1366,7 @@ export function KwhCalculator() {
 
       {/* Filter Controls - Mobile/Tablet - hidden in expanded view, selection mode, and desktop */}
       {!isPriceDriversExpanded && !isPriceDriversSelecting && (
-      <div className="flex lg:hidden flex-col gap-2 items-center">
+      <div className="flex lg:hidden flex-col gap-2 items-center relative">
             <p className="text-base font-medium text-foreground text-center">Rank states or add them individually</p>
             <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
               {/* Filter dropdowns - highlighted when filter mode is active, unchecked when inactive */}
@@ -1494,9 +1494,9 @@ export function KwhCalculator() {
                 </Button>
               )}
             </div>
-            {/* Mobile search suggestions dropdown */}
-            {selectionMode === "individual" && isFilterBarSearchOpen && filterBarSearchValue.trim() && (
-              <div className="flex flex-wrap gap-2 justify-center">
+        {/* Mobile search suggestions dropdown - absolute to avoid pushing content */}
+        {selectionMode === "individual" && isFilterBarSearchOpen && filterBarSearchValue.trim() && (
+          <div className="absolute top-full left-0 right-0 z-20 flex flex-wrap gap-2 justify-center bg-background/95 backdrop-blur-sm py-2 px-1 rounded-b-lg shadow-md">
                 {Object.keys(regionData)
                   .filter((key) => key.toLowerCase().includes(filterBarSearchValue.toLowerCase()))
                   .filter((key) => !pinnedRegions.has(key) && !userAddedRegions.some((r) => r.key === key) && !filteredStates.some((s) => s.key === key))
