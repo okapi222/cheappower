@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sun, Sunrise, Filter } from "lucide-react"
+import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ArrowDown, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sun, Sunrise, Filter } from "lucide-react"
 import { analyzeRegionPricing, askFollowUp, generateFactorAnalyses } from "@/app/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -1365,53 +1365,83 @@ setAnalysis(null)
         </div>
       </div>
 
-      {/* Filter Controls - Mobile Dropdowns - hidden in expanded view and selection mode */}
+      {/* Filter Controls - Mobile - hidden in expanded view and selection mode */}
       {!isPriceDriversExpanded && !isPriceDriversSelecting && (
-      <div className={`flex sm:hidden gap-3 items-center justify-center ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
-        <Select
-          value={filterCategory}
-          onValueChange={(value: FilterCategory) => handleFilterChange('category', value)}
-  disabled={isAnalyzing}
-  >
-  <SelectTrigger className="w-[140px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="price">Price</SelectItem>
-            <SelectItem value="renewables">Renewables</SelectItem>
-            <SelectItem value="nuclear">Nuclear</SelectItem>
-            <SelectItem value="fossilFuels">Fossil Fuels</SelectItem>
-            <SelectItem value="coal">Coal</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex sm:hidden flex-col gap-2 items-center">
+        <p className="text-xs text-muted-foreground text-center">Ranks states or add individually</p>
+        <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
+          <div className="flex items-center gap-2">
+            <Select
+              value={filterCategory}
+              onValueChange={(value: FilterCategory) => handleFilterChange('category', value)}
+              disabled={isAnalyzing}
+            >
+              <SelectTrigger className="w-[120px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="price">Price</SelectItem>
+                <SelectItem value="renewables">Renewables</SelectItem>
+                <SelectItem value="nuclear">Nuclear</SelectItem>
+                <SelectItem value="fossilFuels">Fossil Fuels</SelectItem>
+                <SelectItem value="coal">Coal</SelectItem>
+              </SelectContent>
+            </Select>
 
-        <Select
-          value={filterOrder}
-          onValueChange={(value: FilterOrder) => handleFilterChange('order', value)}
-  disabled={isAnalyzing}
-  >
-  <SelectTrigger className="w-[100px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="highest">Highest</SelectItem>
-            <SelectItem value="lowest">Lowest</SelectItem>
-          </SelectContent>
-        </Select>
-
-<Popover>
-  <PopoverTrigger asChild>
-  <button
-  type="button"
-  className="p-3 text-muted-foreground hover:text-foreground active:text-foreground touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-  >
-  <Info className="size-6" />
-  </button>
-  </PopoverTrigger>
-  <PopoverContent side="bottom" className="max-w-[200px] text-center text-sm p-3 bg-yellow-50">
-  Filter states by price or energy mix
-  </PopoverContent>
-  </Popover>
+            <Select
+              value={filterOrder}
+              onValueChange={(value: FilterOrder) => handleFilterChange('order', value)}
+              disabled={isAnalyzing}
+            >
+              <SelectTrigger className="w-[60px]">
+                <SelectValue>
+                  {filterOrder === "highest" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="highest">
+                  <div className="flex items-center gap-2">
+                    <ArrowUp className="h-4 w-4" />
+                    <span>Highest</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="lowest">
+                  <div className="flex items-center gap-2">
+                    <ArrowDown className="h-4 w-4" />
+                    <span>Lowest</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="h-8 w-px bg-border" />
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setPreSelectionFilterState({
+                category: filterCategory,
+                order: filterOrder,
+                mode: selectionMode,
+                visibleCount: visibleFilterCount,
+              })
+              setIsFilterBarSearchOpen(true)
+              setSelectionMode("individual")
+              setFilterCategory("price")
+              setFilterOrder("highest")
+              setFilteredStates([])
+              setHiddenRegions(new Set())
+              setRemovedFilterSlots(0)
+            }}
+            disabled={isAnalyzing}
+            className="flex items-center gap-2"
+          >
+            <Search className="h-4 w-4" />
+            <span>Add State</span>
+          </Button>
+        </div>
       </div>
       )}
 
