@@ -1368,7 +1368,7 @@ export function KwhCalculator() {
       {!isPriceDriversExpanded && !isPriceDriversSelecting && (
       <div className="flex lg:hidden flex-col gap-2 items-center">
             <p className="text-base font-medium text-foreground text-center">Rank states or add them individually</p>
-            <div className={`relative flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
+            <div className={`flex items-center gap-3 ${isAnalyzing ? "opacity-50 pointer-events-none" : ""}`}>
               {/* Filter dropdowns - highlighted when filter mode is active, unchecked when inactive */}
               <div className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${selectionMode === "filter" ? "bg-primary/10 ring-1 ring-primary/30" : "opacity-60"}`}>
                 <Select
@@ -1427,7 +1427,7 @@ export function KwhCalculator() {
 
               {/* Add button / inline search */}
               {selectionMode === "individual" && isFilterBarSearchOpen ? (
-                <div className="relative flex items-center">
+                <div className="flex items-center" style={{ position: "relative" }}>
                   <Input
                     placeholder="Search state..."
                     value={filterBarSearchValue}
@@ -1458,7 +1458,8 @@ export function KwhCalculator() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6"
+                    className="h-6 w-6"
+                    style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)" }}
                     onClick={() => {
                       setIsFilterBarSearchOpen(false)
                       setFilterBarSearchValue("")
@@ -1471,6 +1472,38 @@ export function KwhCalculator() {
                   >
                     <X className="h-3 w-3" />
                   </Button>
+                  {/* Search suggestions - positioned absolutely from input wrapper */}
+                  {filterBarSearchValue.trim() && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "calc(100% + 4px)",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        zIndex: 50,
+                        minWidth: "280px",
+                      }}
+                      className="flex flex-wrap gap-2 justify-center bg-background border border-border py-2 px-3 rounded-lg shadow-lg"
+                    >
+                      {Object.keys(regionData)
+                        .filter((key) => key.toLowerCase().includes(filterBarSearchValue.toLowerCase()))
+                        .filter((key) => !pinnedRegions.has(key) && !userAddedRegions.some((r) => r.key === key) && !filteredStates.some((s) => s.key === key))
+                        .slice(0, 5)
+                        .map((key) => (
+                          <Badge
+                            key={key}
+                            variant="secondary"
+                            className="cursor-pointer hover:bg-secondary/80"
+                            onClick={() => {
+                              addRegion(key)
+                              setFilterBarSearchValue("")
+                            }}
+                          >
+                            {key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
+                          </Badge>
+                        ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <Button
@@ -1492,28 +1525,6 @@ export function KwhCalculator() {
                   <Plus className="h-4 w-4 shrink-0" />
                   <span className="hidden sm:inline text-sm">Add a State</span>
                 </Button>
-              )}
-              {/* Search suggestions - absolute overlay, anchored to controls row */}
-              {selectionMode === "individual" && isFilterBarSearchOpen && filterBarSearchValue.trim() && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 z-20 flex flex-wrap gap-2 justify-center bg-background border border-border py-2 px-3 rounded-lg shadow-lg mt-1 min-w-[280px]">
-                  {Object.keys(regionData)
-                    .filter((key) => key.toLowerCase().includes(filterBarSearchValue.toLowerCase()))
-                    .filter((key) => !pinnedRegions.has(key) && !userAddedRegions.some((r) => r.key === key) && !filteredStates.some((s) => s.key === key))
-                    .slice(0, 5)
-                    .map((key) => (
-                      <Badge
-                        key={key}
-                        variant="secondary"
-                        className="cursor-pointer hover:bg-secondary/80"
-                        onClick={() => {
-                          addRegion(key)
-                          setFilterBarSearchValue("")
-                        }}
-                      >
-                        {key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
-                      </Badge>
-                    ))}
-                </div>
               )}
             </div>
           </div>
