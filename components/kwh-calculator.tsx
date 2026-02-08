@@ -1023,31 +1023,31 @@ export function KwhCalculator() {
     return () => clearInterval(interval)
   }, [isAnalyzing])
 
-  // Get all currently displayed regions (pinned + filtered + user-added)
+  // Get all currently displayed regions (pinned + user-added + filtered)
   const getDisplayedRegions = () => {
-    const displayed: { key: string; displayName: string }[] = []
-
-    // Pinned regions first
-    Array.from(pinnedRegions).forEach((key) => {
-      if (regionData[key]) {
-        displayed.push({
-          key,
-          displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
-        })
-      }
-    })
-
-    // Filtered states (not already in pinned)
+  const displayed: { key: string; displayName: string }[] = []
+  
+  // Pinned regions first
+  Array.from(pinnedRegions).forEach((key) => {
+  if (regionData[key]) {
+  displayed.push({
+  key,
+  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+  })
+  }
+  })
+  
+  // User-added regions next (not already in pinned) - appear at top left
+  userAddedRegions.forEach((region) => {
+  if (!pinnedRegions.has(region.key)) {
+  displayed.push({ key: region.key, displayName: region.displayName })
+  }
+  })
+  
+  // Filtered states last (not already in pinned)
     filteredStates.forEach((state) => {
       if (!pinnedRegions.has(state.key)) {
         displayed.push({ key: state.key, displayName: state.displayName })
-      }
-    })
-
-    // User-added regions (not already in pinned)
-    userAddedRegions.forEach((region) => {
-      if (!pinnedRegions.has(region.key)) {
-        displayed.push(region)
       }
     })
 
@@ -1169,9 +1169,9 @@ export function KwhCalculator() {
     const isInUserAdded = userAddedRegions.some((r) => r.key === key)
     const isInPinned = pinnedRegions.has(key)
 
-    if (!isInFiltered && !isInUserAdded && !isInPinned) {
-      setUserAddedRegions((prev) => [...prev, { key, displayName }])
-    }
+  if (!isInFiltered && !isInUserAdded && !isInPinned) {
+  setUserAddedRegions((prev) => [{ key, displayName }, ...prev])
+  }
   }
 
   const removeUserRegion = (key: string) => {
@@ -1981,34 +1981,7 @@ export function KwhCalculator() {
                     />
                   )
                 })}
-              {/* Filtered states (excluding pinned) */}
-              {filteredStates.map((state) => (
-                <RegionCard
-                  key={state.key}
-                  regionKey={state.key}
-                  displayName={state.displayName}
-                  data={regionData[state.key]}
-                  onRemove={() => hideFilterRegion(state.key)}
-                  compact={compact}
-                  filterValue={filterCategory !== "price" ? `${state.value}%` : undefined}
-                  filterLabel={filterCategory !== "price" ? filterCategory : undefined}
-                  isPinned={pinnedRegions.has(state.key)}
-                  onTogglePin={() => togglePinRegion(state.key)}
-                  layoutId={`card-${state.key}`}
-                  isSelectionMode={isPriceDriversSelecting}
-                  isSelected={selectedForComparison.has(state.key)}
-                  isSelectionDisabled={selectedForComparison.size >= 3}
-                  onToggleSelection={() => {
-                    setSelectedForComparison((prev) => {
-                      const next = new Set(prev)
-                      if (next.has(state.key)) next.delete(state.key)
-                      else if (next.size < 3) next.add(state.key)
-                      return next
-                    })
-                  }}
-                />
-              ))}
-              {/* Non-pinned user-added regions */}
+              {/* User-added regions first (excluding pinned) - appear at top left */}
               {userAddedRegions
                 .filter((region) => !pinnedRegions.has(region.key))
                 .map((region) => (
@@ -2036,6 +2009,34 @@ export function KwhCalculator() {
                     }}
                   />
                 ))}
+              {/* Filtered states (excluding pinned) */}
+              {filteredStates.map((state) => (
+                <RegionCard
+                  key={state.key}
+                  regionKey={state.key}
+                  displayName={state.displayName}
+                  data={regionData[state.key]}
+                  onRemove={() => hideFilterRegion(state.key)}
+                  compact={compact}
+                  filterValue={filterCategory !== "price" ? `${state.value}%` : undefined}
+                  filterLabel={filterCategory !== "price" ? filterCategory : undefined}
+                  isPinned={pinnedRegions.has(state.key)}
+                  onTogglePin={() => togglePinRegion(state.key)}
+                  layoutId={`card-${state.key}`}
+                  isSelectionMode={isPriceDriversSelecting}
+                  isSelected={selectedForComparison.has(state.key)}
+                  isSelectionDisabled={selectedForComparison.size >= 3}
+                  onToggleSelection={() => {
+                    setSelectedForComparison((prev) => {
+                      const next = new Set(prev)
+                      if (next.has(state.key)) next.delete(state.key)
+                      else if (next.size < 3) next.add(state.key)
+                      return next
+                    })
+                  }}
+                />
+              ))}
+
 
             </div>
           )}
@@ -2088,29 +2089,29 @@ export function KwhCalculator() {
           {isPriceDriversExpanded && (
             <div className="space-y-2 animate-in fade-in duration-300">
 
-              {/* Phone Summary View */}
-              <div className="sm:hidden space-y-3">
-                {(() => {
-                  const allRegions = [
-                    ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
-                      key,
-                      displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-                      isUserAdded: userAddedRegions.some((r) => r.key === key),
-                      isPinned: true,
-                    })),
-                    ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
-                      key: state.key,
-                      displayName: state.displayName,
-                      isUserAdded: false,
-                      isPinned: false,
-                    })),
-                    ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
-                      key: region.key,
-                      displayName: region.displayName,
-                      isUserAdded: true,
-                      isPinned: false,
-                    })),
-                  ].filter((r) => selectedForComparison.has(r.key))
+          {/* Phone Summary View */}
+          <div className="sm:hidden space-y-3">
+            {(() => {
+              const allRegions = [
+                ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
+                  key,
+                  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                  isUserAdded: userAddedRegions.some((r) => r.key === key),
+                  isPinned: true,
+                })),
+                ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
+                  key: region.key,
+                  displayName: region.displayName,
+                  isUserAdded: true,
+                  isPinned: false,
+                })),
+                ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                  key: state.key,
+                  displayName: state.displayName,
+                  isUserAdded: false,
+                  isPinned: false,
+                })),
+              ].filter((r) => selectedForComparison.has(r.key))
 
                   // Calculate overall score for each region
                   const getOverallScore = (regionKey: string, displayName: string) => {
@@ -2332,16 +2333,16 @@ export function KwhCalculator() {
                       isUserAdded: userAddedRegions.some((r) => r.key === key),
                       isPinned: true,
                     })),
-                    ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
-                      key: state.key,
-                      displayName: state.displayName,
-                      isUserAdded: false,
-                      isPinned: false,
-                    })),
                     ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
                       key: region.key,
                       displayName: region.displayName,
                       isUserAdded: true,
+                      isPinned: false,
+                    })),
+                    ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                      key: state.key,
+                      displayName: state.displayName,
+                      isUserAdded: false,
                       isPinned: false,
                     })),
                   ].filter((r) => selectedForComparison.has(r.key))
@@ -2598,30 +2599,30 @@ export function KwhCalculator() {
                 })()}
               </div>
 
-              {/* Desktop Stacked Region Cards with Factor Scores (lg+) */}
-              <div className="hidden lg:flex flex-col gap-2">
-                {/* Only selected regions for comparison */}
-                {(() => {
-                  const allRegions = [
-                    ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
-                      key,
-                      displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
-                      isUserAdded: userAddedRegions.some((r) => r.key === key),
-                      isPinned: true,
-                    })),
-                    ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
-                      key: state.key,
-                      displayName: state.displayName,
-                      isUserAdded: false,
-                      isPinned: false,
-                    })),
-                    ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
-                      key: region.key,
-                      displayName: region.displayName,
-                      isUserAdded: true,
-                      isPinned: false,
-                    })),
-                  ].filter((r) => selectedForComparison.has(r.key))
+          {/* Desktop Stacked Region Cards with Factor Scores (lg+) */}
+          <div className="hidden lg:flex flex-col gap-2">
+            {/* Only selected regions for comparison */}
+            {(() => {
+              const allRegions = [
+                ...Array.from(pinnedRegions).filter((key) => regionData[key]).map((key) => ({
+                  key,
+                  displayName: key.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                  isUserAdded: userAddedRegions.some((r) => r.key === key),
+                  isPinned: true,
+                })),
+                ...userAddedRegions.filter((r) => !pinnedRegions.has(r.key)).map((region) => ({
+                  key: region.key,
+                  displayName: region.displayName,
+                  isUserAdded: true,
+                  isPinned: false,
+                })),
+                ...filteredStates.filter((s) => !pinnedRegions.has(s.key)).map((state) => ({
+                  key: state.key,
+                  displayName: state.displayName,
+                  isUserAdded: false,
+                  isPinned: false,
+                })),
+              ].filter((r) => selectedForComparison.has(r.key))
 
                   return allRegions.map((region, idx) => (
                     <motion.div
