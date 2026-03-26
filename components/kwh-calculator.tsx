@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sun, Sunrise, Filter } from "lucide-react"
+import { MapPin, X, ChevronDown, ChevronUp, Zap, Shuffle, FileText, ArrowUp, ChevronRight, Search, Plus, Pin, TrendingUp, Info, RefreshCw, Undo2, Sun, Sunrise, Filter, Building2 } from "lucide-react"
 import { analyzeRegionPricing, askFollowUp, generateFactorAnalyses } from "@/app/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -1317,6 +1317,12 @@ setAnalysis(null)
       <div className="py-0">
         <div className="flex items-center justify-center gap-3">
           <h1 className="font-semibold text-3xl">Compare State Electricity Prices and Their Drivers</h1>
+        </div>
+        <div className="flex items-center justify-center mt-2">
+          <Badge variant="outline" className="text-sm text-muted-foreground gap-1.5 px-3 py-1">
+            <Building2 className="size-3.5" />
+            <span>Organization: {process.env.NEXT_PUBLIC_ORG_NAME ?? "My Organization"}</span>
+          </Badge>
         </div>
       </div>
 
