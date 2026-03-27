@@ -1,6 +1,7 @@
 "use server"
 
 import { generateText } from "ai"
+import { perplexity } from "@ai-sdk/perplexity"
 
 interface RegionInfo {
   name: string
@@ -165,7 +166,7 @@ Return ONLY valid JSON in this exact format:
 }`
 
   const { text } = await generateText({
-    model: "anthropic/claude-3-5-haiku-20241022",
+    model: perplexity("anthropic/claude-3-5-haiku-20241022"),
     prompt,
     maxOutputTokens: 4000,
   })
@@ -259,7 +260,7 @@ Return ONLY valid JSON:
 }`
 
   const { text } = await generateText({
-    model: "anthropic/claude-3-5-haiku-20241022",
+    model: perplexity("anthropic/claude-3-5-haiku-20241022"),
     prompt,
     maxOutputTokens: 2500,
   })
@@ -326,7 +327,7 @@ Respond directly to the user's question or challenge. If they are challenging th
 Respond with plain text only, no JSON formatting.`
 
   const { text } = await generateText({
-    model: "anthropic/claude-3-5-haiku-20241022",
+    model: perplexity("anthropic/claude-3-5-haiku-20241022"),
     prompt,
     maxOutputTokens: 1500,
   })

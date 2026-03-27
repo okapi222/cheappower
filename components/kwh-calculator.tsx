@@ -1,21 +1,5 @@
 "use client"
 
-import { AlertDialogAction } from "@/components/ui/alert-dialog"
-
-import { AlertDialogCancel } from "@/components/ui/alert-dialog"
-
-import { AlertDialogFooter } from "@/components/ui/alert-dialog"
-
-import { AlertDialogDescription } from "@/components/ui/alert-dialog"
-
-import { AlertDialogTitle } from "@/components/ui/alert-dialog"
-
-import { AlertDialogHeader } from "@/components/ui/alert-dialog"
-
-import { AlertDialogContent } from "@/components/ui/alert-dialog"
-
-import { AlertDialog } from "@/components/ui/alert-dialog"
-
 import { useState, useEffect } from "react"
 import { motion, LayoutGroup } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -55,6 +39,7 @@ interface RegionData {
     naturalGas?: number
     coal?: number
     oil?: number
+    geothermal?: number
     other?: number
   }
   priceSource: string
@@ -1042,7 +1027,7 @@ setAnalysis(null)
         energyMix: regionData[r.key].energyMix as Record<string, number>,
       }))
       const avgPrice = regionsForAnalysis.reduce((sum, r) => sum + r.price, 0) / regionsForAnalysis.length
-      const result = await analyzeRegionPricing(regionsForAnalysis, avgPrice)
+      const result = await analyzeRegionPricing(regionsForAnalysis, avgPrice, regionsForAnalysis.length === 1)
       if (result.success && result.data) {
         setAnalysis(result.data)
         setLastAnalyzedRegions(displayedRegions.map((r) => r.key))
